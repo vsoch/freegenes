@@ -1,0 +1,90 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>About FreeGenes</h1>
+      <p>For more information about FreeGenes, see the <a href="https://biobricks.org/freegenes/#" target="_blank">BioBricks project homepage</a>. Here we'll review frequently asked questions, and general protocol.</p>
+        <ul>
+         <li><a href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+           <ul><li><a href="faq1">What is freegenes?</a></li>
+               <li><a href="faq2">How is this different from the iGEM registry?</a></li>
+               <li><a href="faq3">What restriction sites do you add/remove? (MoClo parts only)</a></li>
+               <li><a href="faq4">Why do you remove restriction enzyme sites? (MoClo parts only)</a></li>
+               <li><a href="faq5">What about third party patent rights?</a></li>
+               <li><a href="faq6">Do you ship internationally?</a></li>
+               <li><a href="faq7">What have you finished synthesizing?</a></li>
+           </ul>
+         <li><a href="#how-does-it-work">How does it work?</a></li>
+        </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2 id="frequently-asked-questions">Frequently Asked Questions</h2>
+      <div class="clearfix"></div>
+      <h5 id="faq1">What is freegenes?</h5>
+      <p>FreeGenes is an intiative by the BioBricks Foundation to create
+an open technology commons. You can read more about it <a href="https://biobricks.org/freegenes" target="_blank">here</a>.</p>
+       <div class="clearfix"></div>
+      <h5 id="faq2">How is this different from the iGEM registry?</h5>
+      <p>There are two major differences between the Free Genes Project and the iGEM registry: The scope of distribution and the distribution methodology. First, iGEM only distributes once a year to academics and non-profits, while Free Genes distributes continuously to anyone, including academics, non-profits, companies, and even DIYbio hackers. Second, Free Genes is also interested in increasing access to biological tools through alternative distribution methodologies, such as decentralized B. subtilis spore-based distribution sets, which may drastically lower costs in DNA production, distribution, and storage. Rather than being a purely central hub for DNA, we hope that in the future there will be nodes of decentralized distributors throughout the world.</p>
+        <div class="clearfix"></div>
+        <h5 id="faq3">What restriction sites do you add/remove? (MoClo parts only)</h5>
+         <p>We remove all common Type IIS restriction enzyme sites from coding sequences. These include AarI, BsmBI, BbsI, BtgZI, BsaI, BfuAI, and SapI. For other parts, such as promoters and terminators, we strongly recommend removing BsaI, BsmBI, and SapI if possible.</p>
+        <div class="clearfix"></div>
+         <h5 id="faq4">Why do you remove restriction enzyme sites? (MoClo parts only)</h5>
+        <p>In order to scale our cloning methods, we take advantage of GoldenGate assembly standardization, and in particular, the MoClo assembly method. We aim to make standardized open access libraries for every major organism in order to clone new synthetic DNA very quickly for any desired application. By doing this, we drastically lower costs and increase our assembly speed.</p>
+        <div class="clearfix"></div> 
+        <h5 id="faq5">What about third party patent rights?</h5>
+         <p>We are currently developing an online tool to enable the community to quickly check DNA sequences for potential third party patent claims. Our goal is to empower the community to design sequences for synthesis that are free of third party rights and that can be widely shared. Stay tuned for developments on this front...</p>
+        <div class="clearfix"></div>
+        <h5 id="faq6">Do you ship internationally?</h5>
+         <p>We would like to support the international community, but will have to manage this on a case-by-case basis. Please contact us at <a href="mailto:koeng101@gmail.com">koeng101@gmail.com</a> for more information.</p>
+         <div class="clearfix"></div>
+         <h5 id="faq7">What have you finished synthesizing?</h5>
+	<p>We have completed synthesis of codon optimized versions of all the JCVI syn3.0 genes. If you are interested in any of those genes, please <a href="mailto:koeng101@gmail.com" rel="noopener" target="_blank">contact us.</a></p>
+	
+      <h2 id="how-does-it-work">How Does it Work?</h2>
+      <ol class="custom-counter">
+        <li>We hold all sequences until there are enough for a batch order from Twist Bioscience.<hr></li>
+        <li>Synthesis via Twist Bioscience now takes ~3-4 weeks to complete, depending on sequence complexity.<hr></li>
+        <li>Once we receive the newly synthesized DNA, it is processed in one of two ways:<br>
+            If you have requested DNA that can be made into MoClo-compatible parts, we will clone and sequence verify the DNA before shipping clonal plasmid stock to you.<br>
+If you have requested DNA that cannot be made MoClo-compatible, we will ship an aliquot of the raw synthesized DNA, keeping other aliquots for any other people interested.<hr></li>
+        <li>The process of cloning and validation takes an additional ~2 weeks.<hr></li>
+        <li>The Free Genes Project is still in beta, so please work with us to make this an efficient and productive community effort.<hr></li>
+        <li>We are synthesizing, cloning, sequencing, and freely distributing 10,000 genes via the <a href="https://www.bionet.io/" target="_blank">bionet.io</a> project and under the <a href="https://biobricks.org/openmta/" target="_blank">Open Material Transfer Agreement (OpenMTA)</a><hr></li>
+
+   <div class="row">
+    <div class="col-md-6">
+    <div class="card">
+       <div class="card-body">
+           <h5 class="card-title">Registry Software</h5>
+           <p class="card-text">
+             <p>If you have an issue with the registry software, please <a href="https://github.com/singularityhub/sregistry/issues" target="_blank">tell us here</a></p>
+           <p class="card-text">
+            <a href="http://www.twitter.com/containertools">
+              <button type="button" class="btn btn-lg btn-primary"><i class="fa fa-twitter"></i></button></a>
+            <a href="https://github.com/singularityhub/sregistry">
+              <button type="button" class="btn btn-lg btn-primary"><i class="fa fa-github"></i></button></a>
+           </p>
+       </div>
+    </div>
+ </div>    
+<div class="col-md-6">
+    <div class="card">
+       <div class="card-body">
+           <h5 class="card-title">Local Contact</h5>
+           <p class="card-text">{% if HELP_CONTACT_EMAIL %}
+             <p>For your local node support, contact <a href="mailto:{{ HELP_CONTACT_EMAIL }}">{{ HELP_CONTACT_EMAIL }}</a></p>
+           <p class="card-text">{% if HELP_INSTITUTION_SITE %}<a href="{{ HELP_INSTITUTION_SITE }}">
+              <button type="button" class="btn btn-lg btn-primary"><i class="fa fa-home"></i></button></a>{% endif %}{% endif %}
+           </p>
+       </div>
+    </div>
+</div>
+</div>
+{% endblock %}
