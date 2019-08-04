@@ -8,6 +8,7 @@ description: Setup, Install, and Deploy via Containers
 These guides will show you how to build containers, configure FreeGenes,
 and deploy the application.
 
+ - [Background](background)
  - [Setup](setup)
 
 

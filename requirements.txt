@@ -21,6 +21,7 @@ django>=1.11.18
 djangorestframework
 h5py
 ipython
+jsonschema
 markdown
 numexpr
 oauth2client==3.0
