@@ -19,6 +19,7 @@ from django.urls import reverse
 from django.contrib.postgres.fields import JSONField
 from taggit.managers import TaggableManager
 
+from .schemas import MODULE_SCHEMAS
 from .validators import (
     validate_dna_string,
     validate_name, 
@@ -344,47 +345,8 @@ class Module(models.Model):
             if not validate(self.data, schema):
                 raise ValidationError('Invalid schema for %s type %s' % (self.uuid, self.module_type))
 
-    SCHEMAS = { 
-        "pipette": { 
-            'type': 'object',
-            'schema': 'http://json-schema.org/draft-07/schema#',
-            'properties': {
-                'upper_range_ul': {
-                'type': 'float'
-              },{
-                'lower_range_ul': {
-                'type': 'float'
-              },{
-                'channels': {
-                'type': 'int'
-              },{
-                'channels': {
-                'type': 'int'
-              }
-            },
-           'required': ['my_key']
-        }
-
-        #TODO: stopped here, need to look up how to do arrays with json validator
-        # Pipette
-#        schema_generator({'upper_range_ul': generic_num, 'lower_range_ul': generic_num, 'channels': generic_num, 'compatible_with': {'type': 'array', 'items': {'type': 'string', 'enum': ['OT2','Human']}}}, # Pipette
-#            ['upper_range_ul','lower_range_ul','channels','compatible_with']),
-
-        # Incubator
-#        schema_generator({'temperature': generic_num, 'shaking': {'type': 'boolean'}, 'fits': {'type': 'array', 'items': {'type':'string','enum':['deep96','deep384','agar96']}}}, # Incubator
-#            ['temperature','shaking','fits']),
-        # Magdeck
-
-#       schema_generator({'compatible_with': {'type': 'array', 'items': {'type': 'string', 'enum': ['OT2','Human']}}, 'fits': {'type': 'array', 'items': {'type':'string','enum':['pcrhardshell96','pcrstrip8']}}},
-#           ['compatible_with','fits']),
-
-        # Tempdeck
-#        schema_generator({'upper_range_tm': generic_num, 'lower_range_tm': generic_num, 'default_tm': generic_num,
-#            'compatible_with': {'type': 'array', 'items': {'type': 'string', 'enum': ['OT2','Human']}}, 'fits': {'type': 'array', 'items':{'type':'string','enum':['pcrhardshell96','pcrstrip8','microcentrifuge2ml']}}},
-#            ['upper_range_tm','lower_range_tm','default_tm','compatible_with','fits'])
-#       ]},
-
-
+    SCHEMAS = MODULE_SCHEMAS
+    
     def get_absolute_url(self):
         return reverse('module_details', args=[self.uuid])
 
@@ -510,8 +472,68 @@ class MaterialTransferAgreement(models.Model):
 
 
 
+################################################################################
+# Plates
+################################################################################
 
-# Plate
+class Plate(models.Model):
+    '''A physical plate in the lab.
+    '''
+    PLATE_STATUS = [
+        ('Planned','Planned'),
+        ('Stocked','Stocked'),
+        ('Trashed','Trashed')
+    ]
+
+    PLATE_TYPE = [
+        ('archive_glycerol_stock','archive_glycerol_stock'),
+        ('glycerol_stock','glycerol_stock'),
+        ('culture','culture'),
+        ('distro','distro'),
+    ]
+
+    PLATE_FORM = [
+        ('standard96', 'standard96'),
+        ('deep96', 'deep96'),
+        ('standard384', 'standard384'),
+        ('deep384', 'deep384'),
+        ('pcrhardshell96', 'pcrhardshell96'),
+        ('pcrstrip8', 'pcrstrip8'),
+        ('agar96', 'agar96'),
+        ('microcentrifuge2ml')
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    plate_type = models.CharField(max_length=32, choices=PLATE_TYPE, required=True)
+    plate_form = models.CharField(max_length=32, choices=PLATE_FORM, required=True)
+    status = models.CharField(max_length=32, choices=PLATE_STATUS, required=True)
+    plate_name = models.CharField(max_length=250, required=True)
+
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    # What is this? Breadcrumb in a web page or something relevant to the plate?
+    breadcrumb = models.CharField(max_length=32, choices=PLATE_STATUS, required=True)
+    plate_vendor_id = models.CharField(max_length=250)
+    thaw_count = models.IntegerField(default=0)
+
+    # This is generally bad practice to have a notes field - what is this for?
+    notes = models.CharField(max_length=500)
+
+    container = models.ForeignKey('Container', on_delete=models.CASCADE)
+    protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE)
+
+    def get_label(self):
+        return "plate"
+
+    class Meta:
+        app_label = 'main'
+
+
+    wells = models.ManyToManyField('main.Well', blank=True, default=None,
+                                   related_name="plate_wells",
+                                   related_query_name="plate_wells")
+
 # Sample
 # Well
 # Protocol
