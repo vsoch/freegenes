@@ -6,8 +6,11 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-*Models are stil being written*
-
+*Note*: We could use an abstract model for shared attributes (less code,
+        and the same result) but in past cases when I've done this (and
+        something needs to change for a model) it makes it more difficult.
+        The current approach to redefine the fields is more redundant, but
+        produces the same result and doesn't risk this future issue.
 '''
 
 from django.conf import settings
@@ -37,6 +40,8 @@ class Tag(models.Model):
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tag = models.CharField(max_length=250, blank=False, null=False)  # should this be unique?
+
+    # Note that other models use "time_created" and "time_updated"
     add_date = models.DateTimeField('date published', auto_now_add=True) # Do we need to keep track of dates?
     modify_date = models.DateTimeField('date modified', auto_now=True)
 
@@ -529,12 +534,69 @@ class Plate(models.Model):
     class Meta:
         app_label = 'main'
 
-
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="plate_wells",
                                    related_query_name="plate_wells")
 
+
+################################################################################
 # Sample
+################################################################################
+
+class Sample(models.Model):
+    '''A physical sample in the lab.
+    '''
+
+    SAMPLE_STATUS = [
+        ('Confirmed','Confirmed'), 
+        ('Mutated','Mutated')
+    ]
+
+    SAMPLE_TYPE = [
+        ('Plasmid', 'Plasmid'),
+        ('Illumina_Library', 'Illumina_Library')
+    ]
+
+    # What is sample evidence?
+    # The labels here don't match what is commented about outside folks, e.g.,
+    # Are all options valid, either lowercase or uppercase? Should there be boolean instead?
+    # Why is this important to know?
+    # ngs, sanger, TWIST - capitals denote outside folks
+    SAMPLE_EVIDENCE = [
+        ('Twist_Confirmed', 'Twist_Confirmed'),
+        ('NGS', 'NGS'),
+        ('Sanger', 'Sanger'),
+        ('Nanopore', 'Nanopore'),
+        ('Derived', 'Derived')
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE)
+    status = models.CharField(max_length=32, choices=SAMPLE_STATUS, required=True)
+    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, required=True)
+    vendor = models.CharField(max_length=250)
+
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    # Confirm that a sample has one part, and delete part == delete sample?
+    derived_from = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    part = models.ForeignKey('Part', on_delete=models.CASCADE, required=True)
+
+    index_for = models.CharField(max_length=250, validators=[validate_dna_string])
+    index_rev = models.CharField(max_length=250, validators=[validate_dna_string])
+
+    wells = models.ManyToManyField('main.Well', blank=True, default=None,
+                                   related_name="sample_wells",
+                                   related_query_name="sample_wells")
+
+    def get_label(self):
+        return "sample"
+
+    class Meta:
+        app_label = 'main'
+
+
 # Well
 # Protocol
 # Operation
