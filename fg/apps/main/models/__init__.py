@@ -19,6 +19,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from taggit.managers import TaggableManager
 from fg.settings import (
@@ -32,6 +34,7 @@ from .validators import (
     validate_json_schema
 )
 
+import string
 import uuid
 
 ################################################################################
@@ -638,7 +641,7 @@ class Sample(models.Model):
 ################################################################################
 
 
-class Wells(models.Model):
+class Well(models.Model):
     '''A physical well in the lab.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -673,10 +676,119 @@ class Wells(models.Model):
         app_label = 'main'
 
 
-
+################################################################################
 # Protocol
+################################################################################
+
+class Protocol(models.Model):
+    '''A physical well in the lab.
+    '''
+    # Is there any reason to not store this as a boolean, potential for other states?
+    PROTOCOL_STATUS = [
+        ('Executed','Executed'), 
+        ('Planned','Planned')
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status = models.CharField(max_length=32, required=True, choices=PROTOCOL_STATUS)
+    description = models.CharField(max_length=500)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    data = JSONField(default=dict)
+
+    # If a schema is deleted, a protocol is deleted.
+    schema = models.ForeignKey('Schema', on_delete=models.CASCADE, required=True)
+    plates = models.ManyToManyField('main.Well', blank=True, default=None,
+                                    related_name="protocol_plates",
+                                    related_query_name="protocol_plates")
+
+    # protocol_required = ['protocol','schema_uuid']
+    # QUESTION: for protocol required you had protocol but I don't see a field. Did you mean plates? or the data?
+    def get_label(self):
+        return "protocol"
+
+    class Meta:
+        app_label = 'main'
+
+
+################################################################################
 # Operation
-# Plan
+################################################################################
+
+class Operation(models.Model):
+    '''A group of plans.
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+    description = models.CharField(max_length=500)
+    name = models.CharField(max_length=250, required=True)
+
+    plans = models.ManyToManyField('main.Plan', blank=True, default=None,
+                                   related_name="operation_plans",
+                                   related_query_name="operation_plans")
+
+    def get_label(self):
+        return "operation"
+
+    class Meta:
+        app_label = 'main'
+
+
+
+################################################################################
+# Plans
+################################################################################
+
+class Plan(models.Model):
+    '''A collection of protocols, plates, samples, and wells to be done.
+    '''
+    # These are similar to plate statuses - are these global statuses that should
+    # be present across protocols, plates, samples, wells?
+    PLAN_STATUS = [
+        ('Executed','Executed'), 
+        ('Planned','Planned')
+        ('Executed','Executed')
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+    name = models.CharField(max_length=250, required=True)
+    description = models.CharField(max_length=500)
+
+    # Are these correct?
+    parent = models.ForeignKey('Plan', on_delete=models.CASCADE)
+    operation = models.ForeignKey('Operation', on_delete=models.DO_NOTHING)
+    status = models.CharField(max_length=32, required=True, choices=PLAN_STATUS)
+
+    def add_item(self, item):
+        '''can be used to add a well, protocol, plate, or sample. We don't
+           currently validate the type, so a plan can include any type.
+        '''
+        data_content_type = ContentType.objects.get_for_model(item)
+
+        return PlanData.objects.create(
+            plan=self,
+            data_content_type=data_content_type,
+            data_object_id=item.pk,
+        )
+
+
+class PlanData(models.Model):
+    '''plan data can hold protocols, plates, samples, or wells. The PlanData is
+       represented under a plan as plan_data, e.g., plan.plan_data.all()
+    '''
+    plan = models.ForeignKey('main.Plan', on_delete=models.CASCADE, related_name="plan_data")
+    data_object_id = models.IntegerField()
+    data_content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    data = GenericForeignKey(
+        'data_content_type',
+        'data_object_id',
+    )
+
+
 # PlateSet
 # Distribution
 # Order (how much of this should be kept in database? We don't want to house PI)
