@@ -17,10 +17,9 @@ ENABLE_GITHUB_AUTH = True
 ENABLE_GITLAB_AUTH = False
 ENABLE_BITBUCKET_AUTH = False
 
-# NOTE you will need to set autehtication methods up.
+# NOTE you will need to set authentication methods up.
 # Configuration goes into secrets.py
-# see https://singularityhub.github.io/sregistry/install.html
-# secrets.py.example provides a template to work from
+#TODO: add link to docs here
 
 # See below for additional authentication module, e.g. LDAP that are
 # available, and configured, as plugins.
@@ -45,6 +44,15 @@ HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_URI = "srcc"
 NODE_NAME = "Stanford Research Computing Center"
+
+# Defaults for Physical Models
+
+# These should be integers, will be used to generate plate locations 
+# (addresses) for the well schema.
+# Question: is this absolutely set in stone for the entire application? Can
+# we not have more than one plate size?
+DEFAULT_PLATE_HEIGHT=16
+DEFAULT_PLATE_LENGTH=24
 
 # Permissions and Views
 
