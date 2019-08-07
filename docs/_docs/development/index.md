@@ -9,6 +9,7 @@ These guides will show you how to build containers, configure FreeGenes,
 and deploy the application.
 
  - [Background](background)
+ - [User Stories](user-stories)
  - [Setup](setup)
 
 

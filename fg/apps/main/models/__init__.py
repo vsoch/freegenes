@@ -47,10 +47,6 @@ class Tag(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tag = models.CharField(max_length=250, blank=False, null=False)  # should this be unique?
 
-    # Note that other models use "time_created" and "time_updated"
-    add_date = models.DateTimeField('date published', auto_now_add=True) # Do we need to keep track of dates?
-    modify_date = models.DateTimeField('date modified', auto_now=True)
-
     def get_absolute_url(self):
         return reverse('tag_details', args=[self.uuid])
 
@@ -70,7 +66,7 @@ class Author(models.Model):
        object.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=250, blank=False, required=True)
+    name = models.CharField(max_length=250, blank=False)
     email = models.EmailField(max_length=250, blank=False, unique=True)
 
     affiliation = models.CharField(max_length=250, blank=False, null=False)
@@ -132,8 +128,8 @@ class Part(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
     status = models.CharField(max_length=250, choices=PART_STATUS, default='null')
-    name = models.CharField(max_length=250, required=True)
-    description = models.CharField(max_length=500, required=True)
+    name = models.CharField(max_length=250, blank=False)
+    description = models.CharField(max_length=500, blank=False)
     gene_id = models.CharField(max_length=250)
     part_type = models.CharField(max_length=250, choices=PART_TYPE)
 
@@ -141,7 +137,7 @@ class Part(models.Model):
     original_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
     optimized_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
     synthesized_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
-    full_sequence = models.CharField(max_length=250, required=True, validators=[validate_dna_string])
+    full_sequence = models.CharField(max_length=250, blank=False, validators=[validate_dna_string])
 
     genbank = JSONField(default=dict)
 
@@ -151,12 +147,12 @@ class Part(models.Model):
     primer_rev = models.CharField(max_length=250, validators=[validate_dna_string])
     barcode = models.CharField(max_length=250, validators=[validate_dna_string])
     translation = models.CharField(max_length=250)
-    vdb = models.CharField(max_length=250, required=True)
+    vdb = models.CharField(max_length=250, blank=False)
 
     # What is an ip check?
     ip_check_date = models.DateTimeField('date ip checked')
     ip_check = models.BooleanField(choices=IP_CHECKED_CHOICES, default='NOT_CHECKED')
-    ip_check_ref = models.CharField(max_length=250, required=True)
+    ip_check_ref = models.CharField(max_length=250, blank=False)
 
     ## Foreign Keys and Relationships
 
@@ -176,10 +172,10 @@ class Part(models.Model):
 
     # When a collection is deleted, so are the parts
     # And assumes parts can only belong to one collection (is this true?)
-    collection = models.ForeignKey('Collection', on_delete=models.CASCADE, required=True)
+    collection = models.ForeignKey('Collection', on_delete=models.CASCADE, blank=False)
 
     # When an author is deleted, his parts are deleted
-    author = models.ForeignKey('Author', on_delete=models.CASCADE, required=True)
+    author = models.ForeignKey('Author', on_delete=models.CASCADE, blank=False)
 
     # Note: there was a to_json function here, but if this is for API, better
     # to do this with a serializer.
@@ -206,10 +202,10 @@ class Collection(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    name = models.CharField(max_length=250, required=True)
+    name = models.CharField(max_length=250, blank=False)
 
     # What is the difference between a readme and description? Should be consistent
-    readme = models.CharField(max_length=500, required=True)
+    readme = models.CharField(max_length=500, blank=False)
 
     # When a parent is deleted, so are the children
     parent = models.ForeignKey('Collection', on_delete=models.CASCADE)
@@ -231,7 +227,7 @@ class Container(models.Model):
     '''A physical container in the lab space
     '''
 
-     CONTAINER_TYPES = [ # TODO: need better descriptions here
+    CONTAINER_TYPES = [ # TODO: need better descriptions here
          ('trash', 'trash'),
          ('lab', 'lab'),
          ('room', 'room'),
@@ -247,14 +243,14 @@ class Container(models.Model):
          ('incubator', 'incubator'),
          ('shaking_incubator', 'shaking incubator'),
 
-     ]
+    ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    name = models.CharField(max_length=250, required=True, validators=[validate_name])
-    container_type = models.CharField(max_length=250, required=True, choices=CONTAINER_TYPES)
+    name = models.CharField(max_length=250, blank=False, validators=[validate_name])
+    container_type = models.CharField(max_length=250, blank=False, choices=CONTAINER_TYPES)
     description = models.CharField(max_length=500)
     estimated_temperature = models.FloatField()
 
@@ -296,7 +292,7 @@ class Organism(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    name = models.CharField(max_length=250, required=True)
+    name = models.CharField(max_length=250, blank=False)
 
     description = models.CharField(max_length=500, null=False)
     genotype = models.CharField(max_length=250, null=False)
@@ -336,13 +332,13 @@ class Module(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    container = models.ForeignKey('Container', on_delete=models.CASCADE, required=True)
-    name = models.CharField(max_length=250, required=True, validators=[validate_name])
+    container = models.ForeignKey('Container', on_delete=models.CASCADE, blank=False)
+    name = models.CharField(max_length=250, blank=False, validators=[validate_name])
 
     # This is generally bad practice to have a notes field - what is this for?
     notes = models.CharField(max_length=500)
-    model_id = models.CharField(max_length=250, required=True)
-    module_type = models.CharField(max_length=250, required=True, choices=MODULE_TYPE)
+    model_id = models.CharField(max_length=250, blank=False)
+    module_type = models.CharField(max_length=250, blank=False, choices=MODULE_TYPE)
 
     # This will be validated with clean according to module_type
     data = JSONField(default=dict)
@@ -385,10 +381,10 @@ class Robot(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    container = models.ForeignKey('Container', on_delete=models.CASCADE, required=True)
-    name = models.CharField(max_length=250, required=True, validators=[name_validator])
-    robot_id = models.CharField(max_length=250, required=True)
-    robot_type = models.CharField(max_length=250, required=True, choices=ROBOT_TYPES, default='OT2')
+    container = models.ForeignKey('Container', on_delete=models.CASCADE, blank=False)
+    name = models.CharField(max_length=250, blank=False, validators=[validate_name])
+    robot_id = models.CharField(max_length=250, blank=False)
+    robot_type = models.CharField(max_length=250, blank=False, choices=ROBOT_TYPES, default='OT2')
 
     # This is generally bad practice to have a notes field - what is this for?
     notes = models.CharField(max_length=500)
@@ -465,7 +461,7 @@ class MaterialTransferAgreement(models.Model):
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    mta_type = models.CharField(max_length=32, choices=PART_TYPE, required=True)
+    mta_type = models.CharField(max_length=32, choices=MTA_TYPE, blank=False)
 
     # Are we sure we want all files hosted remote to server?
     # The agreement file is named based on the UUID here?
@@ -473,7 +469,7 @@ class MaterialTransferAgreement(models.Model):
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    institution = models.CharField(max_length=250, required=True)
+    institution = models.CharField(max_length=250, blank=False)
 
     def get_label(self):
         return "materialtransferagreement"
@@ -515,16 +511,16 @@ class Plate(models.Model):
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    plate_type = models.CharField(max_length=32, choices=PLATE_TYPE, required=True)
-    plate_form = models.CharField(max_length=32, choices=PLATE_FORM, required=True)
-    status = models.CharField(max_length=32, choices=PLATE_STATUS, required=True)
-    plate_name = models.CharField(max_length=250, required=True)
+    plate_type = models.CharField(max_length=32, choices=PLATE_TYPE, blank=False)
+    plate_form = models.CharField(max_length=32, choices=PLATE_FORM, blank=False)
+    status = models.CharField(max_length=32, choices=PLATE_STATUS, blank=False)
+    plate_name = models.CharField(max_length=250, blank=False)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
     # What is this? Breadcrumb in a web page or something relevant to the plate?
-    breadcrumb = models.CharField(max_length=32, choices=PLATE_STATUS, required=True)
+    breadcrumb = models.CharField(max_length=32, choices=PLATE_STATUS, blank=False)
     plate_vendor_id = models.CharField(max_length=250)
     thaw_count = models.IntegerField(default=0)
 
@@ -532,10 +528,8 @@ class Plate(models.Model):
     notes = models.CharField(max_length=500)
 
     # This is a proposed addition so we generate wells from plates with known dimensions
-    height = models.IntegerField(required=True, default=DEFAULT_PLATE_HEIGHT)
-    length = models.IntegerField(required=True, default=DEFAULT_PLATE_LENGTH)
-
-    def generate_wells
+    height = models.IntegerField(blank=False, default=DEFAULT_PLATE_HEIGHT)
+    length = models.IntegerField(blank=False, default=DEFAULT_PLATE_LENGTH)
 
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
     protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE)
@@ -578,6 +572,32 @@ def generate_plate_wells(sender, instance, **kwargs):
 
 
 
+class PlateSet(models.Model):
+    '''One or more plates associated with an order (or similar).
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    description = models.CharField(max_length=500)
+    name = models.CharField(max_length=250, blank=False)
+
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    plates = models.ManyToManyField('main.Plate', blank=False,
+                                    related_name="plateset_plates",
+                                    related_query_name="plateset_plates")
+
+    def get_label(self):
+        return "plateset"
+
+    class Meta:
+        app_label = 'main'
+
+
+# QUESTION: why have platesets and distributions? Why not just have platesets represented
+#           in orders? Is there any other kind of entity that could be distributed (and would
+#           warrant a more flexible model?
+
+
 ################################################################################
 # Sample
 ################################################################################
@@ -611,8 +631,8 @@ class Sample(models.Model):
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE)
-    status = models.CharField(max_length=32, choices=SAMPLE_STATUS, required=True)
-    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, required=True)
+    status = models.CharField(max_length=32, choices=SAMPLE_STATUS, blank=False)
+    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, blank=False)
     vendor = models.CharField(max_length=250)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -620,7 +640,7 @@ class Sample(models.Model):
 
     # Confirm that a sample has one part, and delete part == delete sample?
     derived_from = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    part = models.ForeignKey('Part', on_delete=models.CASCADE, required=True)
+    part = models.ForeignKey('Part', on_delete=models.CASCADE, blank=False)
 
     index_for = models.CharField(max_length=250, validators=[validate_dna_string])
     index_rev = models.CharField(max_length=250, validators=[validate_dna_string])
@@ -645,7 +665,7 @@ class Well(models.Model):
     '''A physical well in the lab.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    address = models.CharField(max_length=32, required=True)
+    address = models.CharField(max_length=32, blank=False)
     volume = models.FloatField()
     quantity = models.PositiveIntegerField()
     media = models.CharField(max_length=250)
@@ -654,11 +674,11 @@ class Well(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
     # If a plate is deleted, a well belonging to it is also deleted.
-    plate = models.ForeignKey('Plate', on_delete=models.CASCADE, required=True)
+    plate = models.ForeignKey('Plate', on_delete=models.CASCADE, blank=False)
 
     # Why did original model code have uuid for organism (model) and organism string with this comment
     # organism = db.Column(db.String) # IMPLEMENT ORGANISM CONTROL
-    organism = models.ForeignKey('Organism', on_delete=models.CASCADE)
+    organism = models.ForeignKey('Organism', on_delete=models.DO_NOTHING)
 
     # The original model had samples required for wells, but why is a sample required?
     # I modeled the Sample to have wells instead, and it shouldn't be required
@@ -675,13 +695,15 @@ class Well(models.Model):
     class Meta:
         app_label = 'main'
 
+# Distribution
+
 
 ################################################################################
 # Protocol
 ################################################################################
 
 class Protocol(models.Model):
-    '''A physical well in the lab.
+    '''a set of plates combined with a schema (what is this exactly?)
     '''
     # Is there any reason to not store this as a boolean, potential for other states?
     PROTOCOL_STATUS = [
@@ -690,15 +712,19 @@ class Protocol(models.Model):
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status = models.CharField(max_length=32, required=True, choices=PROTOCOL_STATUS)
+    status = models.CharField(max_length=32, blank=False, choices=PROTOCOL_STATUS)
     description = models.CharField(max_length=500)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
     data = JSONField(default=dict)
 
+    # QUESTION: A schema is originally modeled as it's own object. Is this necessary?
+    # Are schemas dynamic, or can we store templates somewhere?
     # If a schema is deleted, a protocol is deleted.
-    schema = models.ForeignKey('Schema', on_delete=models.CASCADE, required=True)
+    # schema = models.ForeignKey('Schema', on_delete=models.CASCADE, blank=False)
+    schema = JSONField(default=dict)
+
     plates = models.ManyToManyField('main.Well', blank=True, default=None,
                                     related_name="protocol_plates",
                                     related_query_name="protocol_plates")
@@ -723,7 +749,7 @@ class Operation(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
     description = models.CharField(max_length=500)
-    name = models.CharField(max_length=250, required=True)
+    name = models.CharField(max_length=250, blank=False)
 
     plans = models.ManyToManyField('main.Plan', blank=True, default=None,
                                    related_name="operation_plans",
@@ -748,20 +774,20 @@ class Plan(models.Model):
     # be present across protocols, plates, samples, wells?
     PLAN_STATUS = [
         ('Executed','Executed'), 
+        ('Trashed','Trashed'),
         ('Planned','Planned')
-        ('Executed','Executed')
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    name = models.CharField(max_length=250, required=True)
+    name = models.CharField(max_length=250, blank=False)
     description = models.CharField(max_length=500)
 
     # Are these correct?
     parent = models.ForeignKey('Plan', on_delete=models.CASCADE)
     operation = models.ForeignKey('Operation', on_delete=models.DO_NOTHING)
-    status = models.CharField(max_length=32, required=True, choices=PLAN_STATUS)
+    status = models.CharField(max_length=32, blank=False, choices=PLAN_STATUS)
 
     def add_item(self, item):
         '''can be used to add a well, protocol, plate, or sample. We don't
@@ -774,6 +800,12 @@ class Plan(models.Model):
             data_content_type=data_content_type,
             data_object_id=item.pk,
         )
+
+    def get_label(self):
+        return "plan"
+
+    class Meta:
+        app_label = 'main'
 
 
 class PlanData(models.Model):
@@ -788,15 +820,66 @@ class PlanData(models.Model):
         'data_object_id',
     )
 
+    def get_label(self):
+        return "plandata"
 
-# PlateSet
-# Distribution
-# Order (how much of this should be kept in database? We don't want to house PI)
+    class Meta:
+        app_label = 'main'
+
+
+################################################################################
+# Orders
+################################################################################
+
+class Order(models.Model):
+    '''A request by a user for a shipment. The address/ personal information
+       is not stored here, but looked up elsewhere via the user address.
+       A simple solution to start this off would be to have a form (only
+       accessible with login) that feeds to a Google sheet (in Stanford
+       Drive - check security level) that keeps the order information.
+       Scripts / automation to generate order labels, etc. for addresses
+       could be derived from there.
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+    name = models.CharField(max_length=250, blank=False)
+
+    # What kind of information would go here?
+    notes = models.CharField(max_length=500)
+
+    # TODO: this was originally distributions. It should either be just platesets,
+    # or a distribution modeled as a more generic object.
+    platesets = models.ManyToManyField('main.Plan', blank=False,
+                                       related_name="order_platesets",
+                                       related_query_name="order_platesets")
+ 
+    # Associated with an email that is looked up to get address
+    # assumes that if a user deletes account, we delete orders
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, blank=False)
+    material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
+                                                    on_delete=models.DO_NOTHING)
+
+    def get_label(self):
+        return "order"
+
+    class Meta:
+        app_label = 'main'
+
+# Schema
+
+# Thinking: holding the shipment information in the system is allocating too much
+# responsibility to it - the farthest representation I think we should take
+# is to represent an order, with a set of items and a number. The shipping
+# details (addresses) along with status are out of scope for the FreeGenes
+# database. We need to have another integration that can handle this, that doesn't
+# require storing PI with FreeGenes. 
+
+# The following should be represented elsewhere (personal information)
 # Shipment
 # Address
 # Parcel
 # Institution
-# Schema
 
 # signals
 post_save.connect(generate_plate_wells, sender=Plate)
