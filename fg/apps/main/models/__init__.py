@@ -143,8 +143,8 @@ class Part(models.Model):
 
     # It would be good to have descriptors for these fields
     vector = models.CharField(max_length=250)
-    primer_for = models.CharField(max_length=250, validators=[validate_dna_string])
-    primer_rev = models.CharField(max_length=250, validators=[validate_dna_string])
+    primer_forward = models.CharField(max_length=250, validators=[validate_dna_string])
+    primer_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
     barcode = models.CharField(max_length=250, validators=[validate_dna_string])
     translation = models.CharField(max_length=250)
     vdb = models.CharField(max_length=250, blank=False)
@@ -302,8 +302,7 @@ class Organism(models.Model):
                                    related_query_name="organism_tags")
 
     files = models.ManyToManyField('main.Files', blank=True, default=None,
-                                   related_name="organism_files",
-                                   related_query_name="organism_files")
+                                   related_name="%(class)s_organism")
 
     def get_absolute_url(self):
         return reverse('organism_details', args=[self.uuid])
@@ -391,8 +390,8 @@ class Robot(models.Model):
     server_version = models.CharField(max_length=32)
 
     # What is a mount?
-    right_mount = models.ForeignKey('Module', on_delete=models.CASCADE)
-    left_mount = models.ForeignKey('Module', on_delete=models.CASCADE)
+    right_mount = models.ForeignKey('Module', on_delete=models.CASCADE, related_name="robot_right_mount")
+    left_mount = models.ForeignKey('Module', on_delete=models.CASCADE, related_query_name="robot_left_mount")
 
     def get_absolute_url(self):
         return reverse('robot_details', args=[self.uuid])
@@ -419,17 +418,6 @@ class Files(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
     file_name = models.CharField(max_length=500, null=True, blank=True)
-
-    description = models.CharField(max_length=500, null=False)
-    genotype = models.CharField(max_length=250, null=False)
-
-    tags = models.ManyToManyField('main.Tag', blank=True, default=None,
-                                   related_name="organism_tags",
-                                   related_query_name="organism_tags")
-
-    files = models.ManyToManyField('main.Files', blank=True, default=None,
-                                   related_name="organism_files",
-                                   related_query_name="organism_files")
 
     def download(self):
         # Need to set up connection to some storage, this would be best
@@ -507,7 +495,7 @@ class Plate(models.Model):
         ('pcrhardshell96', 'pcrhardshell96'),
         ('pcrstrip8', 'pcrstrip8'),
         ('agar96', 'agar96'),
-        ('microcentrifuge2ml')
+        ('microcentrifuge2ml', 'microcentrifuge2ml')
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -642,8 +630,8 @@ class Sample(models.Model):
     derived_from = models.ForeignKey('Sample', on_delete=models.CASCADE)
     part = models.ForeignKey('Part', on_delete=models.CASCADE, blank=False)
 
-    index_for = models.CharField(max_length=250, validators=[validate_dna_string])
-    index_rev = models.CharField(max_length=250, validators=[validate_dna_string])
+    index_forward = models.CharField(max_length=250, validators=[validate_dna_string])
+    index_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
 
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="sample_wells",
@@ -725,9 +713,8 @@ class Protocol(models.Model):
     # schema = models.ForeignKey('Schema', on_delete=models.CASCADE, blank=False)
     schema = JSONField(default=dict)
 
-    plates = models.ManyToManyField('main.Well', blank=True, default=None,
-                                    related_name="protocol_plates",
-                                    related_query_name="protocol_plates")
+    plates = models.ManyToManyField('main.Plate', blank=True, default=None,
+                                    related_name="%(class)s_protocol")
 
     # protocol_required = ['protocol','schema_uuid']
     # QUESTION: for protocol required you had protocol but I don't see a field. Did you mean plates? or the data?
