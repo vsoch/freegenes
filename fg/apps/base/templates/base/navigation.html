@@ -13,16 +13,8 @@
       <li class="nav-item sr-only"><a class="nav-link" href="#promo">Home</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
       <li class="nav-item"><a class="nav-link" href="https://vsoch.github.io/freegenes">User Guide</a></li>
-      <li class="nav-item last"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-      {% if request.user.is_authenticated %}<li class="nav-item dropdown">
-        <a class="nav-item dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.username }}</a>
-        <div class="dropdown-menu dropdown-menu-right">
-        <a class="dropdown-item" href="{% url 'profile' %}">Settings</a>
-        <a class="dropdown-item" href="{% url 'token' %}">Token</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-      </div>
-    </li>{% else %}<li class="nav-item"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}
+      <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+      {% if request.user.is_authenticated %}<li class="nav-item last"> <a class="nav-link" href="#">Dashboard</a></li>{% else %}<li class="nav-item last"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}
     </ul>
   </div>
 </nav>

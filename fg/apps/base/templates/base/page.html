@@ -41,9 +41,8 @@
 {% block content %}
 {% endblock %}
 {% block footer %}
-  <!-- Footer -->
-  <footer class="footer bg-light">
-    <div class="container">
+<footer class="footer" style="margin-top:100px">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
           <ul class="list-inline mb-2">
@@ -86,9 +85,10 @@
         </div>
       </div>
     </div>
+
   </footer>
 {% endblock %}
-{% block scripts %}
+{% block basescripts %}
     <script src="{% static "js/jquery.min.js"%}"></script>
     <script src="{% static "js/bootstrap.bundle.min.js"%}"></script>
     <script>
@@ -106,5 +106,5 @@ $(function () {
     lastScrollTop = st;
   });
 });
-    </script>
+</script>
 {% endblock %}
