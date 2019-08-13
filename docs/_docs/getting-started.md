@@ -24,4 +24,5 @@ data and permissions, but it's not technically impossible to do.
 
 ## Development
 
- - [Setup](development/setup): building containers and setting up.
+ - [Development](development/): background and basic setup
+ - [Plugins](plugins/): additional plugins that can be enabled for authentication

@@ -7,7 +7,9 @@
         - title: Overview
           url: "docs/getting-started"
         - title: Development
-          url: "docs/development"
+          url: "docs/development/"
+        - title: Plugins
+          url: "docs/plugins/"
     - title: "About"
       url: "about"
     - title: "News"
