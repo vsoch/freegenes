@@ -16,7 +16,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -42,10 +41,18 @@ import uuid
 ################################################################################
 
 class Tag(models.Model):
-    '''A Tag object.
+    '''tags are ways to organize the different categories they are associated with. 
+       As an example, we may tag a plasmid part as conferring ampicillin 
+       resistance, so it would include the tag resistance:ampicillin. 
+       That same part could also be tagged as an essential_gene.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tag = models.CharField(max_length=250, blank=False, null=False)  # should this be unique?
+    tag = models.CharField(max_length=250, blank=False, null=False, unique=True)
+
+    def save(self, *args, **kwargs):
+        '''tags are enforced as all lowercase to avoid duplication'''
+        self.tag = self.tag.lower()
+        return super(Tag, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('tag_details', args=[self.uuid])
@@ -74,7 +81,7 @@ class Author(models.Model):
     # Maximum length is only 19, but might as well prepare for future extension
     orcid = models.CharField(max_length=32, blank=False, unique=True)
 
-    # What purpose do tags serve? What is a tag?
+    # Tags are shared between models
     tags = models.ManyToManyField('main.Tag', blank=True, default=None,
                                    related_name="author_tags",
                                    related_query_name="author_tags")
@@ -133,11 +140,11 @@ class Part(models.Model):
     gene_id = models.CharField(max_length=250)
     part_type = models.CharField(max_length=250, choices=PART_TYPE)
 
-    # Sequences (what are the maximum lengths here?)
-    original_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
-    optimized_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
-    synthesized_sequence = models.CharField(max_length=250, validators=[validate_dna_string])
-    full_sequence = models.CharField(max_length=250, blank=False, validators=[validate_dna_string])
+    # Sequences - we would want 10K to 100K, can go up to 4 million (but not practical)
+    original_sequence = models.TextField(validators=[validate_dna_string])
+    optimized_sequence = models.TextField(validators=[validate_dna_string])
+    synthesized_sequence = models.TextField(validators=[validate_dna_string])
+    full_sequence = models.TextField(blank=False, validators=[validate_dna_string])
 
     genbank = JSONField(default=dict)
 
@@ -147,7 +154,6 @@ class Part(models.Model):
     primer_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
     barcode = models.CharField(max_length=250, validators=[validate_dna_string])
     translation = models.CharField(max_length=250)
-    vdb = models.CharField(max_length=250, blank=False)
 
     # What is an ip check?
     ip_check_date = models.DateTimeField('date ip checked')
@@ -165,23 +171,19 @@ class Part(models.Model):
                                    related_name="parts_files",
                                    related_query_name="parts_files")
 
-    # Can the same sample exist between parts?
+    # The same sample can exist between parts
     samples = models.ManyToManyField('main.Sample', blank=True, default=None,
                                     related_name="parts_samples",
                                     related_query_name="parts_samples")
 
-    # When a collection is deleted, so are the parts
-    # And assumes parts can only belong to one collection (is this true?)
-    collection = models.ForeignKey('Collection', on_delete=models.CASCADE, blank=False)
+    # Parts can belong to many collections, when collection deleted, all parts remain
+    collections = models.ManyToManyField('main.Collection', blank=True, default=None,
+                                         related_name="parts_collections",
+                                         related_query_name="parts_collections")
 
-    # When an author is deleted, his parts are deleted
-    author = models.ForeignKey('Author', on_delete=models.CASCADE, blank=False)
+    # Authors cannot be deleted if there is a part
+    author = models.ForeignKey('Author', on_delete=models.PROTECT, blank=False)
 
-    # Note: there was a to_json function here, but if this is for API, better
-    # to do this with a serializer.
-
-    #tags = TaggableManager()
-    
     def get_absolute_url(self):
         return reverse('part_details', args=[self.uuid])
 
@@ -196,6 +198,7 @@ class Part(models.Model):
 # Collections and Containers ###################################################
 ################################################################################
 
+
 class Collection(models.Model):
     '''A collection of things (more details?)
     '''
@@ -204,11 +207,11 @@ class Collection(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
     name = models.CharField(max_length=250, blank=False)
 
-    # What is the difference between a readme and description? Should be consistent
-    readme = models.CharField(max_length=500, blank=False)
+    # This was originally the collection "README"
+    description = models.CharField(max_length=500, blank=False)
 
-    # When a parent is deleted, so are the children
-    parent = models.ForeignKey('Collection', on_delete=models.CASCADE)
+    # When a parent is deleted, the children remain
+    parent = models.ForeignKey('Collection', on_delete=models.DO_NOTHING)
 
     tags = models.ManyToManyField('main.Tag', blank=True, default=None,
                                    related_name="collection_tags",
@@ -223,8 +226,15 @@ class Collection(models.Model):
     class Meta:
         app_label = 'main'
 
+
 class Container(models.Model):
-    '''A physical container in the lab space
+    '''A physical container in the lab space. Put together, forms a tree view of 
+      a lab. Inside of a lab is a room, inside of that room is a freezer, 
+      inside of that freezer are  shelves, inside of those shelves are racks, 
+      and inside those racks are plates. For example, see 
+      https://api.freegenes.org/containers/tree_view_full/. 
+      The idea is to be able to tell an end user "please grab this plate from 
+      this specific location and move it to this other specific location"
     '''
 
     CONTAINER_TYPES = [ # TODO: need better descriptions here
@@ -242,7 +252,6 @@ class Container(models.Model):
          ('rack', 'rack'),
          ('incubator', 'incubator'),
          ('shaking_incubator', 'shaking incubator'),
-
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -254,7 +263,8 @@ class Container(models.Model):
     description = models.CharField(max_length=500)
     estimated_temperature = models.FloatField()
 
-    # What are these coordinates for? (no default?)
+    # Meter coordinates for the locations of things in lab
+    # https://github.com/vsoch/freegenes/issues/10
     x = models.FloatField()
     y = models.FloatField()
     z = models.FloatField()
@@ -266,10 +276,6 @@ class Container(models.Model):
     plates = models.ManyToManyField('main.Plate', blank=True, default=None,
                                     related_name="container_plates",
                                     related_query_name="container_plates")
-    # What exactly is a module?
-    modules = models.ManyToManyField('main.Robot', blank=True, default=None,
-                                    related_name="container_modules",
-                                    related_query_name="container_modules")
 
     def get_absolute_url(self):
         return reverse('container_details', args=[self.uuid])
@@ -319,7 +325,14 @@ class Organism(models.Model):
 ################################################################################
 
 class Module(models.Model):
-    '''A module base, can have define a pipette, tempdeck, magdeck, or incubator
+    '''Physical lab capabilities. From a protocol-generation perspective side 
+       (protocol in terms of a lab protocol, or lab procedure), you can query 
+       for a lab's capabilities and then generate a protocol that fits their 
+       capabilities. If I have an OpenTrons available with a pipette, it will 
+       make a protocol for an opentrons, if I have a human available, 
+       it will make a protocol for a human. This, I believe, is important further 
+       down the line to have for general-use protocols, and so have some simple 
+       implementations here.
     '''
     MODULE_TYPE = [
         ('pipette', 'pipette'),
@@ -331,7 +344,11 @@ class Module(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    container = models.ForeignKey('Container', on_delete=models.CASCADE, blank=False)
+
+    # We do nothing here because there is a pre_delete signal on the container to
+    # move any associated modules to belong to the container parent. The root
+    # container is not allowed to be deleted.
+    container = models.ForeignKey('Container', on_delete=models.DO_NOTHING, blank=False)
     name = models.CharField(max_length=250, blank=False, validators=[validate_name])
 
     # This is generally bad practice to have a notes field - what is this for?
@@ -389,9 +406,9 @@ class Robot(models.Model):
     notes = models.CharField(max_length=500)
     server_version = models.CharField(max_length=32)
 
-    # What is a mount?
-    right_mount = models.ForeignKey('Module', on_delete=models.CASCADE, related_name="robot_right_mount")
-    left_mount = models.ForeignKey('Module', on_delete=models.CASCADE, related_query_name="robot_left_mount")
+    # If a module gets deleted, it is removed from the mount. This doesn't mean we delete the robot.
+    right_mount = models.ForeignKey('Module', on_delete=models.DO_NOTHING, related_name="robot_right_mount")
+    left_mount = models.ForeignKey('Module', on_delete=models.DO_NOTHING, related_query_name="robot_left_mount")
 
     def get_absolute_url(self):
         return reverse('robot_details', args=[self.uuid])
@@ -439,6 +456,20 @@ class Files(models.Model):
         app_label = 'main'
 
 
+def get_upload_to(instance, filename):
+    '''upload to a filename named based on the MTA uuid.
+       UPLOAD_FOLDER is data or /code/data in the container.
+    '''
+    # The upload folder is the MTA subfolder of /code/data
+    upload_folder = os.path.join(settings.UPLOAD_PATH, 'MTA')
+    if not os.path.exists(upload_folder):
+        os.mkdir(upload_folder)
+
+    # Get the extension of the current filename
+    _, ext = os.path.splitext(filename)
+    filename = os.path.join(upload_folder, instance.uuid + ext)
+    return time.strftime(filename)
+
 
 class MaterialTransferAgreement(models.Model):
     '''A material transfer agreement (MTA) is an agreement between two parties.
@@ -451,9 +482,9 @@ class MaterialTransferAgreement(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     mta_type = models.CharField(max_length=32, choices=MTA_TYPE, blank=False)
 
-    # Are we sure we want all files hosted remote to server?
-    # The agreement file is named based on the UUID here?
-    agreement_file = models.ForeignKey('Files', on_delete=models.CASCADE)
+    # The agreement file is named based on the UUID
+    # We never want to delete an agreement file, but if we absolutely have to, the MTA is deleted.
+    agreement_file = models.FileField(upload_to=get_upload_to)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
@@ -464,7 +495,6 @@ class MaterialTransferAgreement(models.Model):
 
     class Meta:
         app_label = 'main'
-
 
 
 ################################################################################
@@ -507,9 +537,11 @@ class Plate(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    # What is this? Breadcrumb in a web page or something relevant to the plate?
-    breadcrumb = models.CharField(max_length=32, choices=PLATE_STATUS, blank=False)
+    # legacy implementation of a "lab tree" (see container) with information stored as a string
+    breadcrumb = models.CharField(max_length=500, blank=False)
     plate_vendor_id = models.CharField(max_length=250)
+
+    # Track the number of times a plate has been frozen and thawed, each freeze damages the cells
     thaw_count = models.IntegerField(default=0)
 
     # This is generally bad practice to have a notes field - what is this for?
@@ -521,7 +553,7 @@ class Plate(models.Model):
 
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
     protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE)
-
+   
     def get_label(self):
         return "plate"
 
@@ -531,33 +563,6 @@ class Plate(models.Model):
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="plate_wells",
                                    related_query_name="plate_wells")
-
-
-def generate_plate_wells(sender, instance, **kwargs):
-    '''After save of a plate, based on the width and length generate it's associated
-       wells. This assumes that we want to model wells for a plate as soon as it's 
-       generated (do we not?).
-
-       Parameters
-       ==========
-       instance: is the instance of the Plate
-       sender: is the plate model (we likely don't need)
-    '''
-    # Well positions are generated based on the plate dimensions
-    positions = []
-    
-    for letter in list(string.ascii_uppercase[0:instance.height]):
-        for number in range(instance.length):
-            positions.append((letter, number+1))
-
-    # Create wells, add to plate
-    for location in [x[0]+str(x[1]) for x in positions]:
-        well = Well.objects.create(address=location)
-        well.save()
-        instance.wells.add(well)
-
-    instance.save()
-
 
 
 class PlateSet(models.Model):
@@ -581,9 +586,26 @@ class PlateSet(models.Model):
         app_label = 'main'
 
 
-# QUESTION: why have platesets and distributions? Why not just have platesets represented
-#           in orders? Is there any other kind of entity that could be distributed (and would
-#           warrant a more flexible model?
+class Distribution(models.Model):
+    '''One or more platesets (an additional level of abstraction)
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    description = models.CharField(max_length=500)
+    name = models.CharField(max_length=250, blank=False)
+
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    platesets = models.ManyToManyField('main.PlateSet', blank=False,
+                                       related_name="distribution_plateset",
+                                       related_query_name="distribution_plateset")
+
+    def get_label(self):
+        return "distribution"
+
+    class Meta:
+        app_label = 'main'
+
 
 
 ################################################################################
@@ -591,12 +613,23 @@ class PlateSet(models.Model):
 ################################################################################
 
 class Sample(models.Model):
-    '''A physical sample in the lab.
+    '''In the biological world, we can have a piece of DNA that hypothetically 
+       matches what we have on a computer, but most of the time we don't really 
+       know. A sample is simply a piece of DNA that we have some level of confidence 
+       exists in the real world. We could take a piece of DNA and derive a sample of
+       it (that we have confidence is the "same thing" and then take that 
+       new growth and split it between 10 wells and freeze them, all those new 
+       frozen bacteria are the same sample (they theoretically are all the same).
     '''
 
     SAMPLE_STATUS = [
-        ('Confirmed','Confirmed'), 
-        ('Mutated','Mutated')
+        ('Confirmed', 'Confirmed'), 
+        ('Mutated', 'Mutated')
+    ]
+
+    COLLABORATOR_CHOICES = [
+        ('OUTSIDE', True), 
+        ('WITHIN_INSTITUTION', False)
     ]
 
     SAMPLE_TYPE = [
@@ -609,6 +642,11 @@ class Sample(models.Model):
     # Are all options valid, either lowercase or uppercase? Should there be boolean instead?
     # Why is this important to know?
     # ngs, sanger, TWIST - capitals denote outside folks
+
+    # At very best, we have sequencing data for a sample in our lab. 
+    # This is the "evidence" we have for the state of a sample. The next best is 
+    # someone else sequencing the sample (in which we are often not privy to the data), 
+    # and the worst is if the evidence of the state of a sample is just that it is Derived from something else.
     SAMPLE_EVIDENCE = [
         ('Twist_Confirmed', 'Twist_Confirmed'),
         ('NGS', 'NGS'),
@@ -617,19 +655,31 @@ class Sample(models.Model):
         ('Derived', 'Derived')
     ]
 
+    # Default is outside collaborator (more conservative)
+    outside_collaborator = models.BooleanField(choices=COLLABORATOR_CHOICES, default='OUTSIDE')
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE)
     status = models.CharField(max_length=32, choices=SAMPLE_STATUS, blank=False)
+
+    # Each sequencing method is different (Sanger kind of sucks, and so I barely trust it, 
+    # while NGS is very strong, and so I completely trust it) which is important.
     evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, blank=False)
     vendor = models.CharField(max_length=250)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    # Confirm that a sample has one part, and delete part == delete sample?
-    derived_from = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    part = models.ForeignKey('Part', on_delete=models.CASCADE, blank=False)
+    # A sample with derivations cannot be deleted, a part with samples cannot be deleted
+    # If we have some frozen bacteria, and scrape a little off and put it into 
+    # a new tube to grow overnight, the new growth is not the same sample as the 
+    # frozen bacteria (maybe there was some contamination, or maybe we bottlenecked 
+    # the population so there are more mutations). We think it's status is 
+    # confirmed, but the only evidence we have is that it was "Derived" from a confirmed sample.
+    derived_from = models.ForeignKey('Sample', on_delete=models.PROTECT)
+    part = models.ForeignKey('Part', on_delete=models.PROTECT, blank=False)
 
+    # needed to automate sequencing
     index_forward = models.CharField(max_length=250, validators=[validate_dna_string])
     index_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
 
@@ -650,7 +700,7 @@ class Sample(models.Model):
 
 
 class Well(models.Model):
-    '''A physical well in the lab.
+    '''A physical well in the lab. A sample is not required for a well.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     address = models.CharField(max_length=32, blank=False)
@@ -661,16 +711,11 @@ class Well(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    # If a plate is deleted, a well belonging to it is also deleted.
-    plate = models.ForeignKey('Plate', on_delete=models.CASCADE, blank=False)
+    # A plate with wells cannot be deleted
+    plate = models.ForeignKey('Plate', on_delete=models.PROTECT, blank=False)
 
-    # Why did original model code have uuid for organism (model) and organism string with this comment
-    # organism = db.Column(db.String) # IMPLEMENT ORGANISM CONTROL
-    organism = models.ForeignKey('Organism', on_delete=models.DO_NOTHING)
-
-    # The original model had samples required for wells, but why is a sample required?
-    # I modeled the Sample to have wells instead, and it shouldn't be required
-    # in case we want to represent a sample that doesn't yet have a well.
+    # organism with wells cannot be deleted
+    organism = models.ForeignKey('Organism', on_delete=models.PROTECT)
 
     # Volume is listed as required - where does it come from? If it's added
     # when we fill a well, it shouldn't be required. If it's required,
@@ -683,41 +728,28 @@ class Well(models.Model):
     class Meta:
         app_label = 'main'
 
-# Distribution
-
 
 ################################################################################
 # Protocol
 ################################################################################
 
 class Protocol(models.Model):
-    '''a set of plates combined with a schema (what is this exactly?)
+    '''A protocol associated with a plan. Status is represented with the Plan.
     '''
-    # Is there any reason to not store this as a boolean, potential for other states?
-    PROTOCOL_STATUS = [
-        ('Executed','Executed'), 
-        ('Planned','Planned')
-    ]
-
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status = models.CharField(max_length=32, blank=False, choices=PROTOCOL_STATUS)
     description = models.CharField(max_length=500)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    data = JSONField(default=dict)
+    data = JSONField(default=dict, blank=False)
 
-    # QUESTION: A schema is originally modeled as it's own object. Is this necessary?
-    # Are schemas dynamic, or can we store templates somewhere?
-    # If a schema is deleted, a protocol is deleted.
-    # schema = models.ForeignKey('Schema', on_delete=models.CASCADE, blank=False)
-    schema = JSONField(default=dict)
+    # Protocols exist without schemas. Schema deletion is technically allowed
+    # but not unless an admin does it or something
+    schema = models.ForeignKey('Schema', on_delete=models.DO_NOTHING)
 
     plates = models.ManyToManyField('main.Plate', blank=True, default=None,
                                     related_name="%(class)s_protocol")
 
-    # protocol_required = ['protocol','schema_uuid']
-    # QUESTION: for protocol required you had protocol but I don't see a field. Did you mean plates? or the data?
     def get_label(self):
         return "protocol"
 
@@ -760,9 +792,11 @@ class Plan(models.Model):
     # These are similar to plate statuses - are these global statuses that should
     # be present across protocols, plates, samples, wells?
     PLAN_STATUS = [
-        ('Executed','Executed'), 
-        ('Trashed','Trashed'),
-        ('Planned','Planned')
+        ('Executed', 'Executed'), 
+        ('Trashed', 'Trashed'),
+        ('Planned','Planned'),
+        ('Failed', 'Failed'),
+        ('Interrupted', 'Interrupted'),
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -771,9 +805,12 @@ class Plan(models.Model):
     name = models.CharField(max_length=250, blank=False)
     description = models.CharField(max_length=500)
 
-    # Are these correct?
+    # If a parent plan is deleted, it's children are meaningless, however
+    # a plan that is executed cannot be deleted (see plan pre_delete signal).
     parent = models.ForeignKey('Plan', on_delete=models.CASCADE)
-    operation = models.ForeignKey('Operation', on_delete=models.DO_NOTHING)
+
+    # An operation with plans cannot be deleted
+    operation = models.ForeignKey('Operation', on_delete=models.PROTECT)
     status = models.CharField(max_length=32, blank=False, choices=PLAN_STATUS)
 
     def add_item(self, item):
@@ -832,18 +869,16 @@ class Order(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
     name = models.CharField(max_length=250, blank=False)
 
-    # What kind of information would go here?
+    # Notes match to physical sticky notes in the lab
     notes = models.CharField(max_length=500)
-
-    # TODO: this was originally distributions. It should either be just platesets,
-    # or a distribution modeled as a more generic object.
-    platesets = models.ManyToManyField('main.Plan', blank=False,
-                                       related_name="order_platesets",
-                                       related_query_name="order_platesets")
+    distributions = models.ManyToManyField('main.Distribution', blank=False,
+                                           related_name="order_distribution",
+                                           related_query_name="order_distribution")
  
-    # Associated with an email that is looked up to get address
-    # assumes that if a user deletes account, we delete orders
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE, blank=False)
+    # When a user is deleted don't delete orders
+    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=False)
+
+    # When an MTA is deleted, we don't touch the order
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
                                                     on_delete=models.DO_NOTHING)
 
@@ -853,7 +888,32 @@ class Order(models.Model):
     class Meta:
         app_label = 'main'
 
-# Schema
+
+
+################################################################################
+# Schemas
+################################################################################
+
+class Schema(models.Model):
+    '''
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+    name = models.CharField(max_length=250, blank=False)
+    description = models.CharField(max_length=500, blank=False)
+    schema = JSONField(default=dict, blank=False)
+    schema_version = models.CharField(max_length=250)
+
+    # TODO: should this be calculated on save?
+    schema_hash = models.CharField(max_length=250)
+
+    def get_label(self):
+        return "schema"
+
+    class Meta:
+        app_label = 'main'
+
 
 # Thinking: holding the shipment information in the system is allocating too much
 # responsibility to it - the farthest representation I think we should take
@@ -867,6 +927,3 @@ class Order(models.Model):
 # Address
 # Parcel
 # Institution
-
-# signals
-post_save.connect(generate_plate_wells, sender=Plate)

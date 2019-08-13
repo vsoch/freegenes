@@ -45,8 +45,8 @@ RUN if $ENABLE_SAML; then pip install social-auth-core[saml] ; fi;
 ################################################################################
 # BASE
 
-RUN mkdir -p /code && mkdir -p /code/images
-RUN mkdir -p /var/www/images && chmod -R 0755 /code/images/
+RUN mkdir -p /code && mkdir -p /code/data
+RUN mkdir -p /var/www/data && chmod -R 0755 /code/data/
 
 WORKDIR /code
 RUN apt-get autoremove -y

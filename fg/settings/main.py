@@ -98,11 +98,11 @@ CACHES = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-MEDIA_ROOT = '/var/www/images'
-MEDIA_URL = '/images/'
+MEDIA_ROOT = '/var/www/data'
+MEDIA_URL = '/data/'
 STATIC_ROOT = '/var/www/static'
 STATIC_URL = '/static/'
-UPLOAD_PATH = '%s/_upload' % MEDIA_ROOT
+UPLOAD_PATH = '%s/data' % MEDIA_ROOT
 
 # Gravatar
 GRAVATAR_DEFAULT_IMAGE = "retro"

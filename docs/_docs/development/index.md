@@ -8,8 +8,14 @@ description: Setup, Install, and Deploy via Containers
 These guides will show you how to build containers, configure FreeGenes,
 and deploy the application.
 
- - [Background](background)
- - [User Stories](user-stories)
+## Useful Information
+
+ - [Background](background) on the project
+ - [Models](models) notes on models, some also included in code comments
+ - [User Stories](user-stories) to guide interface development.
+
+## Deployment
+
  - [Setup](setup)
 
 
