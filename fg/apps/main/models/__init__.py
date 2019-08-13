@@ -106,7 +106,11 @@ class Author(models.Model):
 ################################################################################
 
 class Part(models.Model):
-    '''A parts object
+    '''A parts object is a virtual representation of genetic element(s).
+       A part may be created from other parts, or synthesized from scratch.
+       It may be several different types of genetic elements, such as a 
+       promoter, rbs, cds, or terminator. Typically, these parts are 
+       in a standardized format, such as the FreeGenes MoClo format.
     '''
     PART_STATUS = [
         ('null', None),
@@ -206,7 +210,11 @@ class Part(models.Model):
 
 
 class Collection(models.Model):
-    '''A collection of things (more details?)
+    '''A collection object represents a collection of parts. A collection
+       may contain several subcollections containing more parts. For example,
+       the "Mesoplasma florum" collection may have a subcollection of
+       "Mesoplasma florum promoters" and "Mesoplasma florum vectors".
+       This object is used for organizing groups of parts.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -299,7 +307,9 @@ class Container(models.Model):
 ################################################################################
 
 class Organism(models.Model):
-    '''A representation of an organism (more details?)
+    '''A representation of an organism. Includes tags and genotype
+       information. It is assumed if a well contains a sample and 
+       an organism, the sample is within the organism.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -393,7 +403,8 @@ class Module(models.Model):
 
 
 class Robot(models.Model):
-    '''A robot in the lab.
+    '''A robot in the lab. Right now, this is presumed to be 
+       and only supports OpenTrons 2 robots.
     '''
     ROBOT_TYPES = [
         ('OT2','OT2')
@@ -478,7 +489,8 @@ def get_upload_to(instance, filename):
 
 
 class MaterialTransferAgreement(models.Model):
-    '''A material transfer agreement (MTA) is an agreement between two parties.
+    '''A material transfer agreement (MTA) is an agreement between two parties
+       on the terms in which the biological materials will be transfered.
     '''
     MTA_TYPE = [
         ('OpenMTA', 'Open Material Transfer Agreement (OpenMTA)'),
@@ -768,7 +780,8 @@ class Protocol(models.Model):
 ################################################################################
 
 class Operation(models.Model):
-    '''A group of plans.
+    '''An operation is a series of plans required to complete
+       a lab objective, such as 'clone x genes into y vector'.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -901,7 +914,8 @@ class Order(models.Model):
 ################################################################################
 
 class Schema(models.Model):
-    '''
+    '''A JSON Schema to validate JSON information, usually
+       protocol data.
     '''
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
