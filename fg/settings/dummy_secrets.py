@@ -8,13 +8,21 @@
 
 #SECRET_KEY = 'xxxxxxxxxxxxxxxxxx'
 
-
 # =============================================================================
 # Social Authentication
 # Set keys and secrets for social authentication methods that you have
 # enabled in config.py.
 # See https://singularityhub.github.io/sregistry/install.html for full details
 # =============================================================================
+
+# Orcid OAuth2
+
+# SOCIAL_AUTH_ORCID_KEY = ''
+# SOCIAL_AUTH_ORCID_SECRET = ''
+
+# SOCIAL_AUTH_ORCID_SANDBOX_KEY = ''
+# SOCIAL_AUTH_ORCID_SANDBOX_SECRET = ''
+
 
 # Twitter OAuth2
 # Only required if ENABLE_TWITTER_AUTH=TRUE in config.py
@@ -46,7 +54,7 @@
 #SOCIAL_AUTH_GITHUB_SECRET = ''
 
 # You shouldn't actually need this if we aren't using repos
-# SOCIAL_AUTH_GITHUB_SCOPE = ["repo","user"]
+# SOCIAL_AUTH_GITHUB_SCOPE = ["user:email"]
 
 # -----------------------------------------------------------------------------
 # GitLab OAuth2

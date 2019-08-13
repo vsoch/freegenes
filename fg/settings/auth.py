@@ -12,17 +12,17 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'social_core.backends.username.UsernameAuth',
-    'social_core.backends.open_id.OpenIdAuth',
-    'social_core.backends.saml.SAMLAuth',
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.bitbucket.BitbucketOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.gitlab.GitLabOAuth2',
-    'social_core.backends.bitbucket.BitbucketOAuth2'
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.open_id.OpenIdAuth',
+    'social_core.backends.orcid.ORCIDMemberOAuth2',
+    'social_core.backends.orcid.ORCIDMemberOAuth2Sandbox',
+    'social_core.backends.saml.SAMLAuth',
+    'social_core.backends.twitter.TwitterOAuth',
 )
-
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
