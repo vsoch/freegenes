@@ -22,6 +22,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from taggit.managers import TaggableManager
+from fg.apps.main.utils import generate_sha256
 from fg.settings import (
     DEFAULT_PLATE_HEIGHT,
     DEFAULT_PLATE_LENGTH
@@ -35,6 +36,7 @@ from .validators import (
 
 import string
 import uuid
+import re
 
 ################################################################################
 # Tags #########################################################################
@@ -50,8 +52,12 @@ class Tag(models.Model):
     tag = models.CharField(max_length=250, blank=False, null=False, unique=True)
 
     def save(self, *args, **kwargs):
-        '''tags are enforced as all lowercase to avoid duplication'''
-        self.tag = self.tag.lower()
+        '''tags are enforced as all lowercase to avoid duplication, along
+           with removing all special characters except for dashes and :.
+           Dashes and : are allowed. 
+        '''
+        self.tag = self.tag.replace(' ', '-') # replace space with -
+        self.tag = re.sub('[^A-Za-z0-9:-]+', '', self.tag).lower()
         return super(Tag, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -905,8 +911,17 @@ class Schema(models.Model):
     schema = JSONField(default=dict, blank=False)
     schema_version = models.CharField(max_length=250)
 
-    # TODO: should this be calculated on save?
     schema_hash = models.CharField(max_length=250)
+
+    def save(self, *args, **kwargs):
+        '''Calculate the schema_hash on save (sha256). The schema is required,
+           so it will throw an error by the super if not defined, so we check
+           just in case.
+        '''
+        if self.schema:
+            self.schema_version = generate_sha256(self.schema)
+        return super(Schema, self).save(*args, **kwargs)
+
 
     def get_label(self):
         return "schema"
