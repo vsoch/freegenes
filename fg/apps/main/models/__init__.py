@@ -22,7 +22,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from taggit.managers import TaggableManager
-from fg.apps.main.utils import generate_sha256
 from fg.settings import (
     DEFAULT_PLATE_HEIGHT,
     DEFAULT_PLATE_LENGTH
@@ -922,20 +921,8 @@ class Schema(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
     name = models.CharField(max_length=250, blank=False)
     description = models.CharField(max_length=500, blank=False)
-    schema = JSONField(default=dict, blank=False)
+    schema = JSONField(default=dict, blank=False, unique=True)
     schema_version = models.CharField(max_length=250)
-
-    schema_hash = models.CharField(max_length=250)
-
-    def save(self, *args, **kwargs):
-        '''Calculate the schema_hash on save (sha256). The schema is required,
-           so it will throw an error by the super if not defined, so we check
-           just in case.
-        '''
-        if self.schema:
-            self.schema_version = generate_sha256(self.schema)
-        return super(Schema, self).save(*args, **kwargs)
-
 
     def get_label(self):
         return "schema"
