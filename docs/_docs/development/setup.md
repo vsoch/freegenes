@@ -64,12 +64,13 @@ just set them to True in the `settings/config.py`:
 
 ```python
 # Which social auths do you want to use?
-ENABLE_GOOGLE_AUTH=False
-ENABLE_ORCID_AUTH=False  # regular or sandbox
-ENABLE_TWITTER_AUTH=False
-ENABLE_GITHUB_AUTH=True
-ENABLE_GITLAB_AUTH=False
-ENABLE_BITBUCKET_AUTH=False
+ENABLE_GOOGLE_AUTH = False
+ENABLE_ORCID_AUTH = False
+ENABLE_ORCID_AUTH_SANDBOX = False
+ENABLE_TWITTER_AUTH = False
+ENABLE_GITHUB_AUTH = True
+ENABLE_GITLAB_AUTH = False
+ENABLE_BITBUCKET_AUTH = False
 ```
 
 You will need at least one to log in. I've found that Github works the fastest and easiest, and then Google. Twitter now requires an actual server name and won't work with localost, but if you are deploying on a server with a proper domain go ahead and use it. All avenues are extremely specific with regard to callback urls, so you should be very careful in setting them up. 

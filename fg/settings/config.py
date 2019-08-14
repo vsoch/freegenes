@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2017-2019 Vanessa Sochat.
+Copyright (C) 2019 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -21,7 +21,7 @@ ENABLE_BITBUCKET_AUTH = False
 
 # NOTE you will need to set authentication methods up.
 # Configuration goes into secrets.py
-#TODO: add link to docs here
+# See https://vsoch.github.io/freegenes/docs/development/setup#settings
 
 # See below for additional authentication module, e.g. LDAP that are
 # available, and configured, as plugins.
