@@ -16,6 +16,7 @@ before deploying the application.
 
 ## Configuration
 
+ - [Migration](migrate) if migrating from the previous [https://api.freegenes.org](https://api.freegenes.org).
  - [Setup](setup) includes settings and making other choices for deployment
 
 
