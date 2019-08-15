@@ -50,6 +50,12 @@ class Tag(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tag = models.CharField(max_length=250, blank=False, null=False, unique=True)
 
+    def __str__(self):
+        return self.tag
+
+    def __repr__(self):
+        return self.__str__()
+
     def save(self, *args, **kwargs):
         '''tags are enforced as all lowercase to avoid duplication, along
            with removing all special characters except for dashes and :.
@@ -81,15 +87,21 @@ class Author(models.Model):
     name = models.CharField(max_length=250, blank=False)
     email = models.EmailField(max_length=250, blank=False, unique=True)
 
-    affiliation = models.CharField(max_length=250, blank=False, null=False)
+    affiliation = models.CharField(max_length=250, null=False)
 
     # Maximum length is only 19, but might as well prepare for future extension
-    orcid = models.CharField(max_length=32, blank=False, unique=True)
+    orcid = models.CharField(max_length=32, unique=True)
 
     # Tags are shared between models
     tags = models.ManyToManyField('main.Tag', blank=True, default=None,
                                    related_name="author_tags",
                                    related_query_name="author_tags")
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_absolute_url(self):
         return reverse('author_details', args=[self.uuid])
 
@@ -98,6 +110,28 @@ class Author(models.Model):
 
     class Meta:
         app_label = 'main'
+
+
+
+class Institution(models.Model):
+    '''An institution is an organization of people. An institution can optionally
+       sign a master agreement, the default is set to False to indicate not signed.
+    '''
+    SIGNED_MASTER_CHOICES = [
+        ('NOT_SIGNED', False),
+        ('SIGNED', True) 
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=250, blank=False)
+    signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default='NOT_SIGNED')
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.__str__()
+
 
 
 ################################################################################
@@ -450,7 +484,7 @@ class Files(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    file_name = models.CharField(max_length=500, null=True, blank=True)
+    file_name = models.FileField(upload_to=get_upload_to)
 
     def download(self):
         # Need to set up connection to some storage, this would be best
@@ -472,12 +506,12 @@ class Files(models.Model):
         app_label = 'main'
 
 
-def get_upload_to(instance, filename):
+def get_upload_to(instance, filename, subfolder="files"):
     '''upload to a filename named based on the MTA uuid.
        UPLOAD_FOLDER is data or /code/data in the container.
     '''
     # The upload folder is the MTA subfolder of /code/data
-    upload_folder = os.path.join(settings.UPLOAD_PATH, 'MTA')
+    upload_folder = os.path.join(settings.UPLOAD_PATH, subfolder)
     if not os.path.exists(upload_folder):
         os.mkdir(upload_folder)
 
@@ -485,6 +519,13 @@ def get_upload_to(instance, filename):
     _, ext = os.path.splitext(filename)
     filename = os.path.join(upload_folder, instance.uuid + ext)
     return time.strftime(filename)
+
+
+def get_mta_upload_to(instance, filename):
+    '''upload to a filename named based on the MTA uuid.
+       UPLOAD_FOLDER is data or /code/data in the container.
+    '''
+    return get_upload_to(instance, filename, "MTA")
 
 
 class MaterialTransferAgreement(models.Model):
@@ -501,11 +542,11 @@ class MaterialTransferAgreement(models.Model):
 
     # The agreement file is named based on the UUID
     # We never want to delete an agreement file, but if we absolutely have to, the MTA is deleted.
-    agreement_file = models.FileField(upload_to=get_upload_to)
+    agreement_file = models.FileField(upload_to=get_mta_upload_to)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    institution = models.CharField(max_length=250, blank=False)
+    institution = models.ForeignKey('Institution', on_delete=models.DO_NOTHING)
 
     def get_label(self):
         return "materialtransferagreement"
@@ -942,4 +983,3 @@ class Schema(models.Model):
 # Shipment
 # Address
 # Parcel
-# Institution
