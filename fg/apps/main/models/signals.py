@@ -24,13 +24,18 @@ from fg.apps.main.models import (
 def generate_plate_wells(sender, instance, **kwargs):
     '''After save of a plate, based on the width and length generate it's associated
        wells. This assumes that we want to model wells for a plate as soon as it's 
-       generated (do we not?).
+       generated. If the instance already has wells defined (for imported data)
+       we skip the generation.
 
        Parameters
        ==========
        instance: is the instance of the Plate
        sender: is the plate model (we likely don't need)
     '''
+    # Imported data will already have wells added, skip this
+    if instance.wells.count() > 0:
+        return
+
     # Well positions are generated based on the plate dimensions
     positions = []
     

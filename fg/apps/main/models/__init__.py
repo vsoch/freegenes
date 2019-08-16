@@ -201,7 +201,7 @@ class Part(models.Model):
     # What is an ip check?
     ip_check_date = models.DateTimeField('date ip checked')
     ip_check = models.BooleanField(choices=IP_CHECKED_CHOICES, default='NOT_CHECKED')
-    ip_check_ref = models.CharField(max_length=250, blank=False)
+    ip_check_ref = models.CharField(max_length=250)
 
     ## Foreign Keys and Relationships
 
@@ -214,10 +214,7 @@ class Part(models.Model):
                                    related_name="parts_files",
                                    related_query_name="parts_files")
 
-    # The same sample can exist between parts
-    samples = models.ManyToManyField('main.Sample', blank=True, default=None,
-                                    related_name="parts_samples",
-                                    related_query_name="parts_samples")
+    # samples point to their parts (not defined here)
 
     # Parts can belong to many collections, when collection deleted, all parts remain
     collections = models.ManyToManyField('main.Collection', blank=True, default=None,
@@ -590,13 +587,14 @@ class Plate(models.Model):
     plate_type = models.CharField(max_length=32, choices=PLATE_TYPE, blank=False)
     plate_form = models.CharField(max_length=32, choices=PLATE_FORM, blank=False)
     status = models.CharField(max_length=32, choices=PLATE_STATUS, blank=False)
-    plate_name = models.CharField(max_length=250, blank=False)
+    name = models.CharField(max_length=250, blank=False)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
     # legacy implementation of a "lab tree" (see container) with information stored as a string
-    breadcrumb = models.CharField(max_length=500, blank=False)
+    # Not all plates from the Flask export have breadcrumbs, so not required
+    breadcrumb = models.CharField(max_length=500)
     plate_vendor_id = models.CharField(max_length=250)
 
     # Track the number of times a plate has been frozen and thawed, each freeze damages the cells
@@ -722,7 +720,7 @@ class Sample(models.Model):
 
     # Each sequencing method is different (Sanger kind of sucks, and so I barely trust it, 
     # while NGS is very strong, and so I completely trust it) which is important.
-    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, blank=False)
+    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE)
     vendor = models.CharField(max_length=250)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -768,9 +766,6 @@ class Well(models.Model):
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-
-    # A plate with wells cannot be deleted
-    plate = models.ForeignKey('Plate', on_delete=models.PROTECT, blank=False)
 
     # organism with wells cannot be deleted
     organism = models.ForeignKey('Organism', on_delete=models.PROTECT)
@@ -935,7 +930,7 @@ class Order(models.Model):
                                            related_query_name="order_distribution")
  
     # When a user is deleted don't delete orders
-    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=False)
+    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING)
 
     # When an MTA is deleted, we don't touch the order
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
