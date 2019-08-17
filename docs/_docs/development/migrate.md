@@ -107,6 +107,8 @@ then you will want to shell in to the uwsgi container:
 $ docker exec -it freegenes-django_uwsgi_1_ed95e258455c bash
 ```
 
+If you know that the beginning starts with "freegenes-django_uwsgi*" you can
+use tab to autocomplete the rest of the name. 
 The script to import data simply takes the data folder as an argument, which
 is bound to the container at `/code/scripts/data/<date>`. As an example:
 
@@ -114,4 +116,6 @@ is bound to the container at `/code/scripts/data/<date>`. As an example:
 $ python manage.py import_flask_json /code/scripts/data/2019-08-15
 ```
 
-will import the json from those exports into the current database.
+will import the json from those exports into the current database. There are
+over 10K wells so the original import can take a minute.
+

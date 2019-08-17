@@ -33,9 +33,12 @@ from .validators import (
     validate_json_schema
 )
 
+import os
 import string
 import uuid
 import re
+import time
+
 
 ################################################################################
 # Tags #########################################################################
@@ -51,7 +54,7 @@ class Tag(models.Model):
     tag = models.CharField(max_length=250, blank=False, null=False, unique=True)
 
     def __str__(self):
-        return self.tag
+        return "<Tag:%s>" % self.tag
 
     def __repr__(self):
         return self.__str__()
@@ -61,8 +64,9 @@ class Tag(models.Model):
            with removing all special characters except for dashes and :.
            Dashes and : are allowed. 
         '''
-        self.tag = self.tag.replace(' ', '-') # replace space with -
-        self.tag = re.sub('[^A-Za-z0-9:-]+', '', self.tag).lower()
+        if self.pk is None:
+            self.tag = self.tag.replace(' ', '-') # replace space with -
+            self.tag = re.sub('[^A-Za-z0-9:-]+', '', self.tag).lower()
         return super(Tag, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -90,14 +94,14 @@ class Author(models.Model):
     affiliation = models.CharField(max_length=250, null=False)
 
     # Maximum length is only 19, but might as well prepare for future extension
-    orcid = models.CharField(max_length=32, unique=True)
+    orcid = models.CharField(max_length=32, unique=True, blank=True, null=True)
 
     # Tags are shared between models
     tags = models.ManyToManyField('main.Tag', blank=True, default=None,
                                    related_name="author_tags",
                                    related_query_name="author_tags")
     def __str__(self):
-        return self.name
+        return "<Author:%s>" % self.name
 
     def __repr__(self):
         return self.__str__()
@@ -127,7 +131,7 @@ class Institution(models.Model):
     signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default='NOT_SIGNED')
 
     def __str__(self):
-        return self.name
+        return "<Institution:%s>" % self.name
 
     def __repr__(self):
         return self.__str__()
@@ -166,41 +170,36 @@ class Part(models.Model):
         ('terminator', 'terminator'),    
     ]
 
-    IP_CHECKED_CHOICES = [
-        ('NOT_CHECKED', False),
-        ('CHECKED', True) 
-    ]
-
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # Why do these fields use time, and others use date (e.g., see ip_check*)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    status = models.CharField(max_length=250, choices=PART_STATUS, default='null')
+    status = models.CharField(max_length=250, choices=PART_STATUS, default='null', blank=True, null=True)
     name = models.CharField(max_length=250, blank=False)
-    description = models.CharField(max_length=500, blank=False)
+    description = models.CharField(max_length=500, blank=True, null=True)
     gene_id = models.CharField(max_length=250)
     part_type = models.CharField(max_length=250, choices=PART_TYPE)
 
     # Sequences - we would want 10K to 100K, can go up to 4 million (but not practical)
-    original_sequence = models.TextField(validators=[validate_dna_string])
-    optimized_sequence = models.TextField(validators=[validate_dna_string])
-    synthesized_sequence = models.TextField(validators=[validate_dna_string])
-    full_sequence = models.TextField(blank=False, validators=[validate_dna_string])
+    original_sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    optimized_sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    synthesized_sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    full_sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
 
     genbank = JSONField(default=dict)
 
     # It would be good to have descriptors for these fields
-    vector = models.CharField(max_length=250)
-    primer_forward = models.CharField(max_length=250, validators=[validate_dna_string])
-    primer_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
-    barcode = models.CharField(max_length=250, validators=[validate_dna_string])
-    translation = models.CharField(max_length=250)
+    vector = models.CharField(max_length=250, blank=True, null=True)
+    primer_forward = models.TextField(validators=[validate_dna_string])
+    primer_reverse = models.TextField(validators=[validate_dna_string])
+    barcode = models.CharField(max_length=250, validators=[validate_dna_string], blank=True, null=True)
+    translation = models.TextField(validators=[validate_dna_string], blank=True, null=True)
 
     # What is an ip check?
-    ip_check_date = models.DateTimeField('date ip checked')
-    ip_check = models.BooleanField(choices=IP_CHECKED_CHOICES, default='NOT_CHECKED')
+    ip_check_date = models.DateTimeField('date ip checked', blank=True, null=True)
+    ip_check = models.BooleanField(default=False)
     ip_check_ref = models.CharField(max_length=250)
 
     ## Foreign Keys and Relationships
@@ -252,14 +251,20 @@ class Collection(models.Model):
     name = models.CharField(max_length=250, blank=False)
 
     # This was originally the collection "README"
-    description = models.CharField(max_length=500, blank=False)
+    description = models.CharField(max_length=5000, blank=False)
 
     # When a parent is deleted, the children remain
-    parent = models.ForeignKey('Collection', on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey('Collection', on_delete=models.DO_NOTHING, blank=True, null=True)
 
     tags = models.ManyToManyField('main.Tag', blank=True, default=None,
                                    related_name="collection_tags",
                                    related_query_name="collection_tags")
+
+    def __str__(self):
+        return "<Collection:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_absolute_url(self):
         return reverse('collection_details', args=[self.uuid])
@@ -305,21 +310,27 @@ class Container(models.Model):
     name = models.CharField(max_length=250, blank=False, validators=[validate_name])
     container_type = models.CharField(max_length=250, blank=False, choices=CONTAINER_TYPES)
     description = models.CharField(max_length=500)
-    estimated_temperature = models.FloatField()
+    estimated_temperature = models.FloatField(null=True, blank=True, default=None)
 
     # Meter coordinates for the locations of things in lab
     # https://github.com/vsoch/freegenes/issues/10
-    x = models.FloatField()
-    y = models.FloatField()
-    z = models.FloatField()
+    x = models.FloatField(null=True, blank=True, default=None)
+    y = models.FloatField(null=True, blank=True, default=None)
+    z = models.FloatField(null=True, blank=True, default=None)
 
     # When a parent is deleted, so are the children. If a file is deleted, do nothing
-    parent = models.ForeignKey('Container', on_delete=models.CASCADE)
-    image = models.ForeignKey('Files', on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey('Container', on_delete=models.CASCADE, blank=True, null=True)
+    image = models.ForeignKey('Files', on_delete=models.DO_NOTHING, blank=True, null=True)
  
     plates = models.ManyToManyField('main.Plate', blank=True, default=None,
                                     related_name="container_plates",
                                     related_query_name="container_plates")
+
+    def __str__(self):
+        return "<Container:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_absolute_url(self):
         return reverse('container_details', args=[self.uuid])
@@ -355,6 +366,12 @@ class Organism(models.Model):
 
     files = models.ManyToManyField('main.Files', blank=True, default=None,
                                    related_name="%(class)s_organism")
+
+    def __str__(self):
+        return "<Organism:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_absolute_url(self):
         return reverse('organism_details', args=[self.uuid])
@@ -415,6 +432,12 @@ class Module(models.Model):
                 raise ValidationError('Invalid schema for %s type %s' % (self.uuid, self.module_type))
 
     SCHEMAS = MODULE_SCHEMAS
+
+    def __str__(self):
+        return "<Module:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
     
     def get_absolute_url(self):
         return reverse('module_details', args=[self.uuid])
@@ -457,6 +480,12 @@ class Robot(models.Model):
     right_mount = models.ForeignKey('Module', on_delete=models.DO_NOTHING, related_name="robot_right_mount")
     left_mount = models.ForeignKey('Module', on_delete=models.DO_NOTHING, related_query_name="robot_left_mount")
 
+    def __str__(self):
+        return "<Robot:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_absolute_url(self):
         return reverse('robot_details', args=[self.uuid])
 
@@ -471,6 +500,21 @@ class Robot(models.Model):
 ################################################################################
 # Files and Agreements
 ################################################################################
+
+def get_upload_to(instance, filename, subfolder="files"):
+    '''upload to a filename named based on the MTA uuid.
+       UPLOAD_FOLDER is data or /code/data in the container.
+    '''
+    # The upload folder is the MTA subfolder of /code/data
+    upload_folder = os.path.join(settings.UPLOAD_PATH, subfolder)
+    if not os.path.exists(upload_folder):
+        os.mkdir(upload_folder)
+
+    # Get the extension of the current filename
+    _, ext = os.path.splitext(filename)
+    filename = "%s/%s.%s" % (upload_folder, instance.uuid, ext)
+    return time.strftime(filename)
+
 
 class Files(models.Model):
     '''A file associated with an organism or part. The file_name field
@@ -488,6 +532,12 @@ class Files(models.Model):
         # handled by the API
         print('WRITE ME')
 
+    def __str__(self):
+        return "<Files:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
+
     @property
     def name(self):
         if self.file_name:
@@ -501,21 +551,6 @@ class Files(models.Model):
 
     class Meta:
         app_label = 'main'
-
-
-def get_upload_to(instance, filename, subfolder="files"):
-    '''upload to a filename named based on the MTA uuid.
-       UPLOAD_FOLDER is data or /code/data in the container.
-    '''
-    # The upload folder is the MTA subfolder of /code/data
-    upload_folder = os.path.join(settings.UPLOAD_PATH, subfolder)
-    if not os.path.exists(upload_folder):
-        os.mkdir(upload_folder)
-
-    # Get the extension of the current filename
-    _, ext = os.path.splitext(filename)
-    filename = os.path.join(upload_folder, instance.uuid + ext)
-    return time.strftime(filename)
 
 
 def get_mta_upload_to(instance, filename):
@@ -544,6 +579,12 @@ class MaterialTransferAgreement(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
     institution = models.ForeignKey('Institution', on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return "<MTA:%s>" % self.agreement_file.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_label(self):
         return "materialtransferagreement"
@@ -595,7 +636,7 @@ class Plate(models.Model):
     # legacy implementation of a "lab tree" (see container) with information stored as a string
     # Not all plates from the Flask export have breadcrumbs, so not required
     breadcrumb = models.CharField(max_length=500)
-    plate_vendor_id = models.CharField(max_length=250)
+    plate_vendor_id = models.CharField(max_length=250, blank=True, null=True)
 
     # Track the number of times a plate has been frozen and thawed, each freeze damages the cells
     thaw_count = models.IntegerField(default=0)
@@ -608,7 +649,13 @@ class Plate(models.Model):
     length = models.IntegerField(blank=False, default=DEFAULT_PLATE_LENGTH)
 
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
-    protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE)
+    protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return "<Plate:%s,%s>" % (self.container, self.name)
+
+    def __repr__(self):
+        return self.__str__()
    
     def get_label(self):
         return "plate"
@@ -635,6 +682,12 @@ class PlateSet(models.Model):
                                     related_name="plateset_plates",
                                     related_query_name="plateset_plates")
 
+    def __str__(self):
+        return "<PlateSet:%s,%s>" %(self.name, self.plates.count())
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_label(self):
         return "plateset"
 
@@ -655,6 +708,12 @@ class Distribution(models.Model):
     platesets = models.ManyToManyField('main.PlateSet', blank=False,
                                        related_name="distribution_plateset",
                                        related_query_name="distribution_plateset")
+
+    def __str__(self):
+        return "<Distribution:%s,%s>" %(self.name, self.platesets.count())
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_label(self):
         return "distribution"
@@ -712,16 +771,16 @@ class Sample(models.Model):
     ]
 
     # Default is outside collaborator (more conservative)
-    outside_collaborator = models.BooleanField(choices=COLLABORATOR_CHOICES, default='OUTSIDE')
+    outside_collaborator = models.BooleanField(choices=COLLABORATOR_CHOICES, default=True)
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE)
-    status = models.CharField(max_length=32, choices=SAMPLE_STATUS, blank=False)
+    sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE, blank=True, null=True)
+    status = models.CharField(max_length=32, choices=SAMPLE_STATUS, blank=True, null=True)
 
     # Each sequencing method is different (Sanger kind of sucks, and so I barely trust it, 
     # while NGS is very strong, and so I completely trust it) which is important.
-    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE)
-    vendor = models.CharField(max_length=250)
+    evidence = models.CharField(max_length=32, choices=SAMPLE_EVIDENCE, blank=True, null=True)
+    vendor = models.CharField(max_length=250, blank=True, null=True)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
@@ -736,8 +795,8 @@ class Sample(models.Model):
     part = models.ForeignKey('Part', on_delete=models.PROTECT, blank=False)
 
     # needed to automate sequencing
-    index_forward = models.CharField(max_length=250, validators=[validate_dna_string])
-    index_reverse = models.CharField(max_length=250, validators=[validate_dna_string])
+    index_forward = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    index_reverse = models.TextField(validators=[validate_dna_string], blank=True, null=True)
 
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="sample_wells",
@@ -761,7 +820,7 @@ class Well(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     address = models.CharField(max_length=32, blank=False)
     volume = models.FloatField()
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(default=0, null=True, blank=True)
     media = models.CharField(max_length=250)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
@@ -775,8 +834,48 @@ class Well(models.Model):
     # it would need to be generated by plate post_save, so the plate would
     # need to include it's volume per well. The same is true for media.
 
+    def __str__(self):
+        if self.media and self.organism:
+            return "<Well:%s,%s>" %(self.media, self.organism)
+        elif self.media:
+            return self.media
+        else:
+            return self.organism
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_label(self):
         return "well"
+
+    class Meta:
+        app_label = 'main'
+
+
+################################################################################
+# Schemas
+################################################################################
+
+class Schema(models.Model):
+    '''A JSON Schema to validate JSON information, usually
+       protocol data.
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+    name = models.CharField(max_length=250, blank=False)
+    description = models.CharField(max_length=500, blank=False)
+    schema = JSONField(default=dict, blank=False, unique=True)
+    schema_version = models.CharField(max_length=250)
+
+    def __str__(self):
+        return "<Schema:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
+
+    def get_label(self):
+        return "schema"
 
     class Meta:
         app_label = 'main'
@@ -798,10 +897,7 @@ class Protocol(models.Model):
 
     # Protocols exist without schemas. Schema deletion is technically allowed
     # but not unless an admin does it or something
-    schema = models.ForeignKey('Schema', on_delete=models.DO_NOTHING)
-
-    plates = models.ManyToManyField('main.Plate', blank=True, default=None,
-                                    related_name="%(class)s_protocol")
+    schema = models.ForeignKey('Schema', on_delete=models.DO_NOTHING, blank=True, null=True)
 
     def get_label(self):
         return "protocol"
@@ -827,6 +923,12 @@ class Operation(models.Model):
     plans = models.ManyToManyField('main.Plan', blank=True, default=None,
                                    related_name="operation_plans",
                                    related_query_name="operation_plans")
+
+    def __str__(self):
+        return "<Operation:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_label(self):
         return "operation"
@@ -879,6 +981,12 @@ class Plan(models.Model):
             data_object_id=item.pk,
         )
 
+    def __str__(self):
+        return "<Plan:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_label(self):
         return "plan"
 
@@ -897,6 +1005,14 @@ class PlanData(models.Model):
         'data_content_type',
         'data_object_id',
     )
+
+    def __str__(self):
+        if self.plan:
+            return "<PlanData:%s>" % self.plan.name
+        return "<PlanData: (empty)>"
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_label(self):
         return "plandata"
@@ -930,11 +1046,17 @@ class Order(models.Model):
                                            related_query_name="order_distribution")
  
     # When a user is deleted don't delete orders
-    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=False, null=False)
 
     # When an MTA is deleted, we don't touch the order
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
                                                     on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return "<Order:%s>" % self.name
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_label(self):
         return "order"
@@ -942,29 +1064,6 @@ class Order(models.Model):
     class Meta:
         app_label = 'main'
 
-
-
-################################################################################
-# Schemas
-################################################################################
-
-class Schema(models.Model):
-    '''A JSON Schema to validate JSON information, usually
-       protocol data.
-    '''
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    time_created = models.DateTimeField('date created', auto_now_add=True) 
-    time_updated = models.DateTimeField('date modified', auto_now=True)
-    name = models.CharField(max_length=250, blank=False)
-    description = models.CharField(max_length=500, blank=False)
-    schema = JSONField(default=dict, blank=False, unique=True)
-    schema_version = models.CharField(max_length=250)
-
-    def get_label(self):
-        return "schema"
-
-    class Meta:
-        app_label = 'main'
 
 
 # Thinking: holding the shipment information in the system is allocating too much

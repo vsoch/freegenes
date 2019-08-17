@@ -17,6 +17,7 @@ from fg.apps.main.utils import load_json
 from dateutil.parser import parse
 import logging
 import os
+import shutil
 import sys
 
 def update_dates(instance, entry, create_field='time_created', update_field='time_updated'):
@@ -32,7 +33,7 @@ def update_dates(instance, entry, create_field='time_created', update_field='tim
     '''
     for field in [create_field, update_field]:
         if entry.get(field):
-            setattr(instance, field, entry[field])
+            setattr(instance, field, parse(entry[field]))
     instance.save()
     return instance
 
@@ -42,7 +43,7 @@ def add_tags(instance, entry, tags_field="tags"):
        and add to an instance.
     '''
     for name in entry['tags']:
-        tag, created = Tag.objects.get_or_create(tag=name)
+        tag, created = Tag.objects.get_or_create(tag=name.lower())
         instance.tags.add(tag)
     instance.save()
     return instance
@@ -77,6 +78,21 @@ class Command(BaseCommand):
                                                                          uuid=entry['uuid'],
                                                                          signed_master=entry['signed_master'])
 
+
+        # Protocol #############################################################
+        # need to get plates uuid from containers (add plates)
+
+        protocols_file = os.path.join(folder, 'protocols-full.json')
+        if os.path.exists(protocols_file):
+            protocols = load_json(protocols_file)
+            for entry in protocols:
+
+                protocol, created = Protocol.objects.get_or_create(uuid=entry['uuid'],
+                                                                   description=entry['description'],
+                                                                   data=entry['data'])
+
+                protocol = update_dates(protocol, entry)
+
         # Containers ###########################################################
 
         containers_file = os.path.join(folder, 'containers-full.json')
@@ -97,15 +113,22 @@ class Command(BaseCommand):
 
                 # Add plates
                 for plate in entry['plates']:
+
+                    # There are plates with protocol uuid that don't exist
+                    try:
+                        protocol = Protocol.objects.get(uuid=plate['protocol_uuid'])
+                    except Protocol.DoesNotExist:
+                        protocol = None
+
                     newplate, created = Plate.objects.get_or_create(plate_form=plate['plate_form'],
                                                                     name=plate['plate_name'],
+                                                                    container=container,
+                                                                    protocol=protocol,
                                                                     plate_type=plate['plate_type'],
-                                                                    plate_status=plate['status'],
+                                                                    status=plate['status'],
                                                                     thaw_count=plate['thaw_count'],
                                                                     plate_vendor_id=plate['plate_vendor_id'],
                                                                     uuid=plate['uuid'])
-                    newplate.container = container
-                    newplate.save()
                 container.save()
 
             # Second pass, add parents
@@ -144,8 +167,7 @@ class Command(BaseCommand):
             for entry in collections:
                 collection, created = Collection.objects.get_or_create(name=entry['name'],
                                                                        uuid=entry['uuid'],
-                                                                       description=entry['readme'],
-                                                                       signed_master=entry['signed_master'])
+                                                                       description=entry['readme'])
                 collection = update_dates(collection, entry)
                 collection = add_tags(collection, entry)
 
@@ -166,16 +188,14 @@ class Command(BaseCommand):
             modules = load_json(modules_file)
 
             for entry in modules:
+                container = Container.objects.get(uuid=entry['container_uuid'])
                 module, created = Module.objects.get_or_create(uuid=entry['uuid'],
                                                                data=entry['data'],
                                                                model_id=entry['model_id'],
                                                                name=entry['name'],
                                                                notes=entry['notes'],
-                                                               module_type=entry['module_type'])
-
-                module.container = Container.objects.get(uuid=entry['container_uuid'])
-                module.save()
-
+                                                               module_type=entry['module_type'],
+                                                               container=container)
 
 
         # Robots ###############################################################
@@ -186,18 +206,19 @@ class Command(BaseCommand):
 
             # There is only one robot!
             for entry in robots:
+                container = container = Container.objects.get(uuid=entry['container_uuid'])
                 left_mount = Module.objects.get(uuid=entry['left_mount'])
                 right_mount = Module.objects.get(uuid=entry['right_mount'])
                 robot, created = Robot.objects.get_or_create(uuid=entry['uuid'],
                                                              left_mount=left_mount,
                                                              right_mount=right_mount,
+                                                             container=container,
                                                              notes=entry['notes'],
                                                              name=entry['name'],
                                                              robot_id=entry['robot_id'],
                                                              server_version=entry['server_version'],
                                                              robot_type=entry['robot_type'])
 
-                robot.container = Container.objects.get(uuid=entry['container_uuid'])
                 robot = update_dates(robot, entry)
                 robot.save()
 
@@ -216,9 +237,12 @@ class Command(BaseCommand):
                 files_lookup[entry['uuid']] = entry
                 file_path = os.path.join(folder, 'files', entry['name'])
                 if os.path.exists(file_path):
-
-                    #TODO: need to test if this saves
                     newfile, created = Files.objects.get_or_create(file_name=file_path)
+                    original_path = newfile.file_name.name
+                    upload_path = get_upload_to(newfile, newfile.file_name.name)
+                    shutil.copyfile(original_path, upload_path)
+                    newfile.file_name.name = upload_path
+                    newfile.save()
 
 
         # Material Transfer Agreement ##########################################
@@ -234,10 +258,15 @@ class Command(BaseCommand):
                         newmta, created = MaterialTransferAgreement.objects.get_or_create(
                                                uuid=mta['uuid'],
                                                institution=institution,
-                                               mta_type=mta['mta_type'],
-                                               agreement_file=file_path)
+                                               mta_type=mta['mta_type'])
+                        if created:
+                            newmta.agreement_file=file_path
+                            original_path = newmta.agreement_file.name
+                            upload_path = get_mta_upload_to(newmta, newmta.agreement_file.name)
+                            shutil.copyfile(original_path, upload_path)
+                            newmta.agreement_file.name = upload_path
+                            newmta.save()
                         
-
         # Authors ##############################################################
         # data exported contains uuid for parts, but we will add authors to the parts
         # after they are created
@@ -247,14 +276,19 @@ class Command(BaseCommand):
             authors = load_json(author_file)
 
             # name and email are the only required
-            for entry in Authors:
+            for entry in authors:
+
+                # Remove https://orcid
+                orcid = None
+                if entry['orcid']:
+                    orcid = os.path.basename(entry['orcid'])
                 author, created = Author.objects.get_or_create(uuid=entry['uuid'],
                                                                affiliation=entry['affiliation'],
+                                                               name=entry['name'],
                                                                email=entry['email'],
-                                                               orcid=entry['orcid'])
+                                                               orcid=orcid)
                 author = add_tags(author, entry)                
 
-        # input_folder="/code/scripts/data/2019-08-15"
 
         # Wells ################################################################
 
@@ -264,13 +298,14 @@ class Command(BaseCommand):
 
             for entry in wells:
                 organism = Organism.objects.get(uuid=entry['organism_uuid'])
-                well, created = Wells.objects.get_or_create(uuid=entry['uuid'],
-                                                            media=entry['media'],
-                                                            organism=organism,
-                                                            address=entry['address'],
-                                                            quantity=entity['quantity'],
-                                                            volume=entity['volume'])
-                                                            
+                well, created = Well.objects.get_or_create(uuid=entry['uuid'],
+                                                           media=entry['media'],
+                                                           organism=organism,
+                                                           address=entry['address'],
+                                                           volume=entry['volume'])
+                if entry['quantity']:
+                    well.quantity = entry['quantity']
+                    well.save()                                                            
 
         # Plates ###############################################################
         # wells are added before initial save so they aren't generated automatically
@@ -282,20 +317,18 @@ class Command(BaseCommand):
             for entry in plates:
 
                 # Get the wells we just generated
-                wells = []
-                for w in entry['wells']:
-                    wells.append(Well.objects.get(uuid=w))
-
-                container = Container.objects.get(entry['container_uuid'])
+                container = Container.objects.get(uuid=entry['container_uuid'])
                 plate, created = Plate.objects.get_or_create(uuid=entry['uuid'],
-                                                             wells=wells,
                                                              container=container,
                                                              plate_type=entry['plate_type'],
                                                              plate_vendor_id=entry['plate_vendor_id'],
                                                              plate_form=entry['plate_form'],
                                                              status=entry['status'],
                                                              name=entry['plate_name'],
-                                                             thaw_count=entry['thaw_count'],
+                                                             thaw_count=entry['thaw_count'])
+
+                for w in entry['wells']:
+                    plate.wells.add(Well.objects.get(uuid=w))
 
                 plate = update_dates(plate, entry)
 
@@ -313,7 +346,7 @@ class Command(BaseCommand):
                                                                    name=entry['name'])
 
                 for plate in entry['plates']:
-                    plateset.add(Plate.objects.get(uuid=plate))
+                    plateset.plates.add(Plate.objects.get(uuid=plate))
                 plateset = update_dates(plateset, entry)
 
 
@@ -324,13 +357,12 @@ class Command(BaseCommand):
             distributions = load_json(distribution_file)
 
             for entry in distributions:
-                sets = []
-                for s in entry['platesets']:
-                    sets.append(PlateSet.objects.get(uuid=s))
                 distribution, created = Distribution.objects.get_or_create(uuid=entry['uuid'],
                                                                            name=entry['name'],
-                                                                           description=entry['description'],
-                                                                           platesets=sets)
+                                                                           description=entry['description'])
+                for s in entry['platesets']:
+                    distribution.platesets.add(PlateSet.objects.get(uuid=s))
+
                 distribution = update_dates(distribution, entry)
                                                                              
 
@@ -358,7 +390,7 @@ class Command(BaseCommand):
                                                            part_type=entry['part_type'],
                                                            name=entry['name'],
                                                            translation=entry['translation'],
-                                                           status=entity['status'])
+                                                           status=entry['status'])
                 if entry['primer_for']:
                     part.primer_forward = entry['primer_for']
                 if entry['primer_rev']:
@@ -389,7 +421,7 @@ class Command(BaseCommand):
                                                                sample_type=entry['sample_type'],
                                                                status=entry['status'],
                                                                vendor=entry['vendor'],
-                                                               part=part,
+                                                               part=part)
  
                 if entry['index_for']:
                     sample.index_forward = entry['index_for']
@@ -419,22 +451,6 @@ class Command(BaseCommand):
             schemas = load_json(schemas_file)
 
 
-        # Protocol #############################################################
-        # need to get plates uuid from containers (add plates)
-
-        protocols_file = os.path.join(folder, 'protocols-full.json')
-        if os.path.exists(protocols_file):
-            protocols = load_json(protocols_file)
-            for entry in protocols:
-
-                protocol, created = Protocol.objects.get_or_create(uuid=entry['uuid'],
-                                                                   description=entry['description'],
-                                                                   data=entry['data'])
-
-                for p in entry['plates']:
-                    protocol.plates.add(Plate.objects.get(uuid=p))
-                protocol = update_dates(protocol, entry)
-
         # Operation ############################################################
         # no operations are exported from API
 
@@ -458,14 +474,14 @@ class Command(BaseCommand):
             orders = load_json(orders_file)
 
             for entry in orders:
+                mta = MaterialTransferAgreement.objects.get(uuid=entry['materialtransferagreement'])
                 order, created = Order.objects.get_or_create(uuid=entry['uuid'],
                                                              name=entry['name'],
+                                                             material_transfer_agreement=mta,
                                                              notes=entry['notes'])
 
                 for d in entry['distributions']:
                     order.distributions.add(Distribution.objects.get(uuid=entry[d]))
-                mta = MaterialTransferAgreement.objects.get(uuid=entry['materialtransferagreement'])
-                order.material_transfer_agreement = mta
                 order = update_dates(order, entry)
                                                              
 

@@ -102,7 +102,7 @@ MEDIA_ROOT = '/var/www/data'
 MEDIA_URL = '/data/'
 STATIC_ROOT = '/var/www/static'
 STATIC_URL = '/static/'
-UPLOAD_PATH = '%s/data' % MEDIA_ROOT
+UPLOAD_PATH = MEDIA_ROOT
 
 # Gravatar
 GRAVATAR_DEFAULT_IMAGE = "retro"
