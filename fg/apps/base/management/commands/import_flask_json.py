@@ -481,7 +481,7 @@ class Command(BaseCommand):
                                                              notes=entry['notes'])
 
                 for d in entry['distributions']:
-                    order.distributions.add(Distribution.objects.get(uuid=entry[d]))
+                    order.distributions.add(Distribution.objects.get(uuid=d))
                 order = update_dates(order, entry)
                                                              
 

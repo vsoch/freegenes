@@ -791,7 +791,7 @@ class Sample(models.Model):
     # frozen bacteria (maybe there was some contamination, or maybe we bottlenecked 
     # the population so there are more mutations). We think it's status is 
     # confirmed, but the only evidence we have is that it was "Derived" from a confirmed sample.
-    derived_from = models.ForeignKey('Sample', on_delete=models.PROTECT)
+    derived_from = models.ForeignKey('Sample', on_delete=models.PROTECT, blank=True, null=True)
     part = models.ForeignKey('Part', on_delete=models.PROTECT, blank=False)
 
     # needed to automate sequencing
@@ -1046,7 +1046,7 @@ class Order(models.Model):
                                            related_query_name="order_distribution")
  
     # When a user is deleted don't delete orders
-    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=False, null=False)
+    user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=True, null=True)
 
     # When an MTA is deleted, we don't touch the order
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
