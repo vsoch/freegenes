@@ -322,10 +322,6 @@ class Container(models.Model):
     parent = models.ForeignKey('Container', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ForeignKey('Files', on_delete=models.DO_NOTHING, blank=True, null=True)
  
-    plates = models.ManyToManyField('main.Plate', blank=True, default=None,
-                                    related_name="container_plates",
-                                    related_query_name="container_plates")
-
     def __str__(self):
         return "<Container:%s>" % self.name
 

@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include(base_urls)),
     url(r'^api/', include(api_urls)),
-    url(r'^api/schema/$', schema_view),
+    url(r'^api/schema/$', schema_view, name='api-schema'),
     url(r'^api/docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     url(r'^', include(main_urls)),
     url(r'^', include(user_urls)),

@@ -17,12 +17,14 @@
 
     <section id="intro" class="intro section offset-header">
         <div class="container text-center">
-            <h2 class="title">free<span class="highlight">Genes</span></h2>
-            <p class="intro">What are you looking for?
-            <div class="searchbar">
-              <input class="search_input" type="text" name="" placeholder="Search...">
-              <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
-            </div></p>
+            <form method="POST" action="{% url 'running_search' %}">
+                <h2 class="title">free<span class="highlight">Genes</span></h2>
+                <p class="intro">What are you looking for?
+                <div class="searchbar">
+                    <input class="search_input" type="text" name="q" placeholder="Search...">
+                    <a href="#" type="submit" class="search_icon"><i class="fas fa-search"></i></a>
+                </div></p>
+            </form>
         </div>
         <div class="social-media">
             <div class="social-media-inner container text-center">

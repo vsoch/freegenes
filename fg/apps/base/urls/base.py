@@ -14,8 +14,9 @@ import fg.apps.base.views as views
 
 urlpatterns = [
     url(r'^$', views.index_view, name="index"),
-    url(r'^about$', views.about_view, name="about"),
-    url(r'^contact$', views.contact_view, name="contact"),
+    url(r'^about/?$', views.about_view, name="about"),
+    url(r'^dashboard/?$', views.dashboard_view, name="dashboard"),
+    url(r'^contact/?$', views.contact_view, name="contact"),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name='base/robots.txt', 
                                                 content_type='text/plain')),
 ]

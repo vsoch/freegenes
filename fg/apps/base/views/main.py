@@ -27,6 +27,10 @@ def about_view(request):
     return render(request, 'main/about.html')
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def dashboard_view(request):
+    return render(request, 'main/dashboard.html')
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def contact_view(request):
     return render(request, 'main/contact.html')
 

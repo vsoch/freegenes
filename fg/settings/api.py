@@ -8,8 +8,9 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+
     # You can require authentication for your API
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',

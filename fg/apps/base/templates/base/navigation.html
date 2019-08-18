@@ -14,7 +14,7 @@
       <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
       <li class="nav-item"><a class="nav-link" href="https://vsoch.github.io/freegenes">User Guide</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-      {% if request.user.is_authenticated %}<li class="nav-item last"> <a class="nav-link" href="#">Dashboard</a></li>{% else %}<li class="nav-item last"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}
+      {% if request.user.is_authenticated %}<li class="nav-item last"> <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>{% else %}<li class="nav-item last"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}
     </ul>
   </div>
 </nav>

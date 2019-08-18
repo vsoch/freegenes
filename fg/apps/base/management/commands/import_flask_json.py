@@ -460,14 +460,14 @@ class Command(BaseCommand):
  
          
         # Plans ################################################################
-        # no plans are export from the API
+        # no plans are exported from the API
 
         plans_file = os.path.join(folder, 'plans-full.json')
         if os.path.exists(plans_file):
             plans = load_json(plans_file)
 
         # Order ################################################################
-        # no plans are export from the API
+        # no plans are exported from the API
 
         orders_file = os.path.join(folder, 'order-full.json')
         if os.path.exists(orders_file):
