@@ -130,6 +130,9 @@ class Institution(models.Model):
     name = models.CharField(max_length=250, blank=False)
     signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default='NOT_SIGNED')
 
+    def get_label(self):
+        return "institution"
+
     def __str__(self):
         return "<Institution:%s>" % self.name
 
