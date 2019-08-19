@@ -26,3 +26,13 @@ data and permissions, but it's not technically impossible to do.
 
  - [Development](development/): background and basic setup
  - [Plugins](plugins/): additional plugins that can be enabled for authentication
+
+## Usage
+
+ - [Application Programming Interface](usage/api/): The FreeGenes API allows for authenticated, programmatic requests to interact with the FreeGenes node.
+
+
+<hr>
+
+**still under development**
+

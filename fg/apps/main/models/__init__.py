@@ -632,9 +632,6 @@ class Plate(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    # legacy implementation of a "lab tree" (see container) with information stored as a string
-    # Not all plates from the Flask export have breadcrumbs, so not required
-    breadcrumb = models.CharField(max_length=500)
     plate_vendor_id = models.CharField(max_length=250, blank=True, null=True)
 
     # Track the number of times a plate has been frozen and thawed, each freeze damages the cells
@@ -649,6 +646,24 @@ class Plate(models.Model):
 
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
     protocol = models.ForeignKey('Protocol', on_delete=models.CASCADE, blank=True, null=True)
+
+    @property
+    def breadcrumb(self):
+        '''a breadcrumb is a trace of the plate up to the parent container.
+           we start at the child and trace up to the parent, so the order
+           is first child to parent, and we reverse to give user parent
+           to child.
+        '''
+        breadcrumb = []
+        container = self.container
+        while container:
+            breadcrumb.append(container.name)
+            container = container.parent
+
+        # Reverse, give to user parent to child
+        breadcrumb = breadcrumb[::-1]
+        return breadcrumb
+
 
     def __str__(self):
         return "<Plate:%s,%s>" % (self.container, self.name)

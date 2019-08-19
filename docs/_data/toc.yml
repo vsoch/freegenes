@@ -10,6 +10,11 @@
           url: "docs/development/"
         - title: Plugins
           url: "docs/plugins/"
+    - title: "Usage"
+      url: "docs/usage"
+      children:
+        - title: API
+          url: "docs/usage/api"
     - title: "About"
       url: "about"
     - title: "News"

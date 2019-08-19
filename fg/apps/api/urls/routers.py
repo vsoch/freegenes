@@ -47,7 +47,6 @@ router.register(r'^orders', OrderViewSet, base_name="order")
 router.register(r'^organisms', OrganismViewSet, base_name="organism")
 router.register(r'^plans', PlanViewSet, base_name="plan")
 router.register(r'^robots', RobotViewSet, base_name="robots")
-router.register(r'^samples', SampleViewSet, base_name="samples")
 router.register(r'^schemas', SchemaViewSet, base_name="schemas")
 router.register(r'^tags', TagViewSet, base_name="tag")
 
@@ -76,5 +75,8 @@ urlpatterns = [
 
     url(r'^protocols/?$', ProtocolViewSet.as_view()),
     url(r'^protocols/(?P<id>.+?)/?$', ProtocolViewSet.as_view()),
+
+    url(r'^samples/?$', SampleViewSet.as_view()),
+    url(r'^samples/(?P<id>.+?)/?$', SampleViewSet.as_view()),
 
 ]

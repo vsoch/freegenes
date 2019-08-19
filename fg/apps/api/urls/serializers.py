@@ -752,7 +752,7 @@ class RobotViewSet(viewsets.ReadOnlyModelViewSet):
 
 # Sample
 
-class SampleSerializer(serializers.ModelSerializer):
+class SingleSampleSerializer(serializers.ModelSerializer):
 
     label = serializers.SerializerMethodField('get_label')
     derived_from = serializers.SerializerMethodField('get_derived_from')
@@ -788,14 +788,31 @@ class SampleSerializer(serializers.ModelSerializer):
                   'label', 'wells')
 
 
-class SampleViewSet(viewsets.ReadOnlyModelViewSet):
-    # TODO: samples should have separate view for single and list, not listing
-    # wells for the list
+class SampleSerializer(SingleSampleSerializer):
 
-    def get_queryset(self):
-        return Sample.objects.all()
+    class Meta:
+        model = Sample
+        fields = ('uuid', 'outside_collaborator', 'sample_type', 'status',
+                  'evidence', 'vendor', 'time_created', 'time_updated',
+                  'derived_from', 'part', 'index_forward', 'index_reverse',
+                  'label')
 
-    serializer_class = SampleSerializer
+
+class SampleViewSet(ListModelMixin, generics.GenericAPIView):
+    '''Retrieve a single detailed instance with a uuid, or a more generic list
+    '''   
+    remove_data = False
+
+    # These fields are required and should be instantiated by subclass
+    Model = Sample
+    detailedSerializer = SingleSampleSerializer
+    regularSerializer = SampleSerializer
+
+SampleViewSet.get_object = limited_get_object
+SampleViewSet.get_queryset = limited_get_queryset
+SampleViewSet.get_serializer_class = limited_get_serializer_class
+SampleViewSet.list = limited_list
+SampleViewSet.get = limited_get
 
 
 # Schema
