@@ -9,7 +9,6 @@ uwsgi:
   volumes:
     - .:/code
     - ./static:/var/www/static
-    - ./data:/var/www/data
     # uncomment for PAM auth
     #- /etc/passwd:/etc/passwd 
     #- /etc/shadow:/etc/shadow
