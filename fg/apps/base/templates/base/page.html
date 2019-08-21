@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% block css %}
 <link rel="stylesheet" href="{% static "css/bootstrap.min.css"%}">
+<link rel="stylesheet" href="{% static "css/toastr.min.css" %}" media="screen" type="text/css">
 <link rel="stylesheet" href="{% static "css/style.css"%}"><!--try changing here-->
 <link rel="stylesheet" href="{% static "css/simple-line-icons.css"%}">
 {% endblock %}
@@ -32,6 +33,7 @@
             <a class="dropdown-item" href="#">Token</a>
             <a class="dropdown-item" href="{% url 'api-schema' %}">API</a>
             <div class="dropdown-divider"></div>
+            {% if request.user.is_staff %}<a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>{% endif %}
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
           </div>
         </li>{% else %}<li class="nav-item"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}
@@ -91,6 +93,7 @@
 {% endblock %}
 {% block basescripts %}
     <script src="{% static "js/jquery.min.js"%}"></script>
+    <script src="{% static "js/toastr.min.js"%}"></script>
     <script src="{% static "js/bootstrap.bundle.min.js"%}"></script>
     <script>
 $(function () {

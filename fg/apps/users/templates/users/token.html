@@ -1,0 +1,65 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12">
+    {% if not request.user.is_anonymous %}
+    <div class="row" style='padding-bottom:30px'>
+        <div class="col-md-12">
+        <h2>API Token</h2>
+        <p><small>Interact with the FreeGenes API</small></p>
+        </div>
+    </div>
+
+    <div class="row">
+       <div class="col-md-12" style="padding-bottom:20px">
+       Store this in a safe place, keep private, and do not include in github repositories.
+       </div>
+    </div>
+
+    <div class="row">
+       <div class="col-md-5 alert alert-info" id="token_well" role="alert">
+       {{ request.user.token }}
+       </div>
+       <div class="col-md-3" style='padding-top:10px'>
+           <button id="token" 
+                   class="btn copyme" 
+                   data-clipboard-target="#token">
+                   <i class="fa fa-copy"></i></button>
+       </div>
+    </div>
+    {% else %}
+    <div style="padding-top:20px" class="alert alert-info" role="alert">You aren't authorized to see this. Sneaky!</div>
+    {% endif %}
+</div>
+
+</div>
+{% include "messages/notification.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+$('.copyme').click(function(){
+    var copy_id = $(this).attr('id')
+    var content = $("#" + copy_id + "_well")
+    var range = document.createRange();  
+    range.selectNode(content[0])  
+    window.getSelection().addRange(range)
+
+   try {  
+        // Now that we've selected the anchor text, execute the copy command  
+        var successful = document.execCommand('copy');  
+        var msg = successful ? 'successful' : 'unsuccessful';  
+        toast_message('Copy ' + msg)
+      }  catch(err) {  
+        toast_message('Oops, unable to copy');  
+      }  
+
+    // removeRange(range) when it is supported  
+    window.getSelection().removeAllRanges();  
+
+});
+</script>
+{% endblock %}

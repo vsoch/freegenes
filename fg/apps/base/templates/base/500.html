@@ -1,0 +1,844 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>404: Not Found</title>
+  <link href="https://fonts.googleapis.com/css?family=Courgette&display=swap" rel="stylesheet">
+  <style>
+
+body{
+  font-family: 'Courgette', cursive;
+  margin:0;
+  background: #061410;
+}
+
+a:hover, a:focus {
+ color: yellow !important;
+}
+
+#message {
+  top: 50%;
+  position: absolute;
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  color: white;
+}
+
+html {
+  background: black;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  left: 50%;
+  top: 50vh;
+}
+
+.star {
+  position: absolute;
+  -webkit-transform-origin: center top;
+          transform-origin: center top;
+  border-radius: 50%;
+}
+
+.exploder {
+  width: 1em;
+  height: .5em;
+  border-radius: 50%;
+  opacity: .5;
+  margin: 0 auto;
+  -webkit-transform-origin: center top;
+          transform-origin: center top;
+  -webkit-transform-style: preserve-3d(5, 10);
+          transform-style: preserve-3d(5, 10);
+}
+
+.star:nth-of-type(1) {
+  -webkit-transform: rotate(60deg);
+          transform: rotate(60deg);
+}
+.star:nth-of-type(1) .exploder {
+  background: rgba(255, 21, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 50ms ease-in-out;
+  -webkit-animation: explode 2s infinite 50ms ease-in-out;
+}
+
+.star:nth-of-type(2) {
+  -webkit-transform: rotate(120deg);
+          transform: rotate(120deg);
+}
+.star:nth-of-type(2) .exploder {
+  background: rgba(255, 94, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 100ms ease-in-out;
+  -webkit-animation: explode 2s infinite 100ms ease-in-out;
+}
+
+.star:nth-of-type(3) {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+.star:nth-of-type(3) .exploder {
+  background: rgba(255, 166, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 150ms ease-in-out;
+  -webkit-animation: explode 2s infinite 150ms ease-in-out;
+}
+
+.star:nth-of-type(4) {
+  -webkit-transform: rotate(240deg);
+          transform: rotate(240deg);
+}
+.star:nth-of-type(4) .exploder {
+  background: rgba(255, 238, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 200ms ease-in-out;
+  -webkit-animation: explode 2s infinite 200ms ease-in-out;
+}
+
+.star:nth-of-type(5) {
+  -webkit-transform: rotate(300deg);
+          transform: rotate(300deg);
+}
+.star:nth-of-type(5) .exploder {
+  background: rgba(200, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 250ms ease-in-out;
+  -webkit-animation: explode 2s infinite 250ms ease-in-out;
+}
+
+.star:nth-of-type(6) {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+}
+.star:nth-of-type(6) .exploder {
+  background: rgba(128, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 300ms ease-in-out;
+  -webkit-animation: explode 2s infinite 300ms ease-in-out;
+}
+
+.star:nth-of-type(7) {
+  -webkit-transform: rotate(420deg);
+          transform: rotate(420deg);
+}
+.star:nth-of-type(7) .exploder {
+  background: rgba(55, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 350ms ease-in-out;
+  -webkit-animation: explode 2s infinite 350ms ease-in-out;
+}
+
+.star:nth-of-type(8) {
+  -webkit-transform: rotate(480deg);
+          transform: rotate(480deg);
+}
+.star:nth-of-type(8) .exploder {
+  background: rgba(0, 255, 17, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 400ms ease-in-out;
+  -webkit-animation: explode 2s infinite 400ms ease-in-out;
+}
+
+.star:nth-of-type(9) {
+  -webkit-transform: rotate(540deg);
+          transform: rotate(540deg);
+}
+.star:nth-of-type(9) .exploder {
+  background: rgba(0, 255, 89, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 450ms ease-in-out;
+  -webkit-animation: explode 2s infinite 450ms ease-in-out;
+}
+
+.star:nth-of-type(10) {
+  -webkit-transform: rotate(600deg);
+          transform: rotate(600deg);
+}
+.star:nth-of-type(10) .exploder {
+  background: rgba(0, 255, 162, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 500ms ease-in-out;
+  -webkit-animation: explode 2s infinite 500ms ease-in-out;
+}
+
+.star:nth-of-type(11) {
+  -webkit-transform: rotate(660deg);
+          transform: rotate(660deg);
+}
+.star:nth-of-type(11) .exploder {
+  background: rgba(0, 255, 234, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 550ms ease-in-out;
+  -webkit-animation: explode 2s infinite 550ms ease-in-out;
+}
+
+.star:nth-of-type(12) {
+  -webkit-transform: rotate(720deg);
+          transform: rotate(720deg);
+}
+.star:nth-of-type(12) .exploder {
+  background: rgba(0, 204, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 600ms ease-in-out;
+  -webkit-animation: explode 2s infinite 600ms ease-in-out;
+}
+
+.star:nth-of-type(13) {
+  -webkit-transform: rotate(780deg);
+          transform: rotate(780deg);
+}
+.star:nth-of-type(13) .exploder {
+  background: rgba(0, 132, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 650ms ease-in-out;
+  -webkit-animation: explode 2s infinite 650ms ease-in-out;
+}
+
+.star:nth-of-type(14) {
+  -webkit-transform: rotate(840deg);
+          transform: rotate(840deg);
+}
+.star:nth-of-type(14) .exploder {
+  background: rgba(0, 60, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 700ms ease-in-out;
+  -webkit-animation: explode 2s infinite 700ms ease-in-out;
+}
+
+.star:nth-of-type(15) {
+  -webkit-transform: rotate(900deg);
+          transform: rotate(900deg);
+}
+.star:nth-of-type(15) .exploder {
+  background: rgba(13, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 750ms ease-in-out;
+  -webkit-animation: explode 2s infinite 750ms ease-in-out;
+}
+
+.star:nth-of-type(16) {
+  -webkit-transform: rotate(960deg);
+          transform: rotate(960deg);
+}
+.star:nth-of-type(16) .exploder {
+  background: rgba(85, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 800ms ease-in-out;
+  -webkit-animation: explode 2s infinite 800ms ease-in-out;
+}
+
+.star:nth-of-type(17) {
+  -webkit-transform: rotate(1020deg);
+          transform: rotate(1020deg);
+}
+.star:nth-of-type(17) .exploder {
+  background: rgba(157, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 850ms ease-in-out;
+  -webkit-animation: explode 2s infinite 850ms ease-in-out;
+}
+
+.star:nth-of-type(18) {
+  -webkit-transform: rotate(1080deg);
+          transform: rotate(1080deg);
+}
+.star:nth-of-type(18) .exploder {
+  background: rgba(230, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 900ms ease-in-out;
+  -webkit-animation: explode 2s infinite 900ms ease-in-out;
+}
+
+.star:nth-of-type(19) {
+  -webkit-transform: rotate(1140deg);
+          transform: rotate(1140deg);
+}
+.star:nth-of-type(19) .exploder {
+  background: rgba(255, 0, 208, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 950ms ease-in-out;
+  -webkit-animation: explode 2s infinite 950ms ease-in-out;
+}
+
+.star:nth-of-type(20) {
+  -webkit-transform: rotate(1200deg);
+          transform: rotate(1200deg);
+}
+.star:nth-of-type(20) .exploder {
+  background: rgba(255, 0, 136, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1000ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1000ms ease-in-out;
+}
+
+.star:nth-of-type(21) {
+  -webkit-transform: rotate(1260deg);
+          transform: rotate(1260deg);
+}
+.star:nth-of-type(21) .exploder {
+  background: rgba(255, 0, 64, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1050ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1050ms ease-in-out;
+}
+
+.star:nth-of-type(22) {
+  -webkit-transform: rotate(1320deg);
+          transform: rotate(1320deg);
+}
+.star:nth-of-type(22) .exploder {
+  background: rgba(255, 9, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1100ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1100ms ease-in-out;
+}
+
+.star:nth-of-type(23) {
+  -webkit-transform: rotate(1380deg);
+          transform: rotate(1380deg);
+}
+.star:nth-of-type(23) .exploder {
+  background: rgba(255, 81, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1150ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1150ms ease-in-out;
+}
+
+.star:nth-of-type(24) {
+  -webkit-transform: rotate(1440deg);
+          transform: rotate(1440deg);
+}
+.star:nth-of-type(24) .exploder {
+  background: rgba(255, 153, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1200ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1200ms ease-in-out;
+}
+
+.star:nth-of-type(25) {
+  -webkit-transform: rotate(1500deg);
+          transform: rotate(1500deg);
+}
+.star:nth-of-type(25) .exploder {
+  background: rgba(255, 225, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1250ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1250ms ease-in-out;
+}
+
+.star:nth-of-type(26) {
+  -webkit-transform: rotate(1560deg);
+          transform: rotate(1560deg);
+}
+.star:nth-of-type(26) .exploder {
+  background: rgba(213, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1300ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1300ms ease-in-out;
+}
+
+.star:nth-of-type(27) {
+  -webkit-transform: rotate(1620deg);
+          transform: rotate(1620deg);
+}
+.star:nth-of-type(27) .exploder {
+  background: rgba(140, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1350ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1350ms ease-in-out;
+}
+
+.star:nth-of-type(28) {
+  -webkit-transform: rotate(1680deg);
+          transform: rotate(1680deg);
+}
+.star:nth-of-type(28) .exploder {
+  background: rgba(68, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1400ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1400ms ease-in-out;
+}
+
+.star:nth-of-type(29) {
+  -webkit-transform: rotate(1740deg);
+          transform: rotate(1740deg);
+}
+.star:nth-of-type(29) .exploder {
+  background: rgba(0, 255, 4, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1450ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1450ms ease-in-out;
+}
+
+.star:nth-of-type(30) {
+  -webkit-transform: rotate(1800deg);
+          transform: rotate(1800deg);
+}
+.star:nth-of-type(30) .exploder {
+  background: rgba(0, 255, 77, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1500ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1500ms ease-in-out;
+}
+
+.star:nth-of-type(31) {
+  -webkit-transform: rotate(1860deg);
+          transform: rotate(1860deg);
+}
+.star:nth-of-type(31) .exploder {
+  background: rgba(0, 255, 149, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1550ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1550ms ease-in-out;
+}
+
+.star:nth-of-type(32) {
+  -webkit-transform: rotate(1920deg);
+          transform: rotate(1920deg);
+}
+.star:nth-of-type(32) .exploder {
+  background: rgba(0, 255, 221, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1600ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1600ms ease-in-out;
+}
+
+.star:nth-of-type(33) {
+  -webkit-transform: rotate(1980deg);
+          transform: rotate(1980deg);
+}
+.star:nth-of-type(33) .exploder {
+  background: rgba(0, 217, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1650ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1650ms ease-in-out;
+}
+
+.star:nth-of-type(34) {
+  -webkit-transform: rotate(2040deg);
+          transform: rotate(2040deg);
+}
+.star:nth-of-type(34) .exploder {
+  background: rgba(0, 145, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1700ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1700ms ease-in-out;
+}
+
+.star:nth-of-type(35) {
+  -webkit-transform: rotate(2100deg);
+          transform: rotate(2100deg);
+}
+.star:nth-of-type(35) .exploder {
+  background: rgba(0, 72, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1750ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1750ms ease-in-out;
+}
+
+.star:nth-of-type(36) {
+  -webkit-transform: rotate(2160deg);
+          transform: rotate(2160deg);
+}
+.star:nth-of-type(36) .exploder {
+  background: rgba(0, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1800ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1800ms ease-in-out;
+}
+
+.star:nth-of-type(37) {
+  -webkit-transform: rotate(2220deg);
+          transform: rotate(2220deg);
+}
+.star:nth-of-type(37) .exploder {
+  background: rgba(72, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1850ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1850ms ease-in-out;
+}
+
+.star:nth-of-type(38) {
+  -webkit-transform: rotate(2280deg);
+          transform: rotate(2280deg);
+}
+.star:nth-of-type(38) .exploder {
+  background: rgba(145, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1900ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1900ms ease-in-out;
+}
+
+.star:nth-of-type(39) {
+  -webkit-transform: rotate(2340deg);
+          transform: rotate(2340deg);
+}
+.star:nth-of-type(39) .exploder {
+  background: rgba(217, 0, 255, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 1950ms ease-in-out;
+  -webkit-animation: explode 2s infinite 1950ms ease-in-out;
+}
+
+.star:nth-of-type(40) {
+  -webkit-transform: rotate(2400deg);
+          transform: rotate(2400deg);
+}
+.star:nth-of-type(40) .exploder {
+  background: rgba(255, 0, 221, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2000ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2000ms ease-in-out;
+}
+
+.star:nth-of-type(41) {
+  -webkit-transform: rotate(2460deg);
+          transform: rotate(2460deg);
+}
+.star:nth-of-type(41) .exploder {
+  background: rgba(255, 0, 149, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2050ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2050ms ease-in-out;
+}
+
+.star:nth-of-type(42) {
+  -webkit-transform: rotate(2520deg);
+          transform: rotate(2520deg);
+}
+.star:nth-of-type(42) .exploder {
+  background: rgba(255, 0, 77, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2100ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2100ms ease-in-out;
+}
+
+.star:nth-of-type(43) {
+  -webkit-transform: rotate(2580deg);
+          transform: rotate(2580deg);
+}
+.star:nth-of-type(43) .exploder {
+  background: rgba(255, 0, 4, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2150ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2150ms ease-in-out;
+}
+
+.star:nth-of-type(44) {
+  -webkit-transform: rotate(2640deg);
+          transform: rotate(2640deg);
+}
+.star:nth-of-type(44) .exploder {
+  background: rgba(255, 68, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2200ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2200ms ease-in-out;
+}
+
+.star:nth-of-type(45) {
+  -webkit-transform: rotate(2700deg);
+          transform: rotate(2700deg);
+}
+.star:nth-of-type(45) .exploder {
+  background: rgba(255, 140, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2250ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2250ms ease-in-out;
+}
+
+.star:nth-of-type(46) {
+  -webkit-transform: rotate(2760deg);
+          transform: rotate(2760deg);
+}
+.star:nth-of-type(46) .exploder {
+  background: rgba(255, 213, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2300ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2300ms ease-in-out;
+}
+
+.star:nth-of-type(47) {
+  -webkit-transform: rotate(2820deg);
+          transform: rotate(2820deg);
+}
+.star:nth-of-type(47) .exploder {
+  background: rgba(225, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2350ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2350ms ease-in-out;
+}
+
+.star:nth-of-type(48) {
+  -webkit-transform: rotate(2880deg);
+          transform: rotate(2880deg);
+}
+.star:nth-of-type(48) .exploder {
+  background: rgba(153, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2400ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2400ms ease-in-out;
+}
+
+.star:nth-of-type(49) {
+  -webkit-transform: rotate(2940deg);
+          transform: rotate(2940deg);
+}
+.star:nth-of-type(49) .exploder {
+  background: rgba(81, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2450ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2450ms ease-in-out;
+}
+
+.star:nth-of-type(50) {
+  -webkit-transform: rotate(3000deg);
+          transform: rotate(3000deg);
+}
+.star:nth-of-type(50) .exploder {
+  background: rgba(9, 255, 0, 0.6);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  animation: explode 2s infinite 2500ms ease-in-out;
+  -webkit-animation: explode 2s infinite 2500ms ease-in-out;
+}
+
+@-webkit-keyframes explode {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(15, 30);
+            transform: scale(15, 30);
+  }
+}
+
+@keyframes explode {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(15, 30);
+            transform: scale(15, 30);
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="message">
+<span style="font-size: 32px; font-weight:600; padding:20px">You've triggered an error!</span><br>  <span style="padding:20px">Our team has been notified, and you can <a style="color:white; text-decoration:none;" href="{% url 'index' %}">return home</a>
+</div>
+
+<body>
+<div class='container'>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+  <div class='star'>
+    <div class='exploder'></div>
+  </div>
+</div>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script>
+  </script>
+</html>

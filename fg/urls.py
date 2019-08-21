@@ -18,9 +18,14 @@ from fg.apps.api import urls as api_urls
 from fg.apps.base import urls as base_urls
 from fg.apps.main import urls as main_urls
 from fg.apps.users import urls as user_urls
-
+from django.contrib import admin
 from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
+
+# Customize admin title, headers
+admin.site.site_header = 'FreeGenes administration'
+admin.site.site_title = 'FreeGenes Admin'
+admin.site.index_title = 'FreeGenes administration'
 
 # Documentation URL
 API_TITLE = 'FreeGenes API'

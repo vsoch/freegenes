@@ -1,0 +1,156 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>404: Not Found</title>
+  <link href="https://fonts.googleapis.com/css?family=Courgette&display=swap" rel="stylesheet">
+  <style>
+
+body{
+  font-family: 'Courgette', cursive;
+  margin:0;
+  background: #061410;
+}
+
+a:hover, a:focus {
+ color: yellow !important;
+}
+
+#message {
+  top: 50%;
+  position: absolute;
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  color: white;
+}
+ </style>
+</head>
+<body>
+
+<div id="message">
+<span style="font-size: 32px; font-weight:600; padding:20px">Looking for Something?</span>  It's not here... <a style="color:white; text-decoration:none; float:right; padding:20px" href="{% url 'index' %}">Return home</a>
+</div>
+<canvas></canvas>
+
+<script>
+var canvas = document.querySelector('canvas');
+var c = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+var colorArray =  [
+                        "#28a745",
+                        "#074f66",
+                        "#fdda51",
+                        "#ffffff"
+		];
+
+var mouse = {
+  x : undefined,
+  y : undefined
+}
+
+var maxRadius = 20
+
+window.addEventListener('resize', function(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  init();
+});
+
+window.addEventListener('mousemove', function(event){
+  mouse.x = event.x;
+  mouse.y = event.y;
+})
+
+function Circle(x, y, dx, dy, radius){
+  this.x = x;
+  this.y = y;
+  
+  //velocity
+  this.dx = dx;
+  this.dy = dy;
+  this.radius = radius;
+  this.minRadius = radius
+  this.color = colorArray[Math.floor(Math.random() * colorArray.length)];
+  
+  Circle.prototype.draw = function(){
+      c.beginPath();
+      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      c.fillStyle = this.color;
+      // c.strokeStyle = 'lightblue';
+      // c.stroke();  
+      c.shadowColor = this.color;
+			c.shadowBlur = 10;
+			c.shadowOffsetX = 0;
+			c.shadowOffsetY = 0;
+			c.fillStyle = this.color;
+      c.fill();
+      c.closePath();
+  }
+ 
+  //animation behavior
+  Circle.prototype.update = function(){
+        if(this.x + this.radius > innerWidth || this.x - this.radius < 0){
+          this.dx = -this.dx;
+        }
+  
+        if(this.y + this.radius > innerHeight || this.y - this.radius < 0){
+          this.dy =-this.dy;
+        }
+
+        this.x += this.dx;
+        this.y += this.dy;
+        
+        //interactivity
+        if(mouse.x - this.x < 40 && mouse.x - this.x > -40
+           && mouse.y - this.y < 40 && mouse.y - this.y > -40){
+          if(this.radius < maxRadius){
+            this.radius += 0.3
+            this.color = 'white'
+          }
+        }
+        else if(this.radius > this.minRadius){
+          this.radius-= 0.3
+          this.color= colorArray[Math.floor(Math.random() * colorArray.length)];
+        }
+    
+        this.draw();
+    }
+  }
+
+let circleArray;
+
+function init(){
+  circleArray = [];
+   for(var i = 0; i< 600;i++){
+    //position
+    var x = Math.random() * ((innerWidth - radius * 3) + radius);
+    var y = Math.random() * ((innerHeight - radius * 3) + radius);
+
+    //speed
+    var dx = (Math.random() - 0.5) * 2;
+    var dy = (Math.random() - 0.5) * 2;
+    var radius = Math.random() * 2 + 1;
+    circleArray.push(new Circle(x , y, dx, dy, radius));
+  }
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  c.clearRect(0,0,innerWidth, innerHeight);  
+  
+  circleArray.forEach(circles =>{
+    circles.update();
+  });
+}
+
+init();
+animate();
+</script>
+</body>
+</html>

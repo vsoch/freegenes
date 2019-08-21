@@ -15,7 +15,10 @@ $ git clone https://github.com/vsoch/freegenes
 ```
 
 Ensure that you have both [Docker](https://docs.docker.com/install/) and 
-[Docker Compose](https://docs.docker.com/compose/install/) installed.
+[Docker Compose](https://docs.docker.com/compose/install/) installed. To make
+this entire process easier, we've provided a [script](https://github.com/vsoch/freegenes/blob/master/scripts/prepare_instance.sh) that will handle installing Docker, docker-compose, cloning,
+and building the FreeGenes container. Note that you'll need to log in and out after
+adding your user to the Docker group for Docker to function properly without needing sudo.
 
 > We will be adding deployment specific clones and setup once they are determined, for now this is assumed to be local development or deployment on a server.
 
@@ -210,6 +213,7 @@ In the [config.py](https://github.com/{{ site.github_user }}/{{ site.github_repo
 
 
 ### Domain Name
+
 A FreeGenes server should have a domain. It's not required for local development.
 Thus, the first thing you should do is change the `DOMAIN_NAME_*` variables in your settings [settings/config.py](https://github.com/{{ site.github_user }}/{{ site.github_repo }}/blob/master/fg/settings/config.py).
 
@@ -220,7 +224,8 @@ DOMAIN_NAME = "http://127.0.0.1"
 DOMAIN_NAME_HTTP = "http://127.0.0.1"
 ```
 
-It's up to the deployer to set one up a domain or subdomain for the server. Typically this means going into the hosting account to add the A and CNAME records, and then update the DNS servers. Since every host is a little different, I'll leave this up to you, but [here is how it's done on Google Cloud](https://cloud.google.com/dns/quickstart).
+When you deploy, you should [obtain https certificates](https) and set up your DNS, along with
+ensuring that the `DOMAIN_NAME` above uses https. It's up to the deployer to set one up a domain or subdomain for the server. Typically this means going into the hosting account to add the A and CNAME records, and then update the DNS servers. Since every host is a little different, I'll leave this up to you, but [here is how it's done on Google Cloud](https://cloud.google.com/dns/quickstart).
 
 
 ### FreeGenes Node Contact
@@ -269,4 +274,6 @@ VIEW_RATE_LIMIT_BLOCK=True # Given that someone goes over, are they blocked for 
 ```
 
 And see the [django-ratelimit](https://django-ratelimit.readthedocs.io/en/v1.0.0/usage.html) documentation
-for other options.
+for other options. 
+
+Next, you might want to [start your containers]({{ site.baseurl }}/docs/development/start/)

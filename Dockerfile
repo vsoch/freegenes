@@ -49,8 +49,8 @@ RUN mkdir -p /code && mkdir -p /code/data
 RUN mkdir -p /var/www/data && chmod -R 0755 /code/data/
 
 WORKDIR /code
-RUN apt-get autoremove -y
-RUN apt-get clean
+RUN apt-get autoremove -y && \
+    apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 CMD /code/run_uwsgi.sh

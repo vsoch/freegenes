@@ -24,3 +24,13 @@ is required to ask for a uuid directly to see the complete data.
 
 Under development (not a priority) will be [freegenes-python](https://www.github.com/vsoch/freegenes-python/) to allow
 for easy, programmatic access to all endpoints from Python.
+
+## Token
+
+Once you are logged in, you can access your API token from your User Profile
+dropdown menu, at the url "/token":
+
+![token.png]({{ site.baseurl }}/docs/usage/token.png)
+
+Further instructions will be added here (or to freegenes-python) for how to interact
+with the API.
