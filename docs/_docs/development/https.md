@@ -8,7 +8,7 @@ tags:
 
 # Generating Certificates
 
-We will use [Let's Encrypt]() to generate certificates for the server.
+We will use [Let's Encrypt](https://letsencrypt.org/) to generate certificates for the server.
 They expire about every 3 months, but the service asks for an email that will
 send you a reminder to re-generate them. There are services that will handle this
 for you, but I've never wanted to pay for them.

@@ -15,6 +15,10 @@
       children:
         - title: API
           url: "docs/usage/api"
+        - title: Admin
+          url: "docs/usage/admin"
+        - title: Error Pages
+          url: "docs/usage/error"
     - title: "About"
       url: "about"
     - title: "News"
