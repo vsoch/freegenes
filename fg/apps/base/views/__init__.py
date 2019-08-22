@@ -12,6 +12,5 @@ from .main import (
 
 from .search import (
     run_search,
-    search_query,
     search_view
 )

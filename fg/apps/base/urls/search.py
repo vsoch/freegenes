@@ -14,5 +14,5 @@ import fg.apps.base.views as views
 urlpatterns = [
     url(r'^search$', views.search_view, name="search"),
     url(r'^searching$', views.run_search, name="running_search"),
-    url(r'^search/(?P<query>.+?)$', views.search_query, name="search_query"),
+    url(r'^search/(?P<query>.+?)$', views.search_view, name="search_query"),
 ]

@@ -17,12 +17,12 @@
 
     <section id="intro" class="intro section offset-header">
         <div class="container text-center">
-            <form method="POST" action="{% url 'running_search' %}">
+            <form method="GET" action="{% url 'search' %}">
                 <h2 class="title">free<span class="highlight">Genes</span></h2>
                 <p class="intro">What are you looking for?
                 <div class="searchbar">
                     <input class="search_input" type="text" name="q" placeholder="Search...">
-                    <a href="#" type="submit" class="search_icon"><i class="fas fa-search"></i></a>
+                    <a href="#" type="submit"></a>
                 </div></p>
             </form>
         </div>
