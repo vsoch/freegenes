@@ -12,6 +12,12 @@ description: Getting started with FreeGenes
 The documentation here will get you started to use FreeGenes, developed
 with Python and Django.
 
+
+## User Guide
+
+ - [Usage](usage/): Including the FreeGenes API, user and admin interfaces.
+ - [Frequently Asked Questions](faq/) about FreeGenes.
+
 ## Who is FreeGenes For?
 
 FreeGenes is developed as an instance of a node in the [bionet](https://biobricks.org/bionet/). 
@@ -27,9 +33,6 @@ data and permissions, but it's not technically impossible to do.
  - [Development](development/): background and basic setup
  - [Plugins](plugins/): additional plugins that can be enabled for authentication
 
-## Usage
-
- - [Application Programming Interface](usage/api/): The FreeGenes API allows for authenticated, programmatic requests to interact with the FreeGenes node.
 
 
 <hr>

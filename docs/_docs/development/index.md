@@ -12,6 +12,7 @@ before deploying the application.
 
  - [Background](background) on the project
  - [Models](models) notes on models, some also included in code comments
+ - [Views and URLs](views) any notes about design of views and urls.
  - [User Stories](user-stories) to guide interface development.
 
 ## Configuration

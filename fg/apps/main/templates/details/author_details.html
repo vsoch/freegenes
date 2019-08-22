@@ -1,0 +1,45 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{ instance.get_label | title }}: {% if instance.name %}{{ instance.name }}{% else %}{{ instance }}{% endif %}</h1>
+      <h4>
+    </div>
+  </div>
+  <div class="row">
+<div class="card-body">
+  <div class="table-responsive">
+    <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>
+      <tr>
+       <th>Key</th>
+       <th>Value</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+       <th>Key</th>
+       <th>Value</th>
+      </tr>
+    </tfoot>
+      <tbody><!-- TODO THERE IS A BUG HERE - not happy with how this looks -->
+      {% for field in instance.json %}<tr>
+        {% if field.admin %}{% if request.user.is_superuser %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% elif field.auth %}{% if request.user.is_authenticated %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% endif %}
+      </tr>{% endfor %}
+    </tbody>
+   </table>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#{{ instance.get_label }}-table').DataTable();
+});
+</script>
+{% endblock %}

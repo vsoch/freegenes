@@ -87,6 +87,7 @@ class Author(models.Model):
     '''An author coincides with an individual responsible for creation of an
        object.
     '''
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=250, blank=False)
     email = models.EmailField(max_length=250, blank=False, unique=True)
@@ -111,6 +112,28 @@ class Author(models.Model):
 
     def get_label(self):
         return "author"
+
+    def get_tags(self):
+        '''a helper to return a list of tags (strings)'''
+        return [x.tag for x in self.tags.all()]
+
+    def json(self):
+        '''return a list of fields (dict) for the object. The format returned
+           is standard across models so it can be used in templates 
+           to render fields into a table. Fields include key, value, 
+           and auth and admin required (booleans)
+
+           auth: indicates authorization required (True or False)
+           admin: indicates admin (superusers) only
+        '''
+        fields = [
+            {"key": "Name", "value": self.name, "auth": True}, 
+            {"key": "Email", "value": self.email, "admin": True}, 
+            {"key": "Affiliation", "value": self.affiliation, "auth": False},
+            {"key": "orcid", "value": self.orcid, "auth": True},
+            {"key": "tags", "value": self.get_tags(), "auth": False}]
+
+        return fields
 
     class Meta:
         app_label = 'main'
