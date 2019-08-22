@@ -13,12 +13,12 @@
     - title: "Usage"
       url: "docs/usage"
       children:
-        - title: Interface
+        - title: User Interface
           url: "docs/usage/interface"
-        - title: API
-          url: "docs/usage/api"
         - title: Admin
           url: "docs/usage/admin"
+        - title: API
+          url: "docs/usage/api"
         - title: Error Pages
           url: "docs/usage/error"
     - title: "About"
