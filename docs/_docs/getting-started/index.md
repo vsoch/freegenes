@@ -15,8 +15,8 @@ with Python and Django.
 
 ## User Guide
 
- - [Usage](usage/): Including the FreeGenes API, user and admin interfaces.
- - [Frequently Asked Questions](faq/) about FreeGenes.
+ - [Usage](usage): Including the FreeGenes API, user and admin interfaces.
+ - [Frequently Asked Questions](faq) about FreeGenes.
 
 ## Who is FreeGenes For?
 

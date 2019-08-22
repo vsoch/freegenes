@@ -9,6 +9,12 @@ description: Frequently Asked Questions about FreeGenes
 
 # Frequently Asked Questions
 
+ - [General](#general)
+ - [Inventory](#inventory)
+ - [Regulatory](#regulatory)
+ - [Shipping](#shipping)
+
+
 ## General
 
 ### What is freegenes?
