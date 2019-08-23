@@ -8,6 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.core.paginator import Paginator
 from django.shortcuts import render 
 from django.http import Http404
 from ratelimit.decorators import ratelimit
@@ -37,6 +38,8 @@ from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
     VIEW_RATE_LIMIT_BLOCK as rl_block
 )
+
+## Detail Pages
 
 def get_instance(request, uuid, Model):
     '''a helper to get an instance of a particular type based on its uuid. If
@@ -125,3 +128,22 @@ def schema_details(request, uuid):
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def tag_details(request, uuid):
     return get_instance(request, uuid, Tag)
+
+
+## Catalogs
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def catalog_view(request):
+    return render(request, "catalogs/catalog.html")
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def collections_catalog_view(request):
+    context = {"collections": Collection.objects.all()}
+    return render(request, "catalogs/collections.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def parts_catalog_view(request):
+    paginator = Paginator(Part.objects.all(), 50)
+    page = request.GET.get('page')
+    context = {"parts": paginator.get_page(page)}
+    return render(request, "catalogs/parts.html", context=context)

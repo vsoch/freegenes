@@ -1,0 +1,18 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Parent</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for collection in collections %}
+                        <tr>
+                            <td><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></td>
+                            <td>{{ collection.description | truncatechars:100 }}</td>
+                            <td>{% if collection.parent %}<a href="{{ collection.parent.get_absolute_url }}">{{ collection.parent.name }}</a>{% endif %}</td>
+                            <td>{% for tag in collection.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

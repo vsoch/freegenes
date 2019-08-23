@@ -1,0 +1,24 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Author</th>
+                            <th>Part Type</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Gene ID</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for part in parts %}
+                        <tr>
+                            <td><a href="{{ part.get_absolute_url }}">{{ part.name }}</a></td>
+                            <td>{% if part.author %}<a href="{{ part.author.get_absolute_url }}">{{ part.author.name }}</a>{% endif %}</td>
+                            <td>{{ part.part_type }}</td>
+                            <td>{{ part.description | truncatechars:100 }}</td>
+                            <td>{{ part.status }}</td>
+                            <td>{{ part.gene_id }}</td>
+                            <td>{% for tag in part.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

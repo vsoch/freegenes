@@ -15,7 +15,6 @@ import fg.apps.users.views as views
 urlpatterns = [
 
     url(r'^terms/agree', views.agree_terms, name="agree_terms"),
-    url(r'^token', views.view_token, name="token"),
     url(r'^u/delete$', views.delete_account, name="delete_account"),           # delete account
     url(r'^u/profile', views.view_profile, name="profile"),
     

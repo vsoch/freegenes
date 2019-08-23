@@ -10,7 +10,7 @@
     </div>
   </div>{% if request.user.is_superuser %}
   <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_author_change' instance.uuid %}">
+      <div class="col-md-12"><a href="{% url 'admin:main_part_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
       </div>
   </div>{% endif %}
@@ -24,9 +24,11 @@
       </tr>
     </thead>
       <tbody>
-      {% for field in instance.json %}{% if field.value %}<tr>
-        {% if field.admin %}{% if request.user.is_superuser %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% elif field.auth %}{% if request.user.is_authenticated %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% else %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}
-      </tr>{% endif %}{% endfor %}
+        <tr><td>Name</td><td>{{ instance.name }}</td></tr>
+        <tr><td>Description</td><td>{{ instance.description | truncatechars:100 }}</td></tr>
+        <tr><td>Status</td><td>{{ instance.status }}</td></tr>
+        <tr><td>Gene ID</td><td>{{ instance.gene_id }}</td></tr>
+        <tr><td>Part Type</td><td>{{ instance.part_type }}</td></tr>
       <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
     </tbody>
    </table>

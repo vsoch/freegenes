@@ -1,0 +1,22 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:50px">
+      <h1>FreeGenes Catalog</h1>
+      <p>Here you can explore FreeGenes by Category</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <a href="{% url 'collections_catalog' %}"><h4>Collections</h4></a>
+      <p>A collection is a grouping of protocols, plates, samples, and wells. You might be interested to browse here to look over logical groupings of these items.
+      <hr>
+      <a href="{% url 'parts_catalog' %}"><h4>Parts</h4></a>
+      <p>Parts are genetic elements. A part may be created from other parts, or synthesized from scratch.
+      </div>
+  </div>
+</div>
+{% endblock %}

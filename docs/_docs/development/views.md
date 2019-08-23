@@ -39,6 +39,8 @@ Across all apps, we honor the following namespaces to keep the url space (matche
 based on regular expression) well organized.
 
  - **/u** corresponds to user or profile views (indicates "user")
+ - **/c** catalog pages are under the letter c
+   - **/c/<type>/** would correspond to a specific catalog
  - **/api** correponds to API endpoints
  - **/admin** administrative views
  - **/e** correspond to entity (e.g., a Model instance) views (indicates "entity")"

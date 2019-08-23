@@ -130,14 +130,12 @@ class Author(models.Model):
             {"key": "Name", "value": self.name, "auth": True}, 
             {"key": "Email", "value": self.email, "admin": True}, 
             {"key": "Affiliation", "value": self.affiliation, "auth": False},
-            {"key": "orcid", "value": self.orcid, "auth": True},
-            {"key": "tags", "value": self.get_tags(), "auth": False}]
+            {"key": "orcid", "value": self.orcid, "auth": True}]
 
         return fields
 
     class Meta:
         app_label = 'main'
-
 
 
 class Institution(models.Model):
@@ -347,6 +345,23 @@ class Container(models.Model):
     # When a parent is deleted, so are the children. If a file is deleted, do nothing
     parent = models.ForeignKey('Container', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ForeignKey('Files', on_delete=models.DO_NOTHING, blank=True, null=True)
+
+    @property
+    def breadcrumb(self):
+        '''a breadcrumb is a trace of container up to the parent container.
+           we start at the child and trace up to the parent, so the order
+           is first child to parent, and we reverse to give user parent
+           to child.
+        '''
+        breadcrumb = []
+        container = self
+        while container:
+            breadcrumb.append(container.name)
+            container = container.parent
+
+        # Reverse, give to user parent to child
+        breadcrumb = breadcrumb[::-1]
+        return breadcrumb
  
     def __str__(self):
         return "<Container:%s>" % self.name
@@ -360,9 +375,30 @@ class Container(models.Model):
     def get_label(self):
         return "container"
 
+    def json(self):
+        '''return a list of fields (dict) for the object. The format returned
+           is standard across models so it can be used in templates 
+           to render fields into a table. Fields include key, value, 
+           and auth and admin required (booleans)
+
+           auth: indicates authorization required (True or False)
+           admin: indicates admin (superusers) only
+        '''
+        fields = [
+            {"key": "Name", "value": self.name}, 
+            {"key": "Container Type", "value": self.container_type},
+            {"key": "Description", "value": self.description},
+            {"key": "Estimated Temperature", "value": self.estimated_temperature}]
+
+        # Only add coordinates if defined
+        if self.x and self.y and self.z:
+            coordinate = "%s %s %s" %(self.x, self.y, self.z)
+            fields.append({"key": "Coordinate", "value": coordinate})
+
+        return fields
+
     class Meta:
         app_label = 'main'
-
 
 
 ################################################################################
@@ -555,7 +591,7 @@ class Files(models.Model):
         print('WRITE ME')
 
     def __str__(self):
-        return "<Files:%s>" % self.name
+        return "<Files:%s>" % self.file_name
 
     def __repr__(self):
         return self.__str__()
@@ -703,7 +739,6 @@ class Plate(models.Model):
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="plate_wells",
                                    related_query_name="plate_wells")
-
 
 class PlateSet(models.Model):
     '''One or more plates associated with an order (or similar).

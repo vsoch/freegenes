@@ -28,15 +28,6 @@ from ratelimit.decorators import ratelimit
 
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-@login_required
-def view_token(request):
-    ''' tokens are valid for interacting with the FreeGenes API. They are
-        generated automatically when a user creates an account. 
-    '''
-    return render(request, 'users/token.html')
-
-
-@ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def view_profile(request, username=None):
     '''view a user's profile
     '''

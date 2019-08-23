@@ -1,0 +1,24 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Container</th>
+                            <th>Plate Type</th>
+                            <th>Plate Form</th>
+                            <th>Status</th>
+                            <th>Protocol</th>
+                            <th>Thaw Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for plate in plates %}
+                        <tr>
+                            <td><a href="{{ plate.get_absolute_url }}">{{ plate.name }}</a></td>
+                            <td>{% if plate.container %}<a href="{{ plate.container.get_absolute_url }}">{{ plate.container.name }}</a>{% endif %}</td>
+                            <td>{{ plate.plate_type }}</td>
+                            <td>{{ plate.plate_form }}</td>
+                            <td>{{ plate.status }}</td>
+                            <td>{% if plate.protocol %}<a href="{{ plate.protocol.get_absolute_url }}">{{ plate.protocol.name }}</a>{% endif %}</td>
+                            <td>{{ plate.thaw_count }}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

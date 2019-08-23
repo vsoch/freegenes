@@ -1,0 +1,16 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Affiliation</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for author in authors %}
+                        <tr>
+                            <td><a href="{{ author.get_absolute_url }}">{{ author.name }}</a></td>
+                            <td>{{ author.affiliation }}</td>
+                            <td>{% for tag in author.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

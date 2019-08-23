@@ -1,0 +1,16 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for organism in organisms %}
+                        <tr>
+                            <td><a href="{{ organism.get_absolute_url }}">{{ organism.name }}</a></td>
+                            <td>{{ organism.description | truncatechars:100 }}</td>
+                            <td>{% for tag in organism.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

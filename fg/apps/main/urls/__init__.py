@@ -31,6 +31,11 @@ urlpatterns = [
     url(r'^e/robot/(?P<uuid>.+)/?$', views.robot_details, name='robot_details'),
     url(r'^e/sample/(?P<uuid>.+)/?$', views.sample_details, name='sample_details'),
     url(r'^e/schema/(?P<uuid>.+)/?$', views.schema_details, name='schema_details'),
-    url(r'^e/tag/(?P<uuid>.+)/?$', views.tag_details, name='tag_details')
+    url(r'^e/tag/(?P<uuid>.+)/?$', views.tag_details, name='tag_details'),
+
+    # Catalog
+    url(r'c/catalog/?$', views.catalog_view, name='catalog_view'),
+    url(r'c/catalog/collections/?$', views.collections_catalog_view, name='collections_catalog'),
+    url(r'c/catalog/parts/?$', views.parts_catalog_view, name='parts_catalog')
 
 ]

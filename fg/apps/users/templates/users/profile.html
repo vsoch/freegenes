@@ -69,6 +69,7 @@
 {% endblock %}
 
 {% block scripts %}
+{% include "messages/notification.html" %}
 <script src="{% static "js/cookie-token.js" %}"></script>
 <script>
 
@@ -82,6 +83,27 @@ $(document).ready(function(){
            document.location = "{% url 'delete_account' %}";
         }
     })
+
+    $('.copyme').click(function(){
+      var copy_id = $(this).attr('id')
+      var content = $("#" + copy_id + "_well")
+      var range = document.createRange();  
+      range.selectNode(content[0])  
+      window.getSelection().addRange(range)
+
+     try {  
+          // Now that we've selected the anchor text, execute the copy command  
+          var successful = document.execCommand('copy');  
+          var msg = successful ? 'successful' : 'unsuccessful';  
+          toast_message('Copy ' + msg)
+        }  catch(err) {  
+          toast_message('Oops, unable to copy');  
+        }  
+
+      // removeRange(range) when it is supported  
+      window.getSelection().removeAllRanges();  
+
+});
 
 })
 </script>

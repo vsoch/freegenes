@@ -5,18 +5,17 @@
 <div class="container" style='padding-top:200px'>
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
-      <h1>{{ instance.get_label | title }}: {% if instance.name %}{{ instance.name }}{% else %}{{ instance }}{% endif %}</h1>
+      <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
       <h4>
     </div>
   </div>{% if request.user.is_superuser %}
   <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_author_change' instance.uuid %}">
+      <div class="col-md-12"><a href="{% url 'admin:main_collection_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
       </div>
   </div>{% endif %}
   <div class="row">
-<div class="card-body">
-  <div class="table-responsive">
+    <div class="col-md-12">
     <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>
       <tr>
        <th>Key</th>
@@ -24,12 +23,18 @@
       </tr>
     </thead>
       <tbody>
-      {% for field in instance.json %}{% if field.value %}<tr>
-        {% if field.admin %}{% if request.user.is_superuser %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% elif field.auth %}{% if request.user.is_authenticated %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% else %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}
-      </tr>{% endif %}{% endfor %}
-      <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
+        <tr>
+          <td>Name</td><td>{{ instance.name }}</td>
+        </tr>
+        {% if instance.parent %}<tr>
+          <td>Parent</td><td><a href="{{ instance.parent.get_absolute_url }}">{{ instance.parent.name }}</a></td>
+        </tr>{% endif %}
+        <tr>{% if instance.tags.count > 0 %}
+          <td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+        </tr>{% endif %}
     </tbody>
    </table>
+    </div>
   </div>
 </div>
 {% endblock %}
