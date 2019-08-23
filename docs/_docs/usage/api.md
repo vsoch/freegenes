@@ -27,10 +27,6 @@ for easy, programmatic access to all endpoints from Python.
 
 ## Token
 
-Once you are logged in, you can access your API token from your User Profile
-dropdown menu, at the url "/token":
-
-![token.png]({{ site.baseurl }}/docs/usage/token.png)
-
-Further instructions will be added here (or to freegenes-python) for how to interact
+Once you are logged in, you can access your API token from your User Profile,
+under the Settings tab.  Further instructions will be added here (or to freegenes-python) for how to interact
 with the API.
