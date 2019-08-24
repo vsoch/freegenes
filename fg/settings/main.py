@@ -56,6 +56,7 @@ TEMPLATES = [
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
 WSGI_APPLICATION = 'fg.wsgi.application'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

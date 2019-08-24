@@ -16,22 +16,27 @@
     </div>
   </div>{% if request.user.is_superuser %}
   <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_collection_change' instance.uuid %}">
+      <div class="col-md-12"><a href="{% url 'admin:main_tag_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
       </div>
   </div>{% endif %}
+
+  <div class="row" style="margin-bottom:20px">{% if instance.total_count == 0 %}<p class="alert alert-warning">This tag doesn't have any associated authors, collections, organisms, or parts.</p>{% else %}<p>This tag has {{ instance.total_count }} associated entities</p>{% endif %}
+      <div class="col-md-12">
+      </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">{% if instance.author_tags.count > 0 %}
-                <a class="nav-item nav-link active" id="nav-authors-tab" data-toggle="tab" href="#nav-authors" role="tab" aria-controls="nav-authors" aria-selected="true">Authors</a>{% endif %}
-                {% if instance.collection_tags.count > 0 %}<a class="nav-item nav-link" id="nav-collections-tab" data-toggle="tab" href="#nav-collections" role="tab" aria-controls="nav-collections" aria-selected="false">Collections</a>{% endif %}
-                {% if instance.organism_tags.count > 0 %}<a class="nav-item nav-link" id="nav-organisms-tab" data-toggle="tab" href="#nav-organisms" role="tab" aria-controls="nav-organisms" aria-selected="false">Organisms</a>{% endif %}
-                {% if instance.part_tags.count > 0 %}<a class="nav-item nav-link" id="nav-parts-tab" data-toggle="tab" href="#nav-parts" role="tab" aria-controls="nav-parts" aria-selected="false">Parts</a>{% endif %}
+                <a class="nav-item nav-link tag-tab" id="nav-authors-tab" data-toggle="tab" href="#nav-authors" role="tab" aria-controls="nav-authors" aria-selected="true">Authors</a>{% endif %}
+                {% if instance.collection_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-collections-tab" data-toggle="tab" href="#nav-collections" role="tab" aria-controls="nav-collections" aria-selected="false">Collections</a>{% endif %}
+                {% if instance.organism_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-organisms-tab" data-toggle="tab" href="#nav-organisms" role="tab" aria-controls="nav-organisms" aria-selected="false">Organisms</a>{% endif %}
+                {% if instance.part_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-parts-tab" data-toggle="tab" href="#nav-parts" role="tab" aria-controls="nav-parts" aria-selected="false">Parts</a>{% endif %}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">{% if instance.author_tags.count > 0 %}
-            <div class="tab-pane fade show active" id="nav-authors" role="tabpanel" aria-labelledby="nav-authors-tab">
+            <div class="tab-pane fade" id="nav-authors" role="tabpanel" aria-labelledby="nav-authors-tab">
                {% include "tables/author_table.html" with authors=instance.author_tags.all table_id="authors_table" %}
             </div>{% endif %}
             {% if instance.collection_tags.count > 0 %}<div class="tab-pane fade" id="nav-collections" role="tabpanel" aria-labelledby="nav-collections-tab">
@@ -53,10 +58,12 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
-  {% if instance.author_tags.count > 0 %}$('#authors-table').DataTable();{% endif %}
-  {% if instance.collections_tags.count > 0 %}$('#collections-table').DataTable();{% endif %}
-  {% if instance.organisms_tags.count > 0 %}$('#organisms-table').DataTable();{% endif %}
-  {% if instance.parts_tags.count > 0 %}$('#parts-table').DataTable();{% endif %}
+  {% if instance.author_tags.count > 0 %}$('#authors_table').DataTable();{% endif %}
+  {% if instance.collection_tags.count > 0 %}$('#collections_table').DataTable();{% endif %}
+  {% if instance.organism_tags.count > 0 %}$('#organisms_table').DataTable();{% endif %}
+  {% if instance.part_tags.count > 0 %}$('#parts_table').DataTable();{% endif %}
+  {% if selection %}$('#nav-{{ selection }}').addClass('show active').removeClass('fade'); {% else %}
+  {% if instance.total_count > 0 %}$('.tab-pane:first').addClass('show active');$('.tab-pane:first').removeClass('fade'); $('.tag-tab').addClass('active');{% endif %}{% endif %}
 });
 </script>
 {% endblock %}

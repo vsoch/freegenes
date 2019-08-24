@@ -13,6 +13,7 @@ from django.core.management.base import (
     CommandError
 )
 from fg.apps.main.models import *
+from fg.apps.orders.models import *
 from fg.apps.main.utils import load_json
 from dateutil.parser import parse
 import logging

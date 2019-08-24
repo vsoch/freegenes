@@ -2,6 +2,7 @@ anyjson
 coreapi==2.3.3
 cython
 django-chosen
+django-crispy-forms
 django-datatables-view
 django-dirtyfields
 django-extensions

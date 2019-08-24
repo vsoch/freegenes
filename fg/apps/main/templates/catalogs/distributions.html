@@ -1,0 +1,29 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:50px">
+      <h1>Distributions Catalog</h1>
+      <p>Here you can explore FreeGenes Collections</p>
+      <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      {% include "tables/collection_table.html" with table_id="collections-table" %}
+   </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#collections-table').DataTable();
+});
+</script>
+{% endblock %}

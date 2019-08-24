@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2017-2019 Vanessa Sochat.
+Copyright (C) 2019 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -21,11 +21,13 @@ INSTALLED_APPS = [
     'fg.apps.api',
     'fg.apps.base',
     'fg.apps.main',
+    'fg.apps.orders',
     'fg.apps.users'
 ]
 
 THIRD_PARTY_APPS = [
     'social_django',
+    'crispy_forms',
     'django_rq',
     'django_gravatar',
     'django_extensions',

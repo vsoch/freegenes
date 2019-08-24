@@ -21,7 +21,6 @@ from fg.apps.main.models import (
     Module,
     Operation,
     Organism,
-    Order,
     Part,
     Plan,
     Plate,
@@ -33,6 +32,7 @@ from fg.apps.main.models import (
     Tag
 )
 
+from fg.apps.orders.models import Order
 from rest_framework import (
     generics,
     serializers,

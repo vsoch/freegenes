@@ -21,8 +21,7 @@ urlpatterns = [
     url(r'^e/institution/(?P<uuid>.+)/?$', views.institution_details, name='institution_details'),
     url(r'^e/module/(?P<uuid>.+)/?$', views.module_details, name='module_details'),
     url(r'^e/operation/(?P<uuid>.+)/?$', views.operation_details, name='operation_details'),
-    url(r'^e/organism/(?P<uuid>.+)/?$', views.organism_details, name='_details'),
-    url(r'^e/order/(?P<uuid>.+)/?$', views.order_details, name='order_details'),
+    url(r'^e/organism/(?P<uuid>.+)/?$', views.organism_details, name='organism_details'),
     url(r'^e/part/(?P<uuid>.+)/?$', views.part_details, name='part_details'),
     url(r'^e/plan/(?P<uuid>.+)/?$', views.plan_details, name='plan_details'),
     url(r'^e/plate/(?P<uuid>.+)/?$', views.plate_details, name='plate_details'),
@@ -36,6 +35,10 @@ urlpatterns = [
     # Catalog
     url(r'c/catalog/?$', views.catalog_view, name='catalog_view'),
     url(r'c/catalog/collections/?$', views.collections_catalog_view, name='collections_catalog'),
-    url(r'c/catalog/parts/?$', views.parts_catalog_view, name='parts_catalog')
+    url(r'c/catalog/distributions/?$', views.distributions_catalog_view, name='distributions_catalog'),
+    url(r'c/catalog/tags/?$', views.tags_catalog_view, name='tags_catalog'),
+    url(r'c/catalog/tags/(?P<selection>.+)/?$', views.tags_catalog_view, name='tags_catalog_selection'),
+    url(r'c/catalog/parts/?$', views.parts_catalog_view, name='parts_catalog'),
+    url(r'c/catalog/platesets/?$', views.platesets_catalog_view, name='platesets_catalog'),
 
 ]

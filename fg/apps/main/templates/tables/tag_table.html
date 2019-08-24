@@ -1,0 +1,20 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Authors</th>
+                            <th>Organisms</th>
+                            <th>Collections</th>
+                            <th>Parts</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for tag in tags %}
+                        <tr>
+                            <td><a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a></td>
+                            <td><a href="{{ tag.get_absolute_url }}/authors/">{{ tag.author_tags.count }}</a></td> 
+                            <td><a href="{{ tag.get_absolute_url }}/organisms/">{{ tag.organism_tags.count }}</a></td> 
+                            <td><a href="{{ tag.get_absolute_url }}/collections/">{{ tag.collection_tags.count }}</a></td> 
+                            <td><a href="{{ tag.get_absolute_url }}/parts/">{{ tag.part_tags.count }}</a></td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.shortcuts import render
 from ratelimit.decorators import ratelimit
 
+from fg.apps.orders.models import Order
 from fg.apps.main.models import (
     Author,
     Container,
@@ -21,7 +22,6 @@ from fg.apps.main.models import (
     Module,
     Operation,
     Organism,
-    Order,
     Part,
     Plan,
     Plate,

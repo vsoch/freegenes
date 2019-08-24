@@ -22,7 +22,6 @@ from fg.apps.main.models import (
     Module,
     Operation,
     Organism,
-    Order,
     Part,
     Plan,
     Plate,
@@ -86,12 +85,7 @@ def operation_details(request, uuid):
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def organism_details(request, uuid):
-    return get_instance(request, uuid, organism)
-
-@ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def order_details(request, uuid):
-    # will require admin/staff (can a user see their own order? probably yes)
-    return get_instance(request, uuid, Order)
+    return get_instance(request, uuid, Organism)
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def part_details(request, uuid):
@@ -140,6 +134,25 @@ def catalog_view(request):
 def collections_catalog_view(request):
     context = {"collections": Collection.objects.all()}
     return render(request, "catalogs/collections.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def platesets_catalog_view(request):
+    context = {"platesets": PlateSet.objects.all()}
+    return render(request, "catalogs/platesets.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def distributions_catalog_view(request):
+    context = {"distributions": Distribution.objects.all()}
+    return render(request, "catalogs/distributions.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def tags_catalog_view(request, selection=None):
+    '''if selection is defined, the user wants to jump directly to one of
+       the tabbed sections.
+    '''
+    context = {"tags": Tag.objects.all(), 
+              "selection": selection}
+    return render(request, "catalogs/tags.html", context=context)
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def parts_catalog_view(request):

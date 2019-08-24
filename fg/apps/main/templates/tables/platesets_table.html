@@ -1,0 +1,20 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Distributions</th>
+                            <th>Updated At</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for plateset in platesets %}
+                        <tr>
+                            <td><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></td>
+                            <td>{{ plateset.description | truncatechars:100 }}</td>
+                            <td>{% for dist in plateset.distribution_plateset.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a> {% endfor %}</td>
+                            <td>{{ plateset.time_updated }}</td>
+                            <td>{{ plateset.time_created }}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>
