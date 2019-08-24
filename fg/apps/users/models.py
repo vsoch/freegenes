@@ -73,8 +73,29 @@ class User(AbstractUser):
                                             default=None,
                                             null=True)     
 
+    def get_cart(self):
+        '''Get a user's cart (an order that is not yet submit). A user
+           is only allowed one order with this status and their association.
+        '''
+        for order in self.order_set.all():
+            # if the order isn't ordered, it's the cart.
+            if not order.ordered:
+                return order
+
+    def get_cart_items(self):
+        '''get distribution items in a user's active cart. Useful for views
+           to render a button as disabled or active depending on finding/not
+           finding the distribution.
+        '''
+        distributions = []
+        cart = self.get_cart()
+        if cart:
+            return cart.distributions.all()
+        return distributions
+
+
     # Ensure that we can add staff / superuser and retain on logout
-    objects = CustomUserManager()    
+    objects = CustomUserManager()
 
     class Meta:
         app_label = 'users'

@@ -8,6 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
@@ -16,19 +17,6 @@ import uuid
 ################################################################################
 # Orders
 ################################################################################
-
-#/o/	fg.apps.orders.views.HomeView	home
-#/o/add-coupon/	fg.apps.orders.views.AddCouponView	add-coupon
-#/o/add-to-cart/<slug>/	fg.apps.orders.views.add_to_cart	add-to-cart
-#/o/checkout/	fg.apps.orders.views.CheckoutView	checkout
-#/o/details/<uuid>/	fg.apps.orders.views.order_details	order_details
-#/o/order-summary/	fg.apps.orders.views.OrderSummaryView	order-summary
-#/o/payment/<payment_option>/	fg.apps.orders.views.PaymentView	payment
-#/o/product/<slug>/	fg.apps.orders.views.ItemDetailView	product
-#/o/remove-from-cart/<slug>/	fg.apps.orders.views.remove_from_cart	remove-from-cart
-#/o/remove-item-from-cart/<slug>/	fg.apps.orders.views.remove_single_item_from_cart	remove-single-item-from-cart
-#/o/request-refund/	fg.apps.orders.views.RequestRefundView	request-refund
-
 
 class Order(models.Model):
     '''A request by a user for a shipment. The address/ personal information
@@ -70,9 +58,15 @@ class Order(models.Model):
     def get_label(self):
         return "order"
 
+    def clean(self):
+        '''a user is only allowed to have one order that isn't ordered (a cart)
+        '''
+        message = 'User %s has a pending order, only one cart is allowed.' % self.user.username
+        if Order.objects.filter(ordered=False).count() >= 1:
+            raise ValidationError(message)
+
     class Meta:
         app_label = 'main'
-
 
 
 # Thinking: holding the shipment information in the system is allocating too much
