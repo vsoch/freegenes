@@ -12,11 +12,18 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
-from fg.apps.orders.forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
+from fg.apps.orders.forms import (
+    CheckoutForm,
+    CouponForm,
+    RefundForm,
+    PaymentForm,
+    MTAForm
+)
+
 from fg.apps.orders.models import Order
 from fg.apps.main.models import Distribution
 
@@ -97,6 +104,39 @@ def add_to_cart(request, uuid):
         messages.info(request, "This item was added to your cart.")
         return redirect('orders')
 
+# Upload MTA
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def upload_mta(request, uuid):
+    '''a specific view to handle uploading the MTA form, redirected from the
+       view to checkout in the case that an order is missing an MTA. The
+       uuid corresponds to the UUID for the order
+    '''
+    # The order must exist, we look up based on uuid
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        messages.info(request, "We can't find an order with that identifier.")
+        return redirect('orders')        
+
+    if request.method == 'POST':
+        form = MTAForm(request.POST, request.FILES)
+
+        # If the form is valid, save to the order and continue checkout
+        if form.is_valid():
+            print('FORM IS VALID')
+            mta = form.save()
+            order.material_transfer_agreement = mta
+            order.save()
+            return HttpResponseRedirect('checkout')
+    else:
+        form = MTAForm()
+    context = {'form': form, 'order': order}
+    return render(request, 'orders/sign-mta.html', context)
+
+
+# Order Operations
 
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
@@ -108,3 +148,36 @@ def orders_view(request):
         context['cart'] = request.user.get_cart()
         context['orders'] = Order.objects.filter(user=request.user, ordered=True)
     return render(request, 'orders/orders.html', context)
+
+
+class CheckoutView(View):
+    '''Checkout a cart, meaning finishing up an order and placing it. We check
+       for the MTA, along with ensuring that the order exists, period.
+    '''
+
+    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
+    def get(self, *args, **kwargs):
+
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            
+            # if the MTA isn't signed, we need to do that first.
+            if order.material_transfer_agreement is None:
+                messages.info(self.request, "You haven't signed an MTA yet for this order.")
+                context = {"form": MTAForm(), 'order': order}
+                return render(self.request, "orders/sign-mta.html", context)
+
+            form = CheckoutForm()
+            context = {
+                'form': form,
+                'order': order
+            }
+            return render(self.request, "orders/checkout.html", context)
+        except Order.DoesNotExist:
+            messages.info(self.request, "You do not have an active order")
+            return redirect("orders:checkout")
+
+    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        print('TODO WRITE ME VANESSASAURUS')

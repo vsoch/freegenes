@@ -1,0 +1,33 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container" style='padding-top:100px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h2>Sign your Material Transfer Agreement</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <p>A Material Transfer Agreement is needed to proceed with this order. Please
+         <a href="https://biobricks.org/open-mta-become-a-signatory/" target="_blank">save and sign</a>
+         the Material Transfer Agreement document, and then upload.</p>
+
+          <form action="{% url 'sign-mta' order.uuid %}" enctype="multipart/form-data" method="POST">
+	    {% csrf_token %}
+	    {{ form|crispy }}
+	    <button type="submit" class="btn btn-primary">Submit</button>
+	  </form>
+    </div>
+  </div>
+{% endblock %}
+{% block pagescripts %}
+<script>
+$(document).ready(function() {
+  {% if cart %}$("#cart-table").DataTable();{% endif %}
+  {% if orders %}$("#order-table").DataTable();{% endif %}
+});
+</script>
+{% endblock %}
