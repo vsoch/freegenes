@@ -1,0 +1,57 @@
+    <div class="table-responsive text-nowrap">
+    <h2>{% if table_title %}{{ table_title }}{% else %}Cart{% endif %}</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Item title</th>
+            <th scope="col">Description</th>
+            <th scope="col">PlateSets Quantity</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart.distributions.all %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.platesets.count }}</td>
+            <td>
+            {% if request.user.is_superuser %}<a href="{% url 'admin:main_distribution_change' item.uuid %}">
+<button class="btn btn-primary btn-sm" style='margin:0px'>Edit</button></a>{% endif %}
+            <a href="{% url 'remove-from-cart' item.uuid %}">
+                <i class="fas fa-trash float-right"></i>
+            </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+            <a class="btn btn-warning" style="margin-top:50px" href="{% url 'checkout' %}">Checkout</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='5'>Your cart is empty</td>
+        </tr>
+        <tr>
+            <td colspan="5">
+            <a class="btn btn-primary float-right" href="{% url 'catalog_view' %}">Browse Catalogs</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if object.get_total %}
+        <tr>
+            <td colspan="4"><b>Order Total</b></td>
+            <td><b>${{ object.get_total }}</b></td>
+        </tr>
+        <tr>
+            <td colspan="5">
+            <a class='btn btn-warning float-right ml-2' href='/checkout/'>Proceed to checkout</a>
+            <a class='btn btn-primary float-right' href="{% url 'catalog_view' %}">Browse Catalogs</a>
+            </td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    </div>

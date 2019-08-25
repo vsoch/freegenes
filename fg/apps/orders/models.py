@@ -45,9 +45,12 @@ class Order(models.Model):
     # When a user is deleted don't delete orders
     user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=True, null=True)
 
-    # When an MTA is deleted, we don't touch the order
+    # When an MTA is deleted, we don't touch the order. We don't require an MTA
+    # for the order object, however we require it to be present when checking out
+    # (and we change ordered from False to True)
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
-                                                    on_delete=models.DO_NOTHING)
+                                                    on_delete=models.DO_NOTHING,
+                                                    blank=True, null=True)
 
     def __str__(self):
         return "<Order:%s>" % self.name

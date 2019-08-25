@@ -1,0 +1,37 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h1>Orders</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+         {% if request.user.is_authenticated %}{% if cart %}
+        {% include "orders/table.html" with table_id="cart-table" %}{% else %}<p class="alert alert-info">You don't have any items in your cart. Why not <a href="{% url 'distributions_catalog' %}">browse distributions</a> to find something you like?</p>{% endif %}{% else %}<p class="alert alert-info">You must be <a href="{% url 'login' %}">logged in</a> to view current and past orders.</p>{% endif %}
+    </div>
+  </div>
+
+{% if orders %}
+<div class="row">
+    <div class="col-md-12">
+         <h5>Previous Orders</h5>
+        {% include "tables/order_table.html" with table_id="order-table" %}
+    </div>
+</div>{% endif %}
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  {% if cart %}$("#cart-table").DataTable();{% endif %}
+  {% if orders %}$("#order-table").DataTable();{% endif %}
+});
+</script>
+{% endblock %}
