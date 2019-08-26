@@ -8,6 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import render 
 from django.http import Http404
@@ -125,6 +126,7 @@ def tag_details(request, uuid):
 
 ## Map
 
+@login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def lab_map_view(request):
     '''the lab map view shows a map of all containers and platesets,

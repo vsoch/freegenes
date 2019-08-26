@@ -2,10 +2,16 @@
 {% load staticfiles %}
 {% block content %}
 
+<style>
+.tab-pane {
+  padding-top:30px;
+}
+</style>
+
 <div class="container" style='padding-top:200px'>
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
-      <h1>{{ instance.get_label | title }}: {% if instance.name %}{{ instance.name }}{% else %}{{ instance }}{% endif %}</h1>
+      <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
       <h4>
     </div>
   </div>{% if request.user.is_superuser %}
@@ -15,24 +21,36 @@
       </div>
   </div>{% endif %}
   <div class="row">
-<div class="card-body">
-  <div class="table-responsive">
-    <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>
-      <tr>
-       <th>Key</th>
-       <th>Value</th>
-      </tr>
-    </thead>
-      <tbody>
-        <tr><td>Name</td><td>{{ instance.name }}</td></tr>
-        <tr><td>Description</td><td>{{ instance.description | truncatechars:100 }}</td></tr>
-        <tr><td>Status</td><td>{{ instance.status }}</td></tr>
-        <tr><td>Gene ID</td><td>{{ instance.gene_id }}</td></tr>
-        <tr><td>Part Type</td><td>{{ instance.part_type }}</td></tr>
-      <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
-    </tbody>
-   </table>
-  </div>
+    <div class="col-md-12">
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+                {% if instance.sample_set.count > 0 %}<a class="nav-item nav-link" id="nav-samples-tab" data-toggle="tab" href="#nav-samples" role="tab" aria-controls="nav-samples" aria-selected="false">Samples</a>{% endif %}
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-details" role="tabpanel" aria-labelledby="nav-details-tab">
+	    <table class="table table-bordered" id="details-table" width="100%" cellspacing="0"><thead>
+	      <tr>
+	       <th>Key</th>
+	       <th>Value</th>
+	      </tr>
+	    </thead>
+	      <tbody>
+		<tr><td>Name</td><td>{{ instance.name }}</td></tr>
+		<tr><td>Description</td><td>{{ instance.description | truncatechars:100 }}</td></tr>
+		<tr><td>Status</td><td>{{ instance.status }}</td></tr>
+		<tr><td>Gene ID</td><td>{{ instance.gene_id }}</td></tr>
+		<tr><td>Part Type</td><td>{{ instance.part_type }}</td></tr>
+	      <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
+	    </tbody>
+	   </table>
+            </div>
+            {% if instance.sample_set.count > 0 %}<div class="tab-pane fade" id="nav-samples" role="tabpanel" aria-labelledby="nav-samples-tab">
+               {% include "tables/sample_table.html" with samples=instance.sample_set.all table_id="samples_table" %}
+            </div>{% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
 {% block pagescripts %}
@@ -41,7 +59,8 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
-  $('#{{ instance.get_label }}-table').DataTable();
+  $('#details-table').DataTable();
+  {% if instance.sample_set.count > 0 %}$('#samples-table').DataTable();{% endif %}
 });
 </script>
 {% endblock %}

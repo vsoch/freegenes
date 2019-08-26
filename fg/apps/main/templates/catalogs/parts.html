@@ -2,15 +2,20 @@
 {% load staticfiles %}
 {% block content %}
 
-<div class="container" style='padding-top:200px'>
-  <div class="row">
-    <div class="col-md-12" style="padding-bottom:50px">
+<div class="container" style="padding-top:200px;">
+  <div class="row" style="padding-bottom:50px">
+    <div class="col-md-6">
       <h1>Parts Catalog</h1>
       <p>Here you can explore FreeGenes Parts</p>
       <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
-
-{% include "messages/note.html" with message="Endy Lab: rendering this as a table is slow so it's done on the server side. To support search we need to add a custom search to the top of the table here." %}
-
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" onkeypress="handle_enter(event)" 
+                   id="q" class="form-control" placeholder="Search FreeGenes Parts" />
+             <button type="submit" id="searchSubmit" class="btn btn-primary">
+             <i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
     </div>
   </div>
   <div class="row">
@@ -44,8 +49,16 @@
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
-//$(document).ready(function() {
-//  $('#parts-table').DataTable();
-//});
+    function handle_enter(e) {
+        if(e.key === "Enter"){
+            $('#searchSubmit').click();
+        }
+    }; 
+$(document).ready( function() {
+    $('#searchSubmit').click(function() {
+        q = $('#q').val();
+        document.location = '{% url "search" %}?q=' + q + "&type=parts";
+    });
+}); 
 </script>
 {% endblock %}

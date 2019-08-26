@@ -1,0 +1,24 @@
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Part Name</th>
+                            <th>Evidence</th>
+                            <th>Derived From</th>
+                            <th>Sample Type</th>
+                            <th>Status</th>
+                            <th>Vendor</th>
+                            <th>Wells</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for sample in samples %}
+                        <tr>
+                            <td><a href="{{ sample.part.get_absolute_url }}">{{ sample.part.name }}</a></td>
+                            <td>{% if sample.evidence %}{{ sample.evidence}}{% endif %}</td>
+                            <td>{% if sample.derived_from %}<a href="{{ sample.derived_from.get_absolute_url }}">{{ sample.derived_from.uuid }}</a>{% endif %}</td>
+                            <td>{{ sample.sample_type }}</td>
+                            <td>{{ sample.status }}</td>
+                            <td>{{ sample.vendor }}</td>
+                            <td>{% for well in sample.wells.all %}{{ well.address }} in Container <a href="{{ well.plate_wells.first.container.get_absolute_url }}">{{ well.plate_wells.first.container.name }}</a> - Plate <a href="{{ well.plate_wells.first.get_absolute_url }}">{{ well.plate_wells.first.name }}</a><br>{% endfor %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

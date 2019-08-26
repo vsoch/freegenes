@@ -12,7 +12,7 @@
                             {% for result in results %}
                             <tr class="{% cycle 'odd' 'even' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>
-                                <td><a href="#">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a><br/>
+                                <td><a href="{{ result.get_absolute_url }}">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a><br/>
                                     {% if result.description %}<span class="hint">Description: {{ result.description | truncatechars:100 }}</span>{% endif %}
                                     {% if result.notes %}<span class="hint">Notes: {{ result.notes | truncatechars:100 }}</span>{% endif %}
                                 </td>
