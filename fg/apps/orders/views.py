@@ -18,9 +18,6 @@ from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from fg.apps.orders.forms import (
     CheckoutForm,
-    CouponForm,
-    RefundForm,
-    PaymentForm,
     MTAForm
 )
 
@@ -161,11 +158,15 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             
-            # if the MTA isn't signed, we need to do that first.
-            if order.material_transfer_agreement is None:
-                messages.info(self.request, "You haven't signed an MTA yet for this order.")
-                context = {"form": MTAForm(), 'order': order}
-                return render(self.request, "orders/sign-mta.html", context)
+            # NOTE: this will redirect the user to the view to upload their own MTA.
+            # This is currently disabled in favor of sending an email to the lab
+            # and having the lab process the order and handle the MTA offline.
+            # When this changes, this can be uncommented. The checkout view will 
+            # also need to be changed to submit to server, and not to email.
+            #if order.material_transfer_agreement is None:
+            #    messages.info(self.request, "You haven't signed an MTA yet for this order.")
+            #    context = {"form": MTAForm(), 'order': order}
+            #    return render(self.request, "orders/sign-mta.html", context)
 
             form = CheckoutForm()
             context = {
@@ -175,7 +176,7 @@ class CheckoutView(View):
             return render(self.request, "orders/checkout.html", context)
         except Order.DoesNotExist:
             messages.info(self.request, "You do not have an active order")
-            return redirect("orders:checkout")
+            return render(self.request, "orders/checkout.html", context)
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):

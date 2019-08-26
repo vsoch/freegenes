@@ -60,7 +60,7 @@
         {% if request.user.is_authenticated %}<li class="nav-item">
             <a href="{% url 'orders' %}" class="nav-link waves-effect">
               <i class="fas fa-shopping-cart"></i>
-              <span class="clearfix d-none d-sm-inline-block"> Cart </span>
+              <span class="clearfix d-none d-sm-inline-block"></span>
             </a>
           </li>{% endif %}
         <li class="nav-item last"><a class="nav-link" href="{% url 'search' %}"><i class="fa fa-search"></i></a></li>

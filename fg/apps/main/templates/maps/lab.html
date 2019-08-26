@@ -97,6 +97,7 @@ function update(source) {
   nodeEnter.append("rect")
       .attr("y", -barHeight / 2)
       .attr("height", barHeight)
+      .attr("id", function(d) { return d.data.uuid})
       .attr("width", barWidth)
       .style("fill", color)
       .on("click", click);
@@ -179,5 +180,8 @@ function click(d) {
 function color(d) {
   return d._children ? "#3182bd" : d.children ? "#28a745" : "#ffc107";
 }
+
+{% if selection %}document.location = "#{{ selection }}"
+$("#{{ selection }}").css('fill', 'red');{% endif %}
 </script>
 {% endblock %}

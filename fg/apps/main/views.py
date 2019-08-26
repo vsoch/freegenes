@@ -135,14 +135,17 @@ def lab_map_view(request):
        start to run slowly and we will need a method that generates children
        on demand from the view.
     '''
+    # Does the user want to jump to a container or plate?
+    selection = request.GET.get('uuid')
+
     # Return the parent container
     nodes = {}
     max_level = 1
     for container in Container.objects.all():
 
-        node = {}
-        node['name'] = container.name
-        node['url'] = container.get_absolute_url()
+        node = {"name": container.name,
+                "url": container.get_absolute_url(),
+                "uuid": str(container.uuid)} # used to link directly to node
 
         # Keep a record of the container parent uuid, if has one
         if container.parent:
@@ -165,7 +168,9 @@ def lab_map_view(request):
         children = []
         if container.plate_set.count() > 0:
             for plate in container.plate_set.all():
-                children.append({"name": plate.name, "url": plate.get_absolute_url()})
+                children.append({"name": plate.name, 
+                                 "uuid": str(plate.uuid),
+                                 "url": plate.get_absolute_url()})
         node['children'] = children
 
         nodes[str(container.uuid)] = node
@@ -184,10 +189,12 @@ def lab_map_view(request):
         if node['level'] == 1:
             keepers.append(node)
 
-    root = {"name": "root",
-            "children": keepers}
+    context = {"data": {
+                  "name": "root",
+                  "children": keepers},
+               "selection": selection}
 
-    return render(request, "maps/lab.html", {"data": root})
+    return render(request, "maps/lab.html", context)
 
 
 ## Catalogs

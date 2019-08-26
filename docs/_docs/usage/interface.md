@@ -59,7 +59,16 @@ If you are browsing a container, you can also quickly see it's immediate childre
 ![container-map.png]({{ site.baseurl }}/docs/usage/container-map.png)
 
 The breadcrumb at the top shows the direct address of the container, and the
-map tab shows the nested plates within.
+map tab shows the nested plates within. If you are browsing a plate and want
+to quickly find a location, if you want more detail than the breadcrumb
+you can click on "Locate" in the interface:
+
+![locate-from.png]({{ site.baseurl }}/docs/usage/locate-from.png)
+
+And it will take you to the Lab map, with the selected plate highlighted in
+red.
+
+![locate-to.png]({{ site.baseurl }}/docs/usage/locate-to.png)
 
 ## Profile
 

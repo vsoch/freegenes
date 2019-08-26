@@ -14,9 +14,9 @@
       <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
       <h4>
     </div>
-  </div>{% if request.user.is_superuser %}
-  <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_collection_change' instance.uuid %}">
+  </div>
+  {% if request.user.is_superuser or request.user.is_staff %}<div class="row" style="margin-bottom:20px">
+      <div class="col-md-12"><a href="{% url 'admin:main_container_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
       </div>
   </div>{% endif %}
@@ -30,7 +30,7 @@
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
                 {% if instance.plates.count > 0 %}<a class="nav-item nav-link" id="nav-plates-tab" data-toggle="tab" href="#nav-plates" role="tab" aria-controls="nav-plates" aria-selected="false">Plates</a>{% endif %}
-                <a class="nav-item nav-link" id="nav-map-tab" data-toggle="tab" href="#nav-map" role="tab" aria-controls="nav-map" aria-selected="false">Map</a>
+                {% if request.user.is_staff or request.user.is_superuser %}<a class="nav-item nav-link" id="nav-map-tab" data-toggle="tab" href="#nav-map" role="tab" aria-controls="nav-map" aria-selected="false">Map</a>{% endif %}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -52,10 +52,11 @@
             {% if instance.plates.count > 0 %}<div class="tab-pane fade" id="nav-plates" role="tabpanel" aria-labelledby="nav-plates-tab">
                {% include "tables/plate_table.html" with plates=instance.plates.all table_id="plates_table" %}
             </div>{% endif %}
-            <div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">
+            {% if request.user.is_staff or request.user.is_superuser %}<div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">
+              <a href="{% url 'lab_map' %}?uuid={{ instance.uuid }}"><button class="btn btn-primary">Lab Map</button></a>
                <div id="map"></div>
                {% include "maps/container.html" with container=instance div_id="#map" %}
-            </div>
+            </div>{% endif %}
         </div>
     </div>
 </div>
