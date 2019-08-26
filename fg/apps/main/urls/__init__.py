@@ -32,6 +32,9 @@ urlpatterns = [
     url(r'^e/schema/(?P<uuid>.+)/?$', views.schema_details, name='schema_details'),
     url(r'^e/tag/(?P<uuid>.+)/?$', views.tag_details, name='tag_details'),
 
+    # Maps
+    url(r'map/?$', views.lab_map_view, name='lab_map'),
+
     # Catalog
     url(r'c/catalog/?$', views.catalog_view, name='catalog_view'),
     url(r'c/catalog/collections/?$', views.collections_catalog_view, name='collections_catalog'),

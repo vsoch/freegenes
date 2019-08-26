@@ -52,7 +52,8 @@
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{% url 'profile' %}">Settings</a>
             <div class="dropdown-divider"></div>
-            {% if request.user.is_staff %}<a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>{% endif %}
+            {% if request.user.is_staff %}<a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>
+<a class="dropdown-item" href="{% url 'lab_map' %}">Map</a>{% endif %}
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
           </div>
         </li>{% else %}<li class="nav-item"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>{% endif %}

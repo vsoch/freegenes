@@ -93,11 +93,20 @@ h1, h2, h3, h4, h5, h6 {
 /* Links */
 
 a {
-  color: #28a745;
+  color: #28a745 !important;
   -webkit-transition: all 0.4s ease-in-out;
   -moz-transition: all 0.4s ease-in-out;
   -ms-transition: all 0.4s ease-in-out;
   -o-transition: all 0.4s ease-in-out;
+}
+
+
+.navbar.navbar-light .breadcrumb .nav-item .nav-link, .navbar.navbar-light .navbar-nav .nav-item .nav-link {
+   color: #000 !important;
+}
+
+.navbar .dropdown-menu a {
+    color: #000 !important;
 }
 
 a:hover {

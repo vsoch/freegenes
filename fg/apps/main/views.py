@@ -123,6 +123,70 @@ def schema_details(request, uuid):
 def tag_details(request, uuid):
     return get_instance(request, uuid, Tag)
 
+## Map
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def lab_map_view(request):
+    '''the lab map view shows a map of all containers and platesets,
+       which we can derive starting at the parent container. This will work
+       fine for smaller labs, if a lab has thousands of containers it will
+       start to run slowly and we will need a method that generates children
+       on demand from the view.
+    '''
+    # Return the parent container
+    nodes = {}
+    max_level = 1
+    for container in Container.objects.all():
+
+        node = {}
+        node['name'] = container.name
+        node['url'] = container.get_absolute_url()
+
+        # Keep a record of the container parent uuid, if has one
+        if container.parent:
+            node['parent'] = str(container.parent.uuid)
+
+        # Get the level in the tree
+        level = 1
+        parent = container.parent
+        while parent:
+            level +=1
+            parent = parent.parent
+           
+        # Update the max nesting level
+        if level > max_level:
+            max_level = level
+
+        node['level'] = level
+
+        # If the container has plates, it's the last in a hierarchy
+        children = []
+        if container.plate_set.count() > 0:
+            for plate in container.plate_set.all():
+                children.append({"name": plate.name, "url": plate.get_absolute_url()})
+        node['children'] = children
+
+        nodes[str(container.uuid)] = node
+  
+    # Next, append children to their parents - start at most nested
+    for level in range(max_level, 0, -1): 
+        for uuid, node in nodes.items():
+            if node['level'] == level:
+                if "parent" in node:
+                    nodes[node['parent']]['children'].append(node)
+                    
+
+    # Remove all but level 1
+    keepers = []
+    for uuid, node in nodes.items():
+        if node['level'] == 1:
+            keepers.append(node)
+
+    root = {"name": "root",
+            "children": keepers}
+
+    return render(request, "maps/lab.html", {"data": root})
+
 
 ## Catalogs
 

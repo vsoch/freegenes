@@ -6,15 +6,17 @@
                             <th>Distributions</th>
                             <th>Updated At</th>
                             <th>Created At</th>
+                            <th>Plates</th>
                         </tr>
                     </thead>
                     <tbody>{% for plateset in platesets %}
                         <tr>
-                            <td><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></td>
+                            <td><a href="{{ plateset.get_absolute_url }}">{{ plateset.name }}</a></td>
                             <td>{{ plateset.description | truncatechars:100 }}</td>
                             <td>{% for dist in plateset.distribution_plateset.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a> {% endfor %}</td>
                             <td>{{ plateset.time_updated }}</td>
                             <td>{{ plateset.time_created }}</td>
+                            <td>{{ plateset.plates.count }}</td>
                         </tr>{% endfor %}
                     </tbody>
                 </table>

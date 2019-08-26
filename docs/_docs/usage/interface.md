@@ -6,6 +6,7 @@ description: A typical user might want to search, or create an order
 # Interface
 
  - [Search](#search) and catalog views.
+ - [Maps](#maps) for finding plates.
  - [Profile](#profile) include account management and API tokens.
  - [Admin]({{ site.baseurl }}/docs/usage/admin) views
  - [API]({{ site.baseurl }}/docs/usage/api) views
@@ -44,6 +45,21 @@ in the case of a tag, a tab is rendered with subtypes (e.g., collections, organi
 parts, or other) only if the tag is associated with said subtype.
 
 ![tags.png]({{ site.baseurl }}/docs/usage/tags.png)
+
+## Maps
+
+If you are a staff in the lab, you can click on your username in the top right
+and select "Map" to see an expanded, lab map view:
+
+![lab-map.png]({{ site.baseurl }}/docs/usage/lab-map.png)
+
+Any of the plates or containers can be clicked to go to their specific view.
+If you are browsing a container, you can also quickly see it's immediate children:
+
+![container-map.png]({{ site.baseurl }}/docs/usage/container-map.png)
+
+The breadcrumb at the top shows the direct address of the container, and the
+map tab shows the nested plates within.
 
 ## Profile
 

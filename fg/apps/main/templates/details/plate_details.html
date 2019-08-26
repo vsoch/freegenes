@@ -29,8 +29,6 @@
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
-                {% if instance.plates.count > 0 %}<a class="nav-item nav-link" id="nav-plates-tab" data-toggle="tab" href="#nav-plates" role="tab" aria-controls="nav-plates" aria-selected="false">Plates</a>{% endif %}
-                <a class="nav-item nav-link" id="nav-map-tab" data-toggle="tab" href="#nav-map" role="tab" aria-controls="nav-map" aria-selected="false">Map</a>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -44,17 +42,10 @@
 	      <tbody>{% for field in instance.json %}{% if field.value %}<tr>
         {% if field.admin %}{% if request.user.is_superuser %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% elif field.auth %}{% if request.user.is_authenticated %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% else %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}
       </tr>{% endif %}{% endfor %}
-      {% if instance.tags.count > 0 %}<tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>{% endif %}
-      {% if instance.parent %}<tr><td>Parent</td><td><a href="{{ instance.parent.get_absolute_url }}">{{ parent.name }}</a></td></tr>{% endif %}
+      {% if instance.container %}<tr><td>Container</td><td><a href="{{ instance.container.get_absolute_url }}">{{ instance.container.name }}</a></td></tr>{% endif %}
+      {% if instance.protocol %}<tr><td>Protocol</td><td><a href="{{ instance.protocol.get_absolute_url }}">{{ instance.protocol.name }}</a></td></tr>{% endif %}
 	    </tbody>
 	   </table>
-            </div>
-            {% if instance.plates.count > 0 %}<div class="tab-pane fade" id="nav-plates" role="tabpanel" aria-labelledby="nav-plates-tab">
-               {% include "tables/plate_table.html" with plates=instance.plates.all table_id="plates_table" %}
-            </div>{% endif %}
-            <div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">
-               <div id="map"></div>
-               {% include "maps/container.html" with container=instance div_id="#map" %}
             </div>
         </div>
     </div>

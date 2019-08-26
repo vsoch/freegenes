@@ -360,7 +360,7 @@ class Container(models.Model):
 
     @property
     def breadcrumb(self):
-        '''a breadcrumb is a trace of container up to the parent container.
+        '''a breadcrumb is a trace of the plate up to the parent container.
            we start at the child and trace up to the parent, so the order
            is first child to parent, and we reverse to give user parent
            to child.
@@ -368,7 +368,7 @@ class Container(models.Model):
         breadcrumb = []
         container = self
         while container:
-            breadcrumb.append(container.name)
+            breadcrumb.append(container)
             container = container.parent
 
         # Reverse, give to user parent to child
@@ -744,13 +744,34 @@ class Plate(models.Model):
         breadcrumb = []
         container = self.container
         while container:
-            breadcrumb.append(container.name)
+            breadcrumb.append(container)
             container = container.parent
 
         # Reverse, give to user parent to child
         breadcrumb = breadcrumb[::-1]
         return breadcrumb
 
+
+    def json(self):
+        '''return a list of fields (dict) for the object. The format returned
+           is standard across models so it can be used in templates 
+           to render fields into a table. Fields include key, value, 
+           and auth and admin required (booleans)
+
+           auth: indicates authorization required (True or False)
+           admin: indicates admin (superusers) only
+        '''
+        fields = [
+            {"key": "Plate Type", "value": self.plate_type},
+            {"key": "Plate Form", "value": self.plate_form},
+            {"key": "Status", "value": self.status},
+            {"key": "Time Updated", "value": self.time_updated},
+            {"key": "Time Created", "value": self.time_created},
+            {"key": "Thaw Count", "value": self.thaw_count},
+            {"key": "Notes", "value": self.notes},
+            {"key": "Height", "value": self.height},
+            {"key": "Length", "value": self.length}]
+        return fields
 
     def get_absolute_url(self):
         return reverse('plate_details', args=[self.uuid])
