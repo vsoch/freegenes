@@ -189,15 +189,11 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             
-            # NOTE: this will redirect the user to the view to upload their own MTA.
-            # This is currently disabled in favor of sending an email to the lab
-            # and having the lab process the order and handle the MTA offline.
-            # When this changes, this can be uncommented. The checkout view will 
-            # also need to be changed to submit to server, and not to email.
-            #if order.material_transfer_agreement is None:
-            #    messages.info(self.request, "You haven't signed an MTA yet for this order.")
-            #    context = {"form": MTAForm(), 'order': order}
-            #    return render(self.request, "orders/sign-mta.html", context)
+            # redirect the user to the view to upload their own MTA.
+            if order.material_transfer_agreement is None:
+                messages.info(self.request, "You haven't signed an MTA yet for this order.")
+                context = {"form": MTAForm(), 'order': order}
+                return render(self.request, "orders/sign-mta.html", context)
 
             form = CheckoutForm()
             context = {

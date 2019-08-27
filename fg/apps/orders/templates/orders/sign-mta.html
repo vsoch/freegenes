@@ -6,15 +6,22 @@
 <div class="container" style='padding-top:100px'>
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
-       <h2>Sign your Material Transfer Agreement</h2>
+     <h2>Sign your Material Transfer Agreement</h2>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <p>A Material Transfer Agreement is needed to proceed with this order. Please
+      <p class="alert alert-info alert-dismissible fade show" style="margin-bottom:200px">A Material Transfer Agreement is needed to proceed with this order. Please
          <a href="https://biobricks.org/open-mta-become-a-signatory/" target="_blank">save and sign</a>
-         the Material Transfer Agreement document, and then upload.</p>
+         the Material Transfer Agreement document, and then <a href="#upload">upload the document</a> using the form at the bottom
+         of this page.</p>
+           <div style="margin-bottom:100px" id="openmta">
+              {% include "orders/open-mta.html" %}
+           </div>
+          <br><br><br>
+          <hr>
 
+          <h3 id="upload">Upload Your MTA</h3>
           <form action="{% url 'sign-mta' order.uuid %}" enctype="multipart/form-data" method="POST">
 	    {% csrf_token %}
 	    {{ form|crispy }}
