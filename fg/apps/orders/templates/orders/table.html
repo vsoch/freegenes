@@ -18,16 +18,16 @@
             <td>{{ item.description }}</td>
             <td>{{ item.platesets.count }}</td>
             <td>
-            {% if request.user.is_superuser %}<a href="{% url 'admin:main_distribution_change' item.uuid %}">
+            {% if request.user.is_superuser or request.user.is_staff %}<a href="{% url 'admin:main_distribution_change' item.uuid %}">
 <button class="btn btn-primary btn-sm" style='margin:0px'>Edit</button></a>{% endif %}
             <a href="{% url 'remove-from-cart' item.uuid %}">
-                <i class="fas fa-trash float-right"></i>
+                <i style="color:#CCC" class="fas fa-trash float-right"></i>
             </a>
             </td>
         </tr>
         <tr>
             <td colspan="5">
-            <a class="btn btn-warning" style="margin-top:50px" href="{% url 'checkout' %}">Checkout</a>
+            <a class="btn btn-warning" style="margin-top:50px; color:white !important;" href="{% url 'checkout' %}">Checkout</a>
             </td>
         </tr>
         {% empty %}

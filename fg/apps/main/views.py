@@ -227,9 +227,33 @@ def tags_catalog_view(request, selection=None):
               "selection": selection}
     return render(request, "catalogs/tags.html", context=context)
 
+## Catalogs with Pagination (too large for table)
+
+def catalog_pagination(request, Model, label, number_pages=50):
+    '''a shared function to provide generic pagination, and return a template.
+ 
+       Parameters
+       ==========
+       request: the request object from the receiving view
+       Model: the Model class to use
+       label: the label, e.g., "samples" expected under catalogs/<label>.html
+              along with the variable to provide in the page.
+       number_pages: how many pages to paginate (default is 50)
+    '''
+    paginator = Paginator(Model.objects.all(), number_pages)
+    page = request.GET.get('page')
+    context = {label: paginator.get_page(page)}
+    template = "catalogs/%s.html" % label
+    return render(request, template, context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def samples_catalog_view(request):
+    return catalog_pagination(request, Sample, "samples")
+
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def parts_catalog_view(request):
-    paginator = Paginator(Part.objects.all(), 50)
-    page = request.GET.get('page')
-    context = {"parts": paginator.get_page(page)}
-    return render(request, "catalogs/parts.html", context=context)
+    return catalog_pagination(request, Part, "parts")
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def plates_catalog_view(request):
+    return catalog_pagination(request, Plate, "plates")

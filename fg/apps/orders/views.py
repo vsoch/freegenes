@@ -12,7 +12,11 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponseRedirect
+from django.http import (
+    Http404, 
+    HttpResponseRedirect, 
+    JsonResponse
+)
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
@@ -134,6 +138,33 @@ def upload_mta(request, uuid):
 
 
 # Order Operations
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def submit_order(request, uuid):
+    '''Submit an order, must be done by the owner
+    '''
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        return JsonResponse({"message": "The order does not exist.",
+                             "code": "error"})
+
+    # Was the order already ordered?
+    if order.ordered:
+        return JsonResponse({"message": "The order has already been submit",
+                             "code": "error"})
+
+    if request.user != order.user:
+        return JsonResponse({"message": "You are not allowed to perform this action",
+                             "code": "error"})
+
+    order.ordered = True
+    order.save()   
+    return JsonResponse({"message": "Your order has been submit.",
+                         "code": "success"})
+
 
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)

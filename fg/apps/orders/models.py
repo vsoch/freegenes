@@ -33,8 +33,8 @@ class Order(models.Model):
     name = models.CharField(max_length=250, blank=False)
 
     # Status of order, ordered and received
-    ordered = models.BooleanField(default=False)
-    received = models.BooleanField(default=False)
+    ordered = models.BooleanField(default=False)  # The user submit the order
+    received = models.BooleanField(default=False) # FreeGenes staff has processed it
 
     # Notes match to physical sticky notes in the lab
     notes = models.CharField(max_length=500)
@@ -60,6 +60,9 @@ class Order(models.Model):
 
     def get_label(self):
         return "order"
+
+    def get_absolute_url(self):
+        return reverse('order_details', args=[self.uuid])
 
     def clean(self):
         '''a user is only allowed to have one order that isn't ordered (a cart)

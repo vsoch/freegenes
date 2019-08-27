@@ -1,0 +1,64 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style="padding-top:200px;">
+  <div class="row" style="padding-bottom:50px">
+    <div class="col-md-6">
+      <h1>Plates Catalog</h1>
+      <p>Here you can explore FreeGenes Plates</p>
+      <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" onkeypress="handle_enter(event)" 
+                   id="q" class="form-control" placeholder="Search FreeGenes Plates" />
+             <button type="submit" id="searchSubmit" class="btn btn-primary">
+             <i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      {% include "tables/plate_table.html" with table_id="plates-table" %}
+
+	<div class="pagination">
+	    <div class="step-links">
+		{% if plates.has_previous %}
+		    <a href="?page=1">&laquo; first</a>
+		    <a href="?page={{ plates.previous_page_number }}">previous</a>
+		{% endif %}
+
+		<span class="current" style="margin-right:30px; margin-left:30px">
+		    Page {{ plates.number }} of {{ plates.paginator.num_pages }}.
+		</span>
+
+		{% if plates.has_next %}<span style="float:right">
+		    <a href="?page={{ plates.next_page_number }}">next</a>
+		    <a href="?page={{ plates.paginator.num_pages }}">last &raquo;</a>
+		</span>{% endif %}
+	    </div>
+	</div>
+
+   </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    function handle_enter(e) {
+        if(e.key === "Enter"){
+            $('#searchSubmit').click();
+        }
+    }; 
+$(document).ready( function() {
+    $('#searchSubmit').click(function() {
+        q = $('#q').val();
+        document.location = '{% url "search" %}?q=' + q + "&type=plates";
+    });
+}); 
+</script>
+{% endblock %}

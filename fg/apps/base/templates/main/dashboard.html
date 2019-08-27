@@ -1,13 +1,133 @@
 {% extends "base/page.html" %}
 {% load staticfiles %}
 {% block content %}
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
 <div class="container" style='padding-top:200px'>
-  <div class="row">
+  <div class="row" style="padding-bottom:50px">
     <div class="col-md-12">
       <h1>Dashboard</h1>
-      {% include "messages/note.html" with message="Endy Lab: This can be almost anything at all. What do you want to see here?" %}
+      <hr>
+    </div>
+  </div>
+<div class="row">
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card h-100 py-2" style="background-color:#28a745">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2"><a style="text-decoration:none" href="{% url 'parts_catalog' %}">
+          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:white !important">Parts</div>
+          <div class="h5 mb-0 font-weight-bold" style="color:#212529">{{ parts_count }}</div></a>
+        </div>
+        <div class="col-auto">
+          <i class="fas fa-dna fa-2x"></i>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card h-100 py-2" style="background-color:#28a745">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2"><a style="text-decoration:none" href="{% url 'samples_catalog' %}">
+          <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="color:white !important">Samples</div>
+          <div class="h5 mb-0 font-weight-bold" style="color:#212529">{{ samples_count }}</div></a>
+        </div>
+        <div class="col-auto">
+          <i class="fas fa-vial fa-2x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card h-100 py-2" style="background-color:#28a745">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2"><a style="text-decoration:none" href="{% url 'plates_catalog' %}">
+          <div class="text-xs font-weight-bold text-info text-uppercase mb-1" style="color:white !important">Plates</div>
+          <div class="row no-gutters align-items-center"></a>
+            <div class="col-auto">
+              <div class="h5 mb-0 mr-3 font-weight-bold">{{ plates_count }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto">
+          <i class="fas fa-circle fa-2x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card h-100 py-2" style="background-color:#28a745">
+    <div class="card-body">
+      <div class="row no-gutters align-items-center">
+        <div class="col mr-2"><a style="text-decoration:none" href="{% url 'tags_catalog' %}">
+          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="color:white !important">Tags</div>
+          <div class="h5 mb-0 font-weight-bold" style="color:#212529">{{ tags_count }}</div>
+        </div></a>
+        <div class="col-auto">
+          <i class="fas fa-tags fa-2x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+    <div class="row card" style="padding:30px; margin:0px">
+      <div class="col-md-12">
+         <div>
+           <canvas id="dashboard-counts"></canvas>
+         </div>
+      </div>
+    </div>
+  <div class="row" style='margin-top:100px'>
+    <div class="col-md-12">
+      <h1>{% if request.user.is_superuser or request.user.is_staff %}Orders{% else %}Your Orders{% endif %}</h1>
+      <hr>
+      {% include "tables/order_table.html" with table_id="order-table" %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#order-table').DataTable();
+
+var ctx = document.getElementById("dashboard-counts").getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: [{% for name, count in counts.items %}"{{ name }}"{% if forloop.last %}{% else %},{% endif %}{% endfor %}],
+    datasets: [{
+      label: "FreeGene Counts",
+      data: [{% for name, count in counts.items %}{{ count }}{% if forloop.last %}{% else %},{% endif %}{% endfor %}],
+      backgroundColor: [{% for name, count in counts.items %}"#fdda51"{% if forloop.last %}{% else %},{% endif %}{% endfor %}],
+    }]
+  },
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+});
+
+
+});
+</script>
 {% endblock %}

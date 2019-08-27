@@ -129,6 +129,26 @@ def modules_query(q):
                     Q(model_id__contains=q) |
                     Q(module_type__contains=q)).distinct()
 
+def plates_query(q):
+    '''specific search for plates
+    '''
+    return Plate.objects.filter(
+                    Q(name__contains=q) |
+                    Q(plate_type__contains=q) |
+                    Q(status__contains=q) |
+                    Q(thaw_count__contains=q) |
+                    Q(plate_form__contains=q)).distinct()
+
+def samples_query(q):
+    '''specific search for samples
+    '''
+    return Sample.objects.filter(
+                    Q(evidence__contains=q) |
+                    Q(sample_type__contains=q) |
+                    Q(vendor__contains=q) |
+                    Q(status__contains=q)).distinct()
+
+
 def tags_query(q):
     '''specific search for modules
     '''
@@ -147,7 +167,9 @@ def freegenes_query(q, query_types=None):
                 'institutions': institutions_query,
                 'modules': modules_query,
                 'organisms': organisms_query,
+                'samples': samples_query,
                 'parts': parts_query,
+                'plates': plates_query,
                 'tags': tags_query}
 
     # If the user doesn't provide one or more types, search all

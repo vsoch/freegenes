@@ -43,5 +43,7 @@ urlpatterns = [
     url(r'c/catalog/tags/(?P<selection>.+)/?$', views.tags_catalog_view, name='tags_catalog_selection'),
     url(r'c/catalog/parts/?$', views.parts_catalog_view, name='parts_catalog'),
     url(r'c/catalog/platesets/?$', views.platesets_catalog_view, name='platesets_catalog'),
+    url(r'c/catalog/plates/?$', views.plates_catalog_view, name='plates_catalog'),
+    url(r'c/catalog/samples/?$', views.samples_catalog_view, name='samples_catalog'),
 
 ]

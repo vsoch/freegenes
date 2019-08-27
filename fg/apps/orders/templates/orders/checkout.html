@@ -6,18 +6,17 @@
       <h2 class="my-5 h2 text-center">Checkout Order</h2>
       <div class="row">
         <div class="col-md-8 mb-4">
-            <form method="POST" class="card-body">
-              {% csrf_token %}
 
+	<form action="https://formspree.io/{{ HELP_CONTACT_EMAIL }}" method="POST" class="card-body">
               <div class="mta_form">
                 <div class="row">
                   <div class="col-lg-4 col-md-12 mb-4">
-                    <input type='text' id='recipient_name' name='recipient_name' class='form-control' />
-                    <label for="recipient_name" class="">Name of Recipient Scientist</label>
-                  </div>
-                  <div class="col-lg-4 col-md-6 mb-4">
                     <input type='text' id='recipient_title' name='recipient_title' class='form-control' />
                     <label for="recipient_name" class="">Title of Recipient Scientist</label>
+                  </div>
+                  <div class="col-lg-4 col-md-6 mb-4">
+                    <input type='text' id='recipient_name' name='recipient_name' class='form-control' required/>
+                    <label for="recipient_name" class="">Name of Recipient Scientist</label>
                     </div>
                   </div>
                 </div>              
@@ -25,39 +24,42 @@
               <div class='lab_form'>
 
                 <div class="md-form mb-5">
-                  <input type='text' id='lab_name' name='lab_name' class='form-control' />
-                  <label for="lab_name" class="">Name of Lab</label>
+                  <input type='text' id='lab_name' name='lab_name' class='form-control' 
+                         placeholder="Lab Name" required/>
                 </div>
 
                 <div class="md-form mb-5">
-                  <input type='text' id='lab_address' name='lab_address' class='form-control' />
-                  <label for="lab_address" class="">Address</label>
+                  <input type='text' id='lab_address' name='lab_address' class='form-control' 
+                         placeholder="Lab Address" required/>
                 </div>
 
                 <div class="md-form mb-5">
-                  <input type='text' id='lab_address2' name='lab_address2' class='form-control' />
-                  <label for="lab_address2" class="">Address 2 (optional)</label>
-                </div>
-
-                <div class="md-form mb-5">
-                  <input type='text' id='lab_address2' name='lab_address2' class='form-control' />
-                  <label for="lab_address2" class="">Address 2 (optional)</label>
+                  <input type='text' id='lab_address2' name='lab_address2' class='form-control' 
+                         placeholder="Lab Address 2 (optional)" />
                 </div>
 
                 <div class="row">
                   <div class="col-lg-4 col-md-12 mb-4">
                     <label for="lab_zip">Zip</label>
-                    <input type='text' id='lab_zip' name='lab_zip' class='form-control' />
+                    <input type='text' id='lab_zip' name='lab_zip' class='form-control' required/>
                     <div class="invalid-feedback">
                       Zip code required.
                     </div>
                   </div>
                   <div class="col-lg-4 col-md-6 mb-4">
+                    <label for="contactEmail">Contact Email</label>
+                    <input type='email' id='contactEmail' name='_replyto' class='form-control' required/>
+                  </div>
+                </div>
+
+                 <input type='hidden' id='order_uuid' name='order_uuid' class='form-control' value="{{ order.uuid }}"/>
+                 <input type='hidden' id='order_uuid' name='order_url' class='form-control' value="{{ domain }}/{{ order.get_absolute_url }}"/>
+
+                <div class="md-form mb-5">
                     <div class="custom-control custom-checkbox">
                       <input type="checkbox" class="custom-control-input" name="same_shipping_address" id="same_shipping_address">
                       <label class="custom-control-label" for="same_shipping_address">Shipping address is the same as my lab address</label>
                     </div>
-                  </div>
                 </div>
 
               <div class='hideable_shipping_form'>
@@ -67,23 +69,21 @@
               <h3>Shipping address</h3>
 
                 <div class="md-form mb-5">
-                  <input type='text' id='shipping_to' name='shipping_to' class='form-control' />
-                  <label for="shipping_to" class="">Shipping Recipient</label>
+                  <input type='text' id='shipping_to' name='shipping_to' 
+                         placeholder="Shipping Recipient" class='form-control' required/>
                 </div>
 
                 <div class="md-form mb-5">
-                  <input type='text' id='shipping_address' name='shipping_address' class='form-control' />
-                  <label for="shipping_address" class="">Address</label>
+                  <input type='text' id='shipping_address' name='shipping_address' 
+                         placeholder="Address" class='form-control' required />
                 </div>
 
                 <div class="md-form mb-5">
                   <input type='text' id='shipping_address2' name='shipping_address2' class='form-control' />
-                  <label for="shipping_address2" class="">Address 2 (optional)</label>
                 </div>
 
                 <div class="md-form mb-5">
-                    <label for="shipping_zip">Zip</label>
-                    <input type='text' placeholder='Zip code' id='shipping_zip' name='shipping_zip' class='form-control' />
+                    <input type='text' placeholder="Zip code" id='shipping_zip' name='shipping_zip' class='form-control' required/>
                     <div class="invalid-feedback">
                       Zip code required.
                     </div>
@@ -114,15 +114,46 @@
 {% block pagescripts %}
 <script>
 var hideable_shipping_form = $('.hideable_shipping_form');
-
 var use_same_shipping = document.querySelector("input[name=same_shipping_address]");
 
 use_same_shipping.addEventListener('change', function() {
   if (this.checked) {
     hideable_shipping_form.hide();
+    document.getElementById("shipping_to").required = false;
+    document.getElementById("shipping_address").required = false;
+    document.getElementById("shipping_zip").required = false;
   } else {
     hideable_shipping_form.show();
+    document.getElementById("shipping_to").required = true;
+    document.getElementById("shipping_address").required = true;
+    document.getElementById("shipping_zip").required = true;
   }
 })
+
+// On submit, update the server that order is "ordered"
+
+$("form").submit(function( event ) {
+  console.log("Form submit for {{ order.uuid }}")
+
+  var url = "{% url 'submit_order' order.uuid %}";
+
+  fetch(url).then(res => res.json())
+  .then(function(response) {
+    var response = JSON.stringify(response) 
+    console.log('Success:', response)
+
+    // On an error (order already submit, wrong user) don't send form
+    if (response['message'] == "error"){
+       event.preventDefault();
+    }
+  })
+  .catch(function(response) {
+     var response = JSON.stringify(response);
+     console.log("Error", response)
+     event.preventDefault();
+  })
+});
+
+
 </script>
 {% endblock pagescripts %}

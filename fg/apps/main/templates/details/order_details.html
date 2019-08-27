@@ -1,0 +1,65 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+      <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
+      <h4>
+    </div>
+  </div>{% if request.user.is_superuser or request.user.is_staff %}
+  <div class="row" style="margin-bottom:20px">
+      <div class="col-md-12"><a href="{% url 'admin:main_order_change' instance.uuid %}">
+          <button class="btn btn-primary">Edit</button></a>
+      </div>
+  </div>{% endif %}
+  <div class="row">
+    <div class="col-md-12">
+    <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>
+      <tr>
+       <th>Key</th>
+       <th>Value</th>
+      </tr>
+    </thead>
+      <tbody>
+        <tr>
+          <td>Name</td><td>{{ instance.name }}</td>
+        </tr>
+        <tr>
+          <td>Time Created</td><td>{{ instance.time_created }}</td>
+        </tr>
+        <tr>
+          <td>Time Updated</td><td>{{ instance.time_updated }}</td>
+        </tr>
+        <tr>
+          <td>Status</td><td>{% if instance.ordered and instance.received %}Complete{% elif instance.ordered %}Processing{% else %}Cart{% endif %}</td>
+        </tr>
+        <tr>
+          <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Signed{% else %}Not Signed{% endif %}</td>
+        </tr>
+        {% if instance.ordered %}{% else %}<tr>
+          <td>Checkout</td><td><a href="{% url 'checkout' %}"><button style="margin:0px" class="btn btn-sm btn-warning">Checkout</button></a></td>
+        </tr>{% endif %}
+        <tr>
+          <td>Notes</td><td>{{ instance.notes }}</td>
+        </tr>
+        <tr>
+          <td>Distributions</td><td>{% for dist in instance.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>
+        </tr>
+    </tbody>
+   </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#{{ instance.get_label }}-table').DataTable();
+});
+</script>
+{% endblock %}

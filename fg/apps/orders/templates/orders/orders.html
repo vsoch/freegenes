@@ -8,7 +8,7 @@
        <h1>Orders</h1>
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="padding-bottom:50px">
     <div class="col-md-12">
          {% if request.user.is_authenticated %}{% if cart %}
         {% include "orders/table.html" with table_id="cart-table" %}{% else %}<p class="alert alert-info">You don't have any items in your cart. Why not <a href="{% url 'distributions_catalog' %}">browse distributions</a> to find something you like?</p>{% endif %}{% else %}<p class="alert alert-info">You must be <a href="{% url 'login' %}">logged in</a> to view current and past orders.</p>{% endif %}

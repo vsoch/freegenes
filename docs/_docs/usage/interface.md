@@ -5,7 +5,8 @@ description: A typical user might want to search, or create an order
 
 # Interface
 
- - [Search](#search) and catalog views.
+ - [Dashboard](#dashboard) for user and staff navigation
+ - [Search](#search) and catalog views
  - [Maps](#maps) for finding plates.
  - [Profile](#profile) include account management and API tokens.
  - [Admin]({{ site.baseurl }}/docs/usage/admin) views
@@ -13,6 +14,22 @@ description: A typical user might want to search, or create an order
 
 FreeGenes has general functionality for non authenticated users to search,
 and detail is provided after a user has created an account.
+
+## Dashboard
+
+The primary dashboard for FreeGenes shows overall statistics at the top:
+
+![dashboard.png]({{ site.baseurl }}/docs/usage/dashboard.png)
+
+> Question: should the orders / dashboard be moved into a tabbed interface? Should the chart be moved into a 50% column, and then the four statistic boxes stacked on the right?
+
+Larger values are shown in boxes, others are shown in a standard box plot.
+Directly below, an admin or staff user sees a table of all orders:
+
+![dashboard-orders.png]({{ site.baseurl }}/docs/usage/dashboard-orders.png)
+
+And a logged in user that isn't admin or staff only sees his or her current and
+previous orders.
 
 ## Search
 
