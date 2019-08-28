@@ -27,6 +27,8 @@ ENABLE_BITBUCKET_AUTH = False
 # available, and configured, as plugins.
 
 
+# Shipping (set this variable in your secrets.py
+SHIPPO_TOKEN=None
 
 # DOMAIN NAMES
 ## IMPORTANT: if/when you switch to https, you need to change "DOMAIN_NAME"

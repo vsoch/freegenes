@@ -54,6 +54,16 @@ and inside you want to add a `SECRET_KEY`. You can use the [secret key generator
 SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 ```
 
+### Shipping Secrets
+
+We will use [shippo](https://goshippo.com/docs) to generate labels for orders. The only requirement after you create
+an account is to export a `SHIPPO_TOKEN` in your secrets.py:
+
+```python
+SHIPPO_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+
 ### Authentication Secrets
 
 One thing that cannot be donein advance is to produce application keys and secrets to give your FreeGenes node for each social provider that you want to allow users (and yourself) to login with. We are going to use a framework called [python social auth](https://python-social-auth-docs.readthedocs.io/en/latest/configuration/django.html) to achieve this, and in fact you can add a [number of providers](http://python-social-auth-docs.readthedocs.io/en/latest/backends/index.html).

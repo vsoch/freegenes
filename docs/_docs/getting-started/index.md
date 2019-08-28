@@ -28,9 +28,9 @@ searching and requesting these entities. It is not expected that a single node
 would be shared by more than one lab, as this would complicate the sharing of
 data and permissions, but it's not technically impossible to do.
 
-## Development
+## Deployment
 
- - [Development](development/): background and basic setup
+ - [Development or Setup](development/): background and basic setup
  - [Plugins](plugins/): additional plugins that can be enabled for authentication
 
 
