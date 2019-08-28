@@ -12,6 +12,10 @@
   <div class="row" style="margin-bottom:20px">
       <div class="col-md-12"><a href="{% url 'admin:main_order_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
+             <a href="{% url 'download_mta' instance.uuid  %}">
+          <button class="btn btn-primary"><i class="fa fa-download" style="margin-right:5px"></i> Download MTA</button></a>
+             <a href="{% url 'upload-mta' instance.uuid  %}">
+          <button class="btn btn-primary"><i class="fa fa-upload" style="margin-right:5px"></i> Upload Signed MTA</button></a>
       </div>
   </div>{% endif %}
   <div class="row">
@@ -36,7 +40,7 @@
           <td>Status</td><td>{% if instance.ordered and instance.received %}Complete{% elif instance.ordered %}Processing{% else %}Cart{% endif %}</td>
         </tr>
         <tr>
-          <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Signed{% else %}Not Signed{% endif %}</td>
+          <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
         </tr>
         {% if instance.ordered %}{% else %}<tr>
           <td>Checkout</td><td><a href="{% url 'checkout' %}"><button style="margin:0px" class="btn btn-sm btn-warning">Checkout</button></a></td>

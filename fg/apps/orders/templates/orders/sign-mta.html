@@ -2,7 +2,15 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% block content %}
+<style>
+input {
+   border: none !important;
+}
 
+table {
+  border: none !important;
+}
+</style>
 <div class="container" style='padding-top:100px'>
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
@@ -11,13 +19,14 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <p class="alert alert-info alert-dismissible fade show" style="margin-bottom:200px">A Material Transfer Agreement is needed to proceed with this order. Please
+      <p class="alert alert-info alert-dismissible fade show" style="margin-bottom:200px">A Material Transfer Agreement is needed to proceed with this order. Please fill out the fields for the organization name and address, along with the recipient name and address, 
          <a href="https://biobricks.org/open-mta-become-a-signatory/" target="_blank">save and sign</a>
          the Material Transfer Agreement document, and then <a href="#upload">upload the document</a> using the form at the bottom
          of this page.</p>
-           <div style="margin-bottom:100px" id="openmta">
+           <form style="margin-bottom:100px" id="openmta-form">
               {% include "orders/open-mta.html" %}
-           </div>
+              <button id="save" style="float:right" type='submit' class="btn btn-secondary"><i style="margin-right:10px" class="far fa-file-pdf"></i> Save</button>
+           </form>
           <br><br><br>
           <hr>
 
@@ -31,10 +40,42 @@
   </div>
 {% endblock %}
 {% block pagescripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+
 <script>
-$(document).ready(function() {
-  {% if cart %}$("#cart-table").DataTable();{% endif %}
-  {% if orders %}$("#order-table").DataTable();{% endif %}
+// Generate PDF from the page to download
+$("#openmta-form").submit(function(e){
+
+    let promise = new Promise(function(resolve, reject) {
+        $("#save").css('display', 'none');
+        resolve();
+    });
+
+    promise.then(
+      function() { 
+	    var divheight = $('#openmta').height();
+	    var divwidth = $('#openmta').width();
+	    var ratio = divheight / divwidth;
+	    html2canvas($("#openmta"), {
+		onrendered: function(canvas) {
+		    var imgData = canvas.toDataURL('image/png'); 
+		    var doc = new jsPDF();
+		    var width = doc.internal.pageSize.getWidth() -20;
+		    var height = doc.internal.pageSize.getHeight() -20;
+		    height = ratio * width;
+		    doc.addImage(imgData, 'PDF', 20, 20, width-10, height-10);
+		    doc.save('{{ order.user.username | slugify }}-{{ order.name | slugify }}-OpenMTA.pdf');
+		}
+	    });
+            return;
+      }).then(function() {
+         setTimeout(function(){
+             $("#save").css('display', 'normal');
+        }, 3000);
+    })
+    
+    e.preventDefault();
 });
 </script>
 {% endblock %}

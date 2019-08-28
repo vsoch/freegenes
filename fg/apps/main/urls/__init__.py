@@ -46,4 +46,6 @@ urlpatterns = [
     url(r'c/catalog/plates/?$', views.plates_catalog_view, name='plates_catalog'),
     url(r'c/catalog/samples/?$', views.samples_catalog_view, name='samples_catalog'),
 
+    # Download
+    url(r'^download/mta/(?P<uuid>.+)/?$', views.download_mta, name='download_mta'),
 ]

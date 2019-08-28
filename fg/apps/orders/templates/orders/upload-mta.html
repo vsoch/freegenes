@@ -1,0 +1,32 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+input {
+   border: none !important;
+}
+
+table {
+  border: none !important;
+}
+</style>
+<div class="container" style='padding-top:100px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+     <h2>Upload Signed Material Transfer Agreement</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <p>Upload the signed MTA agreement here.</p>
+          <br>
+          <hr>
+          <form action="{% url 'upload-mta' order.uuid %}" enctype="multipart/form-data" method="POST">
+	    {% csrf_token %}
+	    {{ form|crispy }}
+	    <button type="submit" class="btn btn-primary">Submit</button>
+	  </form>
+    </div>
+  </div>
+{% endblock %}

@@ -55,10 +55,9 @@
 </ol>
 </div>
 </div>
-<!-- .et_pb_text -->
-<div class="et_pb_module et_pb_text et_pb_text_1 et_pb_bg_layout_light  et_pb_text_align_left">
-
-    <div class="et_pb_text_inner">
+<div id="openmta">
+<div>
+    <div>
         <p>
             <center><strong>Template of OpenMTA Implementing Letter</strong></center>
         </p>
@@ -71,10 +70,9 @@
 
     </div>
 </div>
-<!-- .et_pb_text -->
-<div class="et_pb_module et_pb_text et_pb_text_2 et_pb_bg_layout_light  et_pb_text_align_left">
+<div>
 
-    <div class="et_pb_text_inner">
+    <div>
         <style>
             table,
             th,
@@ -91,12 +89,12 @@
                 </tr>
                 <tr>
                     <td>Name:
-                        <br /> Address:
+                        <br/> Address:
                         </p>
                         <p>
                     </td>
-                    <td>Name:
-                        <br /> Address:
+                    <td>Name:<input style="width:100%" type="text" placeholder="Organization Name Here" required>
+                        <br /> Address: <input style="width:100%" type="text" placeholder="Organization Address Here" required>
                         </p>
                         <p>
                     </td>
@@ -112,10 +110,10 @@
                 </tr>
                 <tr>
                     <td>Name:
-                        <br /> Title:
+                        <br/> Title:
                     </td>
-                    <td>Name:
-                        <br /> Title:
+                    <td>Name:<input style="width:100%" type="text" placeholder="Recipient Name Here" required>
+                        <br/> Title:<input style="width:100%" type="text" placeholder="Recipient Title Here" required>
                     </td>
                 </tr>
             </tbody>
@@ -145,38 +143,37 @@
                     <th>Original Material <span style="font-weight:normal;">(description of the material being transferred, including any identifiers)</span></th>
                 </tr>
                 <tr>
-                    <td>Description:</p>
-                        <p>
+                    <td>Description:<p>
+                        {% for dist in order.distributions.all %}<strong>{{ dist.name }}: </strong> {{ dist.description }}<br>{% endfor %}</p>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
-<!-- .et_pb_text -->
-<div class="et_pb_module et_pb_text et_pb_text_3 et_pb_bg_layout_light  et_pb_text_align_left">
+<div>
 
-    <div class="et_pb_text_inner">
+    <div><br>
         <p>If checked, the following optional terms apply to this Agreement:
             <br />
-            <i class="far fa-square" aria-hidden="true"></i> A transmittal fee of _________________ shall be paid by Recipient to Provider, for preparation and distribution costs.
+            [ ] A transmittal fee of _________________ shall be paid by Recipient to Provider, for preparation and distribution costs.
             <br />
             <br />
-            <i class="far fa-square" aria-hidden="true"></i> Recipient agrees to provide appropriate acknowledgement of the source of the Material in all publications.
+            [ ] Recipient agrees to provide appropriate acknowledgement of the source of the Material in all publications.
             <br />
             <br />
-            <i class="far fa-square" aria-hidden="true"></i> Recipient agrees to notify the Provider upon redistribution of the Material to third parties.
+            [ ] Recipient agrees to notify the Provider upon redistribution of the Material to third parties.
             <br />
             <br />
-            <i class="far fa-square" aria-hidden="true"></i> Information relevant to the status of the Material is provided in an attachment.
+            [ ] Information relevant to the status of the Material is provided in an attachment.
             <br />
         </p>
     </div>
 </div>
 <!-- .et_pb_text -->
-<div class="et_pb_module et_pb_text et_pb_text_4 et_pb_bg_layout_light  et_pb_text_align_left">
+<div>
 
-    <div class="et_pb_text_inner">
+    <div>
         <p>This Implementing Letter is effective when signed by all parties. The parties executing this Implementing Letter certify that their respective organizations have accepted and signed an unmodified copy of the OpenMTA, and further agree to be bound by its terms, for the transfer specified above.
             <br />
             <br />
@@ -209,3 +206,4 @@
         </p>
         <hr> Date
         </p>
+</div>

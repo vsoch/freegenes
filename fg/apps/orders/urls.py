@@ -20,6 +20,7 @@ urlpatterns = [
 
     # Material Transfer Agreement
     url(r'^mta/upload/(?P<uuid>.+)$', views.upload_mta, name='sign-mta'),
+    url(r'^mta/admin-upload/(?P<uuid>.+)$', views.admin_upload_mta, name='upload-mta'),
 
     # Details (e corresponds for entity)
     url(r'^details/(?P<uuid>.+)$', views.order_details, name='order_details'),

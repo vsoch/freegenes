@@ -158,6 +158,8 @@ class Institution(models.Model):
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=250, blank=False)
+
+    # Master MTAs are available on biobricks, if signed_master False need to look up
     signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default='NOT_SIGNED')
 
     def get_absolute_url(self):
@@ -598,7 +600,7 @@ def get_upload_to(instance, filename, subfolder="files"):
 
     # Get the extension of the current filename
     _, ext = os.path.splitext(filename)
-    filename = "%s/%s.%s" % (upload_folder, instance.uuid, ext)
+    filename = "%s/%s%s" % (upload_folder, instance.uuid, ext)
     return time.strftime(filename)
 
 

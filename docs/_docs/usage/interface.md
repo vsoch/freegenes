@@ -6,6 +6,7 @@ description: A typical user might want to search, or create an order
 # Interface
 
  - [Dashboard](#dashboard) for user and staff navigation
+ - [Orders](#orders) to sign an MTA and request distributions
  - [Search](#search) and catalog views
  - [Maps](#maps) for finding plates.
  - [Profile](#profile) include account management and API tokens.
@@ -30,6 +31,43 @@ Directly below, an admin or staff user sees a table of all orders:
 
 And a logged in user that isn't admin or staff only sees his or her current and
 previous orders.
+
+## Orders
+
+When a user adds one or more distributions to his or her cart, they appear
+on the "Cart" page that is available by clicking the shopping cart in the top
+right:
+
+![order.png]({{ site.baseurl }}/docs/usage/order.png)
+
+Checkout first checks if the user has signed a material transfer agreement for
+the order. In the case of not, the user is redirected to a page to read,
+fill out fields, and then download the form as a PDF.
+
+![sign-mta.png]({{ site.baseurl }}/docs/usage/sign-mta.png)
+
+Once the form is signed, the user can re-upload it in the same interface.
+
+![upload-mta.png]({{ site.baseurl }}/docs/usage/upload-mta.png)
+
+A successful upload redirects the user to the actual Checkout form.
+
+![checkout.png]({{ site.baseurl }}/docs/usage/checkout.png)
+
+The checkout form itself doesn't save personal information to the server,
+but rather sends an email with the form to the lab. This is done for three reasons -
+
+ 1. It's an easy way to notify the lab of an order
+ 2. It eliminates the need to store personal information on the server
+ 3. We can have better certainty of having the latest shipping information.
+
+The lab can then receive the email, click a link to go directly to the order
+and download the MTA:
+
+![download-mta.png]({{ site.baseurl }}/docs/usage/download-mta.png)
+
+And then use a similar form to re-upload, finish processing on their side, and continue with
+preparing the order.
 
 ## Search
 

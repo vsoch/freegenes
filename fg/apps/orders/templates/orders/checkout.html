@@ -133,8 +133,8 @@ use_same_shipping.addEventListener('change', function() {
 // On submit, update the server that order is "ordered"
 
 $("form").submit(function( event ) {
-  console.log("Form submit for {{ order.uuid }}")
 
+  console.log("Form submit for {{ order.uuid }}")
   var url = "{% url 'submit_order' order.uuid %}";
 
   fetch(url).then(res => res.json())

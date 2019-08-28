@@ -105,14 +105,11 @@ def add_to_cart(request, uuid):
         messages.info(request, "This item was added to your cart.")
         return redirect('orders')
 
-# Upload MTA
+# Upload MTA (for user and admin)
 
-@login_required
-@ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def upload_mta(request, uuid):
-    '''a specific view to handle uploading the MTA form, redirected from the
-       view to checkout in the case that an order is missing an MTA. The
-       uuid corresponds to the UUID for the order
+def _upload_mta(request, uuid, template="orders/sign-mta.html"):
+    '''a general view to handle uploading the MTA form, is used for both the
+       admin and user upload forms, but each return different templates.
     '''
     # The order must exist, we look up based on uuid
     try:
@@ -126,16 +123,36 @@ def upload_mta(request, uuid):
 
         # If the form is valid, save to the order and continue checkout
         if form.is_valid():
-            print('FORM IS VALID')
             mta = form.save()
             order.material_transfer_agreement = mta
             order.save()
-            return HttpResponseRedirect('checkout')
+            return redirect('checkout')
     else:
         form = MTAForm()
     context = {'form': form, 'order': order}
-    return render(request, 'orders/sign-mta.html', context)
+    return render(request, template, context)
 
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def upload_mta(request, uuid):
+    '''a specific view to handle uploading the MTA form, redirected from the
+       view to checkout in the case that an order is missing an MTA. The
+       uuid corresponds to the UUID for the order
+    '''
+    return _upload_mta(request, uuid)
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def admin_upload_mta(request, uuid):
+    '''the admin view to upload the MTA - the same variables and functionality,
+       but a different template.
+    '''
+    if request.user.is_staff or request.user.is_superuser:
+        return _upload_mta(request, uuid, template='orders/upload-mta.html')
+    messages.warning(request, 'You are not allowed to perform this action.')
+    redirect('orders')
 
 # Order Operations
 
@@ -203,9 +220,11 @@ class CheckoutView(View):
             return render(self.request, "orders/checkout.html", context)
         except Order.DoesNotExist:
             messages.info(self.request, "You do not have an active order")
-            return render(self.request, "orders/checkout.html", context)
+            return redirect('orders')
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
+        '''This can be written if form data is ever sent to the server
+        '''
         form = CheckoutForm(self.request.POST or None)
-        print('TODO WRITE ME VANESSASAURUS')
+
