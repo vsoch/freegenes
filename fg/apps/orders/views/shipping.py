@@ -84,9 +84,6 @@ class ShippingView(View):
             order = Order.objects.get(user=self.request.user, received=False)
             if form.is_valid():
 
-                import pickle
-                pickle.dump(form, open('form-data.pkl','wb'))
-
                 # Get cleaned form data
                 data = form.cleaned_data
                 data['shipping_email'] = request.user.email

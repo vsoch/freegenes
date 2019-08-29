@@ -67,7 +67,14 @@ and download the MTA:
 ![download-mta.png]({{ site.baseurl }}/docs/usage/download-mta.png)
 
 And then use a similar form to re-upload, finish processing on their side, and continue with
-preparing the order.
+preparing the order. The interface for creating the shipment is what you would expect -
+the lab enters the addresses needed to create the shipment:
+
+![create-shipment.png]({{ site.baseurl }}/docs/usage/create-shipment.png)
+
+The parcel dimensions are currently set to a default, and the requester can
+decide to include dry ice or not. If either of the addresses aren't valid,
+the user is returned to the page with instructions to fix.
 
 ## Search
 

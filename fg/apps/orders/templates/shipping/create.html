@@ -7,6 +7,7 @@
       <div class="row">
         <div class="col-md-8 mb-4">
           <h2 id="upload">Create Shipment</h2>
+          <button class="btn btn-secondary" id="load-button" style="display:none">Load Addresses</button>
           <form action="{% url 'create_shipment' order.uuid %}" enctype="multipart/form-data" method="POST">
 	    {% csrf_token %}
 	    {{ form|crispy }}
@@ -27,47 +28,51 @@
 
 {% block pagescripts %}
 <script>
-var hideable_shipping_form = $('.hideable_shipping_form');
-var use_same_shipping = document.querySelector("input[name=same_shipping_address]");
 
-use_same_shipping.addEventListener('change', function() {
-  if (this.checked) {
-    hideable_shipping_form.hide();
-    document.getElementById("shipping_to").required = false;
-    document.getElementById("shipping_address").required = false;
-    document.getElementById("shipping_zip").required = false;
-  } else {
-    hideable_shipping_form.show();
-    document.getElementById("shipping_to").required = true;
-    document.getElementById("shipping_address").required = true;
-    document.getElementById("shipping_zip").required = true;
-  }
-})
-
-// On submit, update the server that order is "ordered"
-
-$("form").submit(function( event ) {
-
-  console.log("Form submit for {{ order.uuid }}")
-  var url = "#";
-
-  fetch(url).then(res => res.json())
-  .then(function(response) {
-    var response = JSON.stringify(response) 
-    console.log('Success:', response)
-
-    // On an error (order already submit, wrong user) don't send form
-    if (response['message'] == "error"){
-       event.preventDefault();
+// If the browser supports local storage, give user option to load from it
+$( document ).ready(function() {
+    if (localStorage.getItem('shipping_to') != null){
+        $('#load-button').show();
     }
-  })
-  .catch(function(response) {
-     var response = JSON.stringify(response);
-     console.log("Error", response)
-     event.preventDefault();
-  })
 });
 
+// Load previous values for form
+
+$("#load-button").click(function() {
+  if(typeof Storage !== "undefined") {
+      $("input[name='shipping_to']").val(localStorage.getItem('shipping_to'));
+      $("input[name='shipping_address']").val(localStorage.getItem('shipping_address'));
+      $("input[name='shipping_zip']").val(localStorage.getItem('shipping_zip'));
+      $("input[name='shipping_address2']").val(localStorage.getItem('shipping_address2'));   
+      $("input[name='from_name']").val(localStorage.getItem('from_name'));
+      $("input[name='from_address']").val(localStorage.getItem('from_address'));
+      $("input[name='from_zip']").val(localStorage.getItem('from_zip'));
+  } else {
+     console.log("Browser does not support local storage of fields.")
+  }
+}
+
+
+// On submit, save values to local storage
+
+$("form").submit(function(event) {
+
+  console.log("Form submit for {{ order.uuid }}")
+  if(typeof Storage !== "undefined") {
+
+      localStorage.setItem('shipping_to', $("input[name='shipping_to']").val());
+      localStorage.setItem('shipping_address', $("input[name='shipping_address']").val());
+      localStorage.setItem('shipping_zip', $("input[name='shipping_zip']").val());
+      localStorage.setItem('shipping_address2', $("input[name='shipping_address2']").val());
+   
+      localStorage.setItem('from_name', $("input[name='from_name']").val());
+      localStorage.setItem('from_address', $("input[name='from_address']").val());
+      localStorage.setItem('from_zip', $("input[name='from_zip']").val());
+  } else {
+     console.log("Browser does not support local storage of fields.")
+  }
+
+});
 
 </script>
 {% endblock pagescripts %}
