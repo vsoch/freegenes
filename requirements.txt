@@ -38,6 +38,7 @@ requests-toolbelt
 retrying
 rq-scheduler
 shapely
+shippo==2.0.0rc1
 social-auth-app-django
 social-auth-core[saml]
 uwsgi

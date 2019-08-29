@@ -1,0 +1,73 @@
+{% extends "base/page.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container wow fadeIn" style="padding-top:150px">
+      <h2 class="my-5 h2 text-center">Create Shipment</h2>
+      <div class="row">
+        <div class="col-md-8 mb-4">
+          <h2 id="upload">Create Shipment</h2>
+          <form action="{% url 'create_shipment' order.uuid %}" enctype="multipart/form-data" method="POST">
+	    {% csrf_token %}
+	    {{ form|crispy }}
+	    <button type="submit" class="btn btn-primary">Submit</button>
+	  </form>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          {% include "orders/order_snippet.html" with order_title="Order Details" %}
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+{% endblock content %}
+
+{% block pagescripts %}
+<script>
+var hideable_shipping_form = $('.hideable_shipping_form');
+var use_same_shipping = document.querySelector("input[name=same_shipping_address]");
+
+use_same_shipping.addEventListener('change', function() {
+  if (this.checked) {
+    hideable_shipping_form.hide();
+    document.getElementById("shipping_to").required = false;
+    document.getElementById("shipping_address").required = false;
+    document.getElementById("shipping_zip").required = false;
+  } else {
+    hideable_shipping_form.show();
+    document.getElementById("shipping_to").required = true;
+    document.getElementById("shipping_address").required = true;
+    document.getElementById("shipping_zip").required = true;
+  }
+})
+
+// On submit, update the server that order is "ordered"
+
+$("form").submit(function( event ) {
+
+  console.log("Form submit for {{ order.uuid }}")
+  var url = "#";
+
+  fetch(url).then(res => res.json())
+  .then(function(response) {
+    var response = JSON.stringify(response) 
+    console.log('Success:', response)
+
+    // On an error (order already submit, wrong user) don't send form
+    if (response['message'] == "error"){
+       event.preventDefault();
+    }
+  })
+  .catch(function(response) {
+     var response = JSON.stringify(response);
+     console.log("Error", response)
+     event.preventDefault();
+  })
+});
+
+
+</script>
+{% endblock pagescripts %}

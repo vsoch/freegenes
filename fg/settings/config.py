@@ -46,6 +46,7 @@ MANAGERS = ADMINS
 
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
+NODE_INSTITUTION = 'Stanford University'
 NODE_URI = "srcc"
 NODE_NAME = "Stanford Research Computing Center"
 

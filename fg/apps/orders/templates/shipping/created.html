@@ -1,0 +1,18 @@
+{% extends "base/page.html" %}
+
+{% block content %}
+    <div class="container wow fadeIn" style="padding-top:150px">
+      <h2 class="my-5 h2 text-center">Create Shipment</h2>
+      <div class="row">
+        <div class="col-md-8 mb-4">
+          <h2 id="upload">Shipment</h2>
+	    {{ shipment }}
+        </div>
+        <div class="col-md-4 mb-4">
+          {% include "orders/order_snippet.html" with order_title="Order Details" %}
+        </div>
+      </div>
+
+    </div>
+  </main>
+{% endblock content %}

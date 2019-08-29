@@ -21,12 +21,12 @@ class MTAForm(forms.ModelForm):
         model = MaterialTransferAgreement
         fields = ['mta_type', 'agreement_file', 'institution']
 
-#PAYMENT_CHOICES = (
-#    ('S', 'Stripe'),
-#    ('P', 'PayPal')
-#)
 
 class CheckoutForm(forms.Form):
+    '''the checkout form is sent to the view, but currently not used -
+       the information is sent via email to the lab. If we ever post to
+       the server, this form can be used to validate fields.
+    '''
 
     # Lab Name and Address
     lab_name = forms.CharField(required=True)
@@ -47,5 +47,30 @@ class CheckoutForm(forms.Form):
     shipping_address2 = forms.CharField(required=False)
     shipping_zip = forms.CharField(required=False)
 
-    #payment_option = forms.ChoiceField(
-    #    widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
+
+DRY_ICE_CHOICES = (
+    ('Yes', 'Contains Dry Ice'),
+    ('No', 'No Dry Ice')
+)
+
+class ShippingForm(forms.Form):
+    '''the shipping form is filled out by the lab staff using the addresses
+       sent via email. The institution (lab) name, and email are taken from
+       settings.config (HELP_INSTITUTION_EMAIL and NODE_INSTITUTION
+    ''' 
+
+    # If shipping address is different
+    shipping_to = forms.CharField(required=True)
+    shipping_address = forms.CharField(required=True)
+    shipping_address2 = forms.CharField(required=False)
+    shipping_zip = forms.CharField(required=True)
+
+    # TO Lab Name and Address
+    from_name = forms.CharField(required=True)
+    from_address = forms.CharField(required=True)
+    from_address2 = forms.CharField(required=False)
+    from_zip = forms.CharField(required=True)
+
+    dryice_options = forms.ChoiceField(
+        widget=forms.RadioSelect, choices=DRY_ICE_CHOICES)
+

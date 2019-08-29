@@ -16,6 +16,8 @@
           <button class="btn btn-primary"><i class="fa fa-download" style="margin-right:5px"></i> Download MTA</button></a>
              <a href="{% url 'upload-mta' instance.uuid  %}">
           <button class="btn btn-primary"><i class="fa fa-upload" style="margin-right:5px"></i> Upload Signed MTA</button></a>
+          <a href="{% url 'create_shipment' instance.uuid %}">
+          <button class="btn btn-secondary" {% if instance.received %}disabled{% else %}{% endif %}><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Create Shipment</button></a>
       </div>
   </div>{% endif %}
   <div class="row">

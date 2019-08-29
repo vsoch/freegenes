@@ -11,3 +11,5 @@ from .orders import (
     orders_view,
     CheckoutView
 )
+
+from .shipping import ShippingView

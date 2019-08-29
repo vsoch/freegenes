@@ -9,13 +9,14 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
 import fg.apps.orders.views as views
 
 urlpatterns = [
     url(r'^$', views.orders_view, name='orders'),
     url(r'^cart/add/(?P<uuid>.+)$', views.add_to_cart, name='add-to-cart'),
     url(r'^cart/remove/(?P<uuid>.+)$', views.remove_from_cart, name='remove-from-cart'),
-    url(r'^checkout$', views.CheckoutView.as_view(), name='checkout'),
+    url(r'^checkout$', login_required(views.CheckoutView.as_view()), name='checkout'),
     url(r'^submit/(?P<uuid>.+)$', views.submit_order, name='submit_order'),
 
     # Material Transfer Agreement
@@ -24,5 +25,8 @@ urlpatterns = [
 
     # Details (e corresponds for entity)
     url(r'^details/(?P<uuid>.+)$', views.order_details, name='order_details'),
+
+    # Shipments
+    url(r'^shipment/create/(?P<uuid>.+)$', login_required(views.ShippingView.as_view()), name='create_shipment'),
 
 ]

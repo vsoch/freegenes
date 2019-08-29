@@ -15,8 +15,8 @@ with Python and Django.
 
 ## User Guide
 
- - [Usage](usage): Including the FreeGenes API, user and admin interfaces.
- - [Frequently Asked Questions](faq) about FreeGenes.
+ - [Usage]({{ site.baseurl }}/docs/usage/): Including the FreeGenes API, user and admin interfaces.
+ - [Frequently Asked Questions]({{ site.baseurl }}/docs/faq/) about FreeGenes.
 
 ## Who is FreeGenes For?
 
@@ -30,9 +30,8 @@ data and permissions, but it's not technically impossible to do.
 
 ## Deployment
 
- - [Development or Setup](development/): background and basic setup
- - [Plugins](plugins/): additional plugins that can be enabled for authentication
-
+ - [Development or Setup]({{ site.baseurl }}/docs/development/): background and basic setup
+ - [Plugins]({{ site.baseurl }}/docs/plugins/): additional plugins that can be enabled for authentication
 
 
 <hr>

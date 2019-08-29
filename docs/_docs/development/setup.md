@@ -242,9 +242,12 @@ ensuring that the `DOMAIN_NAME` above uses https. It's up to the deployer to set
 
 You need to define a FreeGenes node uri, and different contact information:
 
+> **Important** The `HELP_CONTACT_EMAIL` is used for the Shippo API, as the from address email. Ensure that it's a valid email that can be received by lab personell. The `NODE_INSTITUTION` is also used for the company field.
+
 ```python
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
+NODE_INSTITUTION = 'Stanford University'
 NODE_URI = "srcc"
 NODE_NAME = "Stanford Research Computing Center"
 ```
