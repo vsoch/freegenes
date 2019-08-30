@@ -8,6 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
@@ -17,6 +18,7 @@ import uuid
 ################################################################################
 # Orders
 ################################################################################
+
 
 class Order(models.Model):
     '''A request by a user for a shipment. The address/ personal information
@@ -44,6 +46,8 @@ class Order(models.Model):
  
     # When a user is deleted don't delete orders
     user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=True, null=True)
+    transaction = JSONField(default=dict)
+    label = JSONField(default=dict)
 
     # When an MTA is deleted, we don't touch the order. We don't require an MTA
     # for the order object, however we require it to be present when checking out
@@ -51,6 +55,27 @@ class Order(models.Model):
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
                                                     on_delete=models.DO_NOTHING,
                                                     blank=True, null=True)
+
+    # Save json functions
+
+    def add_transaction(self, transaction):
+        '''add a Shippo transaction to an order, meaning stripping any billing
+           information and converting to dictionary
+        '''
+        data = dict(transaction)
+        del data['billing']
+        self.transaction = data
+        self.save()
+
+    def add_label(self, label):
+        '''save a Shippo label to an order, meaning stripping any billing
+           information and converting to dictionary
+        '''
+        data = dict(label)
+        del data['billing']
+        self.label = data
+        self.save()
+
 
     def __str__(self):
         return "<Order:%s>" % self.name

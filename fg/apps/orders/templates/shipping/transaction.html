@@ -1,0 +1,38 @@
+{% extends "base/page.html" %}
+
+{% block content %}
+    <div class="container wow fadeIn" style="padding-top:150px">
+      <h2 class="my-5 h2 text-center">Transaction Details</h2>
+      <div class="row">
+        <div class="col-md-8 mb-4">
+          <h2 id="upload" style="margin-bottom:20px">Transaction</h2>
+            {% if order.transaction %}
+              {% if order.label %}
+                {% if order.label.status == "SUCCESS" %}
+                  <p class="alert alert-info">Tracking Number: {{ order.label.tracking_number }}</p>
+                  <a href="{{ order.label.tracking_url_provider }}" target="_blank"><button class="btn btn-secondary">Track this Package</button></a>
+                  <a href="{{ order.label.label_url }}" target="_blank"><button class="btn btn-secondary">Print Label</button></a>
+                  {% if order.label.messages %}<p class="alert alert-info">{% for message in order.label.messages %}{{ message }}{% endfor %}<br></p>{% endif %}
+                {% else %}
+                   <p class="alert alert-danger">There was an error creating this shipment label.</p>
+                   {% if order.label.messages %}<p class="alert alert-info">{% for message in order.label.messages %}{{ message }}{% endfor %}<br></p>{% endif %}
+                   <p class="well">{{ order.label }}</p>
+                {% endif %}
+              {% else %}
+                 {% if order.transaction.object_state == "VALID" %}
+                  <p>The shipping transaction was valid! Next, generate a label.</p> 
+                  <a href="{% url 'create_label' order.uuid %}"><button class="btn btn-warning">Generate Label</button></a>
+                  {% else %}<p class="alert alert-warning">There was an issue with the transaction<br>{{ order.transaction }}</p>
+                  {% endif %}
+              {% endif %}
+            {% else %}
+                 <p class="alert alert-warning">No shipment transaction has been created for this order. <a href="{{ order.get_absolute_url }}">See order details.</a></p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 mb-4">
+          {% include "orders/order_snippet.html" with order_title="Order Details" %}
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock content %}

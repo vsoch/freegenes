@@ -68,13 +68,35 @@ and download the MTA:
 
 And then use a similar form to re-upload, finish processing on their side, and continue with
 preparing the order. The interface for creating the shipment is what you would expect -
-the lab enters the addresses needed to create the shipment:
+the lab enters the addresses needed to create the shipment, along with
+the dimensions of the parcel:
 
 ![create-shipment.png]({{ site.baseurl }}/docs/usage/create-shipment.png)
 
-The parcel dimensions are currently set to a default, and the requester can
-decide to include dry ice or not. If either of the addresses aren't valid,
-the user is returned to the page with instructions to fix.
+The requester can also decide to include dry ice or not. If either of the addresses aren't valid,
+the user is returned to the page with instructions to fix. In the case that the
+user is returned to the page, a button is presented that will re-load the addresses
+information from local storage so the user doesn't need to re-enter it. 
+If the shipment is valid, the user is then presented with the shipping rate options:
+
+![shipment-details.png]({{ site.baseurl }}/docs/usage/shipment-details.png)
+
+Selecting a rate first needs to create and validate the transaction. The user is
+taken to a page that shows it's valid, and then (for the first round, given that
+there is no label) the user can click a button to generate one when ready. Once
+the label is generated, the user can choose to print it, or track the package:
+
+![transaction.png]({{ site.baseurl }}/docs/usage/transaction.png)
+
+The label prints as a PDF that opens in a new window:
+
+![label.png]({{ site.baseurl }}/docs/usage/label.png)
+
+And the tracking url is standard, provided by the service selected (the testing
+api appears to return an already used number):
+
+![tracking.png]({{ site.baseurl }}/docs/usage/tracking.png)
+
 
 ## Search
 

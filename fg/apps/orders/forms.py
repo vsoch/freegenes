@@ -71,6 +71,10 @@ class ShippingForm(forms.Form):
     from_address2 = forms.CharField(required=False)
     from_zip = forms.CharField(required=True)
 
+    parcel_length = forms.CharField(required=True, label="Length in inches")
+    parcel_width = forms.CharField(required=True, label="Width in inches")
+    parcel_height = forms.CharField(required=True, label="Height in inches")
+    parcel_weight = forms.CharField(required=True, label="Weight in pounds")
+
     dryice_options = forms.ChoiceField(
         widget=forms.RadioSelect, choices=DRY_ICE_CHOICES)
-

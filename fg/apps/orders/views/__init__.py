@@ -12,4 +12,8 @@ from .orders import (
     CheckoutView
 )
 
-from .shipping import ShippingView
+from .shipping import (
+    create_label,
+    create_transaction,
+    ShippingView
+)

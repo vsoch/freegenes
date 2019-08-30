@@ -7,18 +7,36 @@
         <div class="col-md-8 mb-4">
           <h2 id="upload">Shipment</h2>
             {% if shipment.status == "SUCCESS" %}
-            <p class="well">{{ shipment }}</p>
+            <form action="{% url 'create_transaction' order.uuid %}" method="POST">
+                {% csrf_token %}
+		<div class="form-group">
+		  <label for="select-provider">Select a shipping option (details below):</label>
+		  <select class="form-control" name="select_provider" id="select-provider" required>{% for rate in shipment.rates %}
+		    <option value="{{ rate.object_id }}">{{ rate.provider }}: {{ rate.servicelevel.name }} - ${{ rate.amount }}</option>{% endfor %}
+		  </select>
+		</div>
+                {% for rate in shipment.rates %}
+		<div class="card">
+		  <h5 class="card-header">{{ rate.provider }}: {{ rate.servicelevel.name }} - ${{ rate.amount }}</h5>
+		  <div class="card-body">
+		    <h5 class="card-title">{{ rate.duration_terms }}</h5>
+		    <p class="card-text"><img src="{{ rate.provider_image_200 }}">{% if rate.attributes %}<ul>
+                        {% for attribute in rate.attributes %}<li>{{ attribute }}</li>{% endfor %}</ul>{% endif %}
+                    </p>
+		  </div>
+		</div>
+                {% endfor %}
+                <button style="float:right; margin-top:20px" class="btn btn-warning" type="submit">Submit</button>
+            </form>
             {% else %}
                <p class="alert alert-danger">There was an error creating this shipment.</p>
                <p class="well">{{ shipment }}</p>
             {% endif %}
-	    {{ shipment }}
         </div>
         <div class="col-md-4 mb-4">
           {% include "orders/order_snippet.html" with order_title="Order Details" %}
         </div>
       </div>
-
     </div>
   </main>
 {% endblock content %}

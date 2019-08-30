@@ -28,5 +28,7 @@ urlpatterns = [
 
     # Shipments
     url(r'^shipment/create/(?P<uuid>.+)$', login_required(views.ShippingView.as_view()), name='create_shipment'),
+    url(r'^transaction/create/(?P<uuid>.+)$', views.create_transaction, name='create_transaction'),
+    url(r'^label/create/(?P<uuid>.+)$', views.create_label, name='create_label'),
 
 ]

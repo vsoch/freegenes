@@ -58,11 +58,10 @@ class ShippingView(View):
             redirect('catalog_view')
 
         try:
-           # An order cannot be already processed (received is True)
-           order = Order.objects.get(uuid=kwargs.get('uuid'), received=False)
+            order = Order.objects.get(uuid=kwargs.get('uuid'))
         except Order.DoesNotExist:
             raise Http404
-
+            
         # If no MTA, redirect back to the order page with instructions to get it
         if not order.material_transfer_agreement:
             messages.warning(self.request, "This order needs an MTA before proceeding.")
@@ -81,12 +80,12 @@ class ShippingView(View):
         '''
         form = ShippingForm(self.request.POST or None)
         try:
-            order = Order.objects.get(user=self.request.user, received=False)
+            order = Order.objects.get(user=self.request.user)
             if form.is_valid():
 
                 # Get cleaned form data
                 data = form.cleaned_data
-                data['shipping_email'] = request.user.email
+                data['shipping_email'] = self.request.user.email
                 addresses = create_addresses(data)    
 
                 # Ensure that both addresses are valid
@@ -97,13 +96,83 @@ class ShippingView(View):
                         redirect('create_shipment', args=(order.uuid,))
 
                 # Create the shipment, return to view
-                shipment = create_shipment(addresses)
+                shipment = create_shipment(addresses, data)
                 context = {"shipment": shipment, "order": order}
                 return render(self.request, "shipping/created.html", context)
 
         except Order.DoesNotExist:                
             message.error(self.request, 'That order does not exist.')
             redirect('orders')
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def create_transaction(request, uuid):
+    '''we receive the response from the ShippingView, and create the transaction
+       here. The order id is again the only required argument to save the transaction
+       id with it, and the only thing we need for the Shippo API is the rate_id
+       that was chosen, which already is associated with the particular parcel.
+    '''
+    try:
+        # An order cannot be already processed (received is True)
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+
+    # Only staff, admins, and order owners can see
+    if not request.user.is_staff and not request.user.is_superuser and not request.user == order.owner:
+        messages.info(request, "This operation is not permitted")
+        return redirect("orders")
+
+    # A post indicates creating the transaction
+    if request.method == "POST":
+
+        rate_id = request.POST.get('select_provider')
+
+        # Create the transaction
+        transaction = shippo.Transaction.create(rate=rate_id,
+                                                label_file_type="PDF",
+                                                api_key=SHIPPO_TOKEN)
+
+        # Save the transaction object
+        order.add_transaction(transaction)
+
+        if transaction['object_state'] != 'VALID':
+            messages.error(request, 'There was an error creating that transaction.')
+            return redirect('order_details', args=(order.uuid,))
+
+        # There is some delay to create the label, so we make the user wait
+
+    # A get is viewing a previous transaction, if it exists.
+    return render(request, "shipping/transaction.html", {'order': order})
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def create_label(request, uuid):
+    '''The shipment takes a small delay to process the transaction, so we
+       first direct the user to the transaction page, and (given that the label
+       is not generated) require them to push a button to generate it.
+    '''
+    try:
+        # An order cannot be already processed (received is True)
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+
+    if not order.label:
+
+        # If we are successful, we can retrieve the shipping label
+        label = shippo.Transaction.retrieve(order.transaction['object_id'], 
+                                            api_key=SHIPPO_TOKEN)
+        order.add_label(label)
+
+        # Received flag indicates it was processed
+        order.received = True
+        order.save()
+
+    # A get is viewing a previous transaction, if it exists.
+    return render(request, "shipping/transaction.html", {'order': order})
 
 
 # Helper Functions
