@@ -48,4 +48,5 @@ urlpatterns = [
 
     # Download
     url(r'^download/mta/(?P<uuid>.+)/?$', views.download_mta, name='download_mta'),
+    url(r'^download/plate/csv/(?P<uuid>.+)/?$', views.download_plate_csv, name='download_plate_csv'),
 ]

@@ -265,7 +265,7 @@ def plates_catalog_view(request):
     return catalog_pagination(request, Plate, "plates")
 
 
-## Download
+## Download and Export
 
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
@@ -297,3 +297,24 @@ def download_mta(request, uuid):
         messages.warning(request, "That order doesn't have a material transfer agreement.")
 
     raise Http404
+
+
+def generate_plates_csv(
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def download_plateset_csv(request, uuid):
+    '''download a csv file for a plateset.
+    '''
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+    writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+
+    return response
+
+
+Plate name, Plate type, Well Address, Part name, Part gene_id, Sample evidence, Part sequence
