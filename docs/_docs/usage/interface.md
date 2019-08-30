@@ -7,6 +7,7 @@ description: A typical user might want to search, or create an order
 
  - [Dashboard](#dashboard) for user and staff navigation
  - [Orders](#orders) to sign an MTA and request distributions
+ - [Shipments](#shipments) for the label to receive and process orders
  - [Search](#search) and catalog views
  - [Maps](#maps) for finding plates.
  - [Profile](#profile) include account management and API tokens.
@@ -60,6 +61,8 @@ but rather sends an email with the form to the lab. This is done for three reaso
  1. It's an easy way to notify the lab of an order
  2. It eliminates the need to store personal information on the server
  3. We can have better certainty of having the latest shipping information.
+
+## Shipments
 
 The lab can then receive the email, click a link to go directly to the order
 and download the MTA:
