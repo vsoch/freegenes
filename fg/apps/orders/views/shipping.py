@@ -52,6 +52,10 @@ class ShippingView(View):
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
     def get(self, *args, **kwargs):
         '''create a shipment for a given order
+
+           Parameters
+           ==========
+           uuid: the unique ID for the order, must exist.
         '''
         if not self.request.user.is_staff or self.request.user.is_superuser:
             messages.warning(self.request, "You don't have permission to see this view.")
@@ -77,6 +81,10 @@ class ShippingView(View):
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
         '''This can be written if form data is ever sent to the server
+
+           Parameters
+           ==========
+           uuid: the unique identifier for the order, must exist
         '''
         form = ShippingForm(self.request.POST or None)
         try:

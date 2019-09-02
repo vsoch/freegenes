@@ -573,7 +573,7 @@ class SinglePlateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plate
         fields = ('uuid', 'time_created', 'time_updated', 'plate_type', 
-                  'plate_form', 'status', 'name', 'breadcrumb', 'thaw_count',
+                  'plate_form', 'status', 'name', 'thaw_count',
                   'notes', 'height', 'length', 'container', 'protocol', 
                   'wells', 'label')
 
@@ -584,9 +584,8 @@ class PlateSerializer(SinglePlateSerializer):
     class Meta:
         model = Plate
         fields = ('uuid', 'time_created', 'time_updated', 'plate_type', 
-                  'plate_form', 'status', 'name', 'breadcrumb', 'thaw_count',
-                  'notes', 'height', 'length', 'container', 'protocol', 
-                  'label')
+                  'plate_form', 'status', 'name', 'thaw_count',
+                  'notes', 'height', 'length', 'protocol', 'label')
 
 
 class PlateViewSet(ListModelMixin, generics.GenericAPIView):
