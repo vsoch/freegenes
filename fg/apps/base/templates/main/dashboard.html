@@ -87,12 +87,11 @@
       </div>
     </div>
   <div class="row" style='margin-top:100px'>
-    <div class="col-md-12">
+    {% if request.user.is_authenticated %}<div class="col-md-12">
       <h1>{% if request.user.is_superuser or request.user.is_staff %}Orders{% else %}Your Orders{% endif %}</h1>
       <hr>
       {% include "tables/order_table.html" with table_id="order-table" %}
-
-    </div>
+    </div>{% endif %}
   </div>
 </div>
 {% endblock %}
