@@ -4,7 +4,7 @@
 # is probably a bad choice if it needs to be maintained
 # by a group of people
 
-# This was developed on Ubuntu 18.04 LTS on Google Cloud
+# This was developed on Ubuntu 18.04 LTS minimal on Google Cloud with 100GB disk
 
 INSTALL_ROOT=$HOME
 
@@ -14,6 +14,7 @@ sudo apt-get update > /dev/null
 sudo apt-get install -y git \
                         build-essential \
                         nginx \
+                        vim \
                         python-dev
 
 # Needed module for system python

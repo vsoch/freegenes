@@ -8,10 +8,14 @@ tags:
 
 # Docker Compose
 
-At this point you should have cloned the repository to your server, edited the settings files to select the
-authentication, rate limits, and other settings, generated the secrets file
-with credentials for third party services, and you should be ready to start your
-node. You can do this with:
+At this point you should have cloned the repository to your server, edited the settings files to select the authentication, rate limits, and other settings, generated the secrets file with credentials for third party services, and set up networking. Personally, I like to have https ready to go before turning anything on - if you haven't done this yet
+go back to [here](https://vsoch.github.io/freegenes/docs/development/setup#domain-name). After those steps, you should be ready to start your node. If you haven't built the primary container yet:
+
+```bash
+$ docker build -t vanessa/freegenes .
+```
+
+(And in the future we can provide pre-built versions likely on Quay.io)! And then you can start the containers with:
 
 ```bash
 $ docker-compose up -d

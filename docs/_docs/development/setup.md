@@ -20,9 +20,30 @@ this entire process easier, we've provided a [script](https://github.com/vsoch/f
 and building the FreeGenes container. Note that you'll need to log in and out after
 adding your user to the Docker group for Docker to function properly without needing sudo.
 
-> We will be adding deployment specific clones and setup once they are determined, for now this is assumed to be local development or deployment on a server.
+## Google Cloud
+
+For development deployment on Google Cloud, you will want to first log in to your project and [create an instance](https://console.cloud.google.com/compute/instances). Notes are in
+[script](https://github.com/vsoch/freegenes/blob/master/scripts/prepare_instance.sh), and repeated here for clarity:
+
+ - **Region** you want to be as close to where your main operations are as possible. For CA, this typically means us-west1, and then choose a,b, or c. The actual instances for a/b/c vary by project, so your choice of A isn't equal to another project's, so don't worry too much about your choice.
+ - **Machine Family** I typically choose General purpose, because we just need a basic linux base.
+ - You don't need to select that we are deploying a container to the instance - we are, but we don't need the special "Container OS" that Google Cloud offers.
+ - **Machine Type** It's best to choose a smaller (but not too small) size, typically I choose n1-standard-2 (2 vCPUs, 7.5 GB memory).
+ - **Boot Disk** Even for development, you always want to chose an image with long term support. E.g., for now I would choose Ubuntu 18.04 LTS (long term support). There is a minimal image that works well.
+ - **API Access** you generally want to limit to only those endpoints that are needed. For the current FreeGenes we don't need additional, however I anticipate using Google Storage and possibly Big Query.
+ - You want to allow both http/https traffic - this server will be exposed to the web.
+ - Under management, I like to enable "Delete protection." You never know if/when someone might click a button by accident.
+ - Under management-> networking, you can click on the "default" interface to ensure that you have a static (and not ephemeral) ip address. This is important so that if we ever need to re-create the server, we can use the same DNS settings and have confidence that we have the ip address.
+
+### Billing
+
+Under billing, it's good practice to also set up billing alerts - unintended charges to a project that you don't know about can have dire consequences. A small server of this size shouldn't cost more than $10 a day (this would be a LOT) so I generally would start with a lower monthly limit (possibly $300) with alerts at 25, 50, 75, and 100, and adjust as needed.
+
+> We will be adding production deployment specific clones and setup once they are determined, for now this is assumed to be local development or deployment on a server. This setup could very well serve in production.
 
 ## Settings
+
+By the time you get here, you should be sitting on a server, have dependencies installed via the [prepare instance script](https://github.com/vsoch/freegenes/blob/master/scripts/prepare_instance.sh), and have cloned the FreeGenes repository to your $HOME (or a shared location where you want to install it).
 
 The primary workings of your FreeGenes node are determined by how you configure
 it in the application settings, which are located in the [settings folder](https://github.com/vsoch/freegenes/blob/master/fg/settings). In that folder are a group of different files with default settings for your application. 

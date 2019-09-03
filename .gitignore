@@ -1,11 +1,11 @@
 # Compiled pyc #
 ################
 *.pyc
-.*
 !/.gitignore
 __pycache__
 *.img
 _site
+.env
 
 # Other #
 #########
