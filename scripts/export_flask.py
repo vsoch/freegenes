@@ -43,6 +43,10 @@ endpoints = ["collections", "collections/full",
              "modules", "modules/full",
              "schemas", "schemas/full"]
 
+if not username or not password:
+    print('Please export FREEGENES_USER and FREEGENES_PASSWORD to the environment')
+    sys.exit(1)
+
 # Save to data folder in the scripts directory, organized by date
 save_base = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
 save_to = os.path.join(save_base, today)
@@ -51,10 +55,6 @@ for folder in [save_base, save_to, files]:
     if not os.path.exists(folder):
         print('Creating output directory %s' % folder)
         os.mkdir(folder)
-
-if not username or not password:
-    print('Please export FREEGENES_USER and FREEGENES_PASSWORD to the environment')
-    sys.exit(1)
 
 # Helper Functions #############################################################
 
@@ -98,8 +98,11 @@ for endpoint in endpoints:
         print("GET %s" % url)
  
         if re.search('(shipment|address|parcel)', endpoint):
-            token = get_auth_token(username, password)
-            response = requests.get(url, json={'token': token})
+            try:
+                token = get_auth_token(username, password)
+                response = requests.get(url, json={'token': token})
+            except:
+                continue
         else:
             response = requests.get(url)
 
