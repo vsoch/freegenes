@@ -9,7 +9,7 @@ tags:
 # Docker Compose
 
 At this point you should have cloned the repository to your server, edited the settings files to select the authentication, rate limits, and other settings, generated the secrets file with credentials for third party services, and set up networking. Personally, I like to have https ready to go before turning anything on - if you haven't done this yet
-go back to [here](https://vsoch.github.io/freegenes/docs/development/setup#domain-name). After those steps, you should be ready to start your node. 
+go back to [here](https://vsoch.github.io/freegenes/docs/development/setup#domain-name). And **do not forget** to swap the docker-compose.yml (supporting http only) with the one in https. After those steps, you should be ready to start your node. 
 
 ## Containers
 
