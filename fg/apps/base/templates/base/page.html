@@ -42,7 +42,7 @@
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="supportDropdown">
             <a class="dropdown-item" href="{% url 'contact' %}">Contact Us</a>
             <a class="dropdown-item" href="https://vsoch.github.io/freegenes/docs/getting-started/">User Guide</a>
-            <a class="dropdown-item" href="{% url 'api-schema' %}">API</a>
+            <a class="dropdown-item" href="{{ domain }}/api/docs">API</a>
           </div>
          </li>
         {% if request.user.is_authenticated %}<li class="nav-item dropdown">
