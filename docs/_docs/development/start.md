@@ -54,6 +54,50 @@ If you want to have logs streaming live in a window, add "-f":
 $ docker-compose logs -f uwsgi
 ```
 
+## Importing Data
+
+If you want to export data from the [previous Flask](), you'll need to export your
+`FREEGENES_LOGIN` and `FREEGENES_PASSWORD` to the environment:
+
+```bash
+export FREEGENES_LOGIN=username
+export FREEGENES_PASSWORD=password
+```
+
+And then run the flask export script from the root of the repository:
+
+```bash
+$ python scripts/flask_export.py
+```
+
+This will create a data folder in the scripts folder, with subdirectories with the date.
+You can then shell into the uwsgi container:
+
+```bash
+$ docker exec -it freegenes_uwsgi_1 bash
+```
+
+And import the data to the database based on the date.
+
+```bash
+$ python manage.py import_flask_json scripts/data/2019-09-03
+Adding parent to <Collection:Build-A-Cell>
+Adding parent to <Collection:Addgene 20>
+Adding parent to <Collection:E.coli RED20 essentials>
+Adding parent to <Collection:B.subtilis essentials>
+Adding parent to <Collection:JCVI-Syn3.0>
+Adding parent to <Collection:Mycoplasma genitalium full set>
+Adding parent to <Collection:Mycoplasma pneumoniae full set>
+Adding parent to <Collection:Mesoplasma florum gene set>
+Adding parent to <Collection:Wolbachia gene collection>
+Adding parent to <Collection:OpenEnzyme>
+...
+```
+
+This script will successfully work given that the data exported has not changed in
+format since it was developed. If you have any issues or there are known changes, please
+[open an issue]({{ site.repo }}/issues).
+
 ## Logging in
 
 Next you should be able to go to the interface at either [127.0.0.1](127.0.0.1) (for development)
