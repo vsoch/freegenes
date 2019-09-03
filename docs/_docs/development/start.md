@@ -107,6 +107,21 @@ This script will successfully work given that the data exported has not changed 
 format since it was developed. If you have any issues or there are known changes, please
 [open an issue]({{ site.repo }}/issues).
 
+## Enabling Monitoring
+
+Google offers monitoring options, but I like using [sentry.io](https://sentry.io).
+If you want to create an account and new project, you'll just need to change
+`USE_SENTRY` in your settings/logging.py to True, and then add the following variables with
+your key and secret:
+
+```bash
+ENABLE_SENTRY=True
+SENTRY_DSN="https://xxxxxxxxxxxxxxxxxxxxxxx@sentry.io/xxxxxxx"
+```
+
+You will need to replace the dummy string for `SENTRY_DSN` with the one presented
+after you create the project.
+
 ## Logging in
 
 Next you should be able to go to the interface at either [127.0.0.1](127.0.0.1) (for development)

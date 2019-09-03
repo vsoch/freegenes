@@ -26,7 +26,6 @@ ENABLE_BITBUCKET_AUTH = False
 # See below for additional authentication module, e.g. LDAP that are
 # available, and configured, as plugins.
 
-
 # Shipping (set this variable in your secrets.py
 SHIPPO_TOKEN=None
 

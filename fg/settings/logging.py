@@ -10,6 +10,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
 
+# Monitoring **recommended
+ENABLE_SENTRY=False
+SENTRY_DSN="https://xxxxxxxxxxxxxxxxxxxxxxx@sentry.io/xxxxxxx"
+
 # Default Django logging is WARNINGS+ to console
 # so visible via docker-compose logs uwsgi
 LOGGING = {
@@ -27,3 +31,13 @@ LOGGING = {
         },
     },
 }
+
+if ENABLE_SENTRY:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()]
+    )
+
