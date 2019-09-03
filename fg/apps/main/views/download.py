@@ -18,6 +18,7 @@ from ratelimit.decorators import ratelimit
 
 from fg.apps.orders.models import Order
 from fg.apps.main.models import (
+    Distribution,
     Plate,
     PlateSet,
 )
@@ -65,29 +66,31 @@ def download_mta(request, uuid):
     raise Http404
 
 
-@ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def download_plate_csv(request, uuid):
-    '''generate a response to write a csv for some number of plates (all plates,
-       or a plateset) to return via a download view.
+def generate_plate_csv(plates, filename, content_type='text/csv'):
+    '''a helper function to generate a csv file for one or more plates.
+       a filename be provided for the csv writer from the 
+       calling view. A HttpResponse is returned.
+
+       Parameters
+       ==========
+       plates: a list of plates to include (can be from a plateset, a single
+               plate, or a distribution)
+       filename: the complete filename to download to
+       content_type: the content type (defaults to text/csv)
     '''
-    try:
-        plate = Plate.objects.get(uuid=uuid)
+    response = HttpResponse(content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
-        # Add the date, number of wells
-        filename = "freegenes-plate-%s-wells-%s.csv" %(datetime.now().strftime('%Y-%m-%d'),
-                                                       plate.wells.count())
+    # Columns headers for plate wells
+    columns = ['plate_name', 'plate_type', 
+               'well_address', 'part_name',
+               'part_gene_id', 'sample_evidence',
+               'part_sequence']
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    writer = csv.writer(response)
+    writer.writerow(columns)
 
-        # Columns headers for plate wells
-        columns = ['plate_name', 'plate_type', 
-                   'well_address', 'part_name',
-                   'part_gene_id', 'sample_evidence',
-                   'part_sequence']
-
-        writer = csv.writer(response)
-        writer.writerow(columns)
+    for plate in plates:
  
         # Add each well to the csv
         for well in plate.wells.all():
@@ -102,7 +105,50 @@ def download_plate_csv(request, uuid):
                              sample.evidence,
                              sample.part.synthesized_sequence])
 
-        return response
+    return response
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def download_plate_csv(request, uuid):
+    '''generate a response to write a csv for some number of plates (all plates,
+       or a plateset) to return via a download view.
+    '''
+    try:
+        plate = Plate.objects.get(uuid=uuid)
+
+        # Add the date, number of wells
+        filename = "freegenes-plate-%s-wells-%s.csv" %(datetime.now().strftime('%Y-%m-%d'),
+                                                       plate.wells.count())
+        return generate_plate_csv([plate], filename)
 
     except Plate.DoesNotExist:
+        pass
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def download_plateset_csv(request, uuid):
+    '''generate a csv for an entire (single) plateset.
+    '''
+    try:
+        plateset = PlateSet.objects.get(uuid=uuid)
+        filename = "freegenes-plateset-%s-plates-%s.csv" %(datetime.now().strftime('%Y-%m-%d'),
+                                                           plateset.plates.count())
+
+        return generate_plate_csv(plateset.plates.all(), filename)
+
+    except PlateSet.DoesNotExist:
+        pass
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def download_distribution_csv(request, uuid):
+    '''generate a csv for an entire distribution (more than one plateset).
+    '''
+    try:
+        dist = Distribution.objects.get(uuid=uuid)
+        filename = "freegenes-distribution-%s-%s.csv" %(dist.name.replace(' ', '-').lower(),
+                                                        datetime.now().strftime('%Y-%m-%d'))
+
+        return generate_plate_csv(dist.get_plates(), filename)
+
+    except Distribution.DoesNotExist:
         pass

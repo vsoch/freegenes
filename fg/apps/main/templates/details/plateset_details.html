@@ -8,12 +8,12 @@
       <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
       <h4>
     </div>
-  </div>{% if request.user.is_superuser %}
+  </div>
   <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_plateset_change' instance.uuid %}">
-          <button class="btn btn-primary">Edit</button></a>
+      <div class="col-md-12">{% if request.user.is_superuser or request.user.is_staff %}<a href="{% url 'admin:main_plateset_change' instance.uuid %}"><button class="btn btn-primary">Edit</button></a>{% endif %}
+           <a href="{% url 'download_plateset_csv' instance.uuid %}"><button class="btn btn-primary">Download (csv)</button></a>
       </div>
-  </div>{% endif %}
+  </div>
   <div class="row">
     <div class="col-md-12">
     <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>

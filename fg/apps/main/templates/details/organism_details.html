@@ -8,7 +8,7 @@
       <h1>{{ instance.get_label | title }}: {% if instance.name %}{{ instance.name }}{% else %}{{ instance }}{% endif %}</h1>
       <h4>
     </div>
-  </div>{% if request.user.is_superuser %}
+  </div>{% if request.user.is_superuser or request.user.is_staff %}
   <div class="row" style="margin-bottom:20px">
       <div class="col-md-12"><a href="{% url 'admin:main_organism_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>

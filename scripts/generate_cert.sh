@@ -11,7 +11,7 @@ INSTALL_ROOT=$HOME
 # Install certbot (if not already done)
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update && \
-    sudo apt-get install python-certbot-nginx
+    sudo apt-get install -y python-certbot-nginx
 
 # Get certificates (might need sudo)
 certbot certonly --nginx -d "${DOMAIN}" -d "www.${DOMAIN}" --email "${EMAIL}" --agree-tos --redirect

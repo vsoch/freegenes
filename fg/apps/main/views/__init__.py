@@ -33,5 +33,7 @@ from .catalog import (
 
 from .download import (
     download_mta,
-    download_plate_csv
+    download_plate_csv,
+    download_plateset_csv,
+    download_distribution_csv
 )

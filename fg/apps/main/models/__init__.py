@@ -33,6 +33,7 @@ from .validators import (
     validate_json_schema
 )
 
+from itertools import chain
 import os
 import string
 import uuid
@@ -840,6 +841,15 @@ class Distribution(models.Model):
 
     def get_absolute_url(self):
         return reverse('distribution_details', args=[self.uuid])
+
+    def get_plates(self):
+        '''return a list of plates belonging to the distribution (meaning
+           unwrapping the platesets
+        '''
+        plates = []
+        for plateset in self.platesets.all():
+            plates = list(chain(plates, plateset.plates.all()))
+        return plates
 
     def __str__(self):
         return "<Distribution:%s,%s>" %(self.name, self.platesets.count())

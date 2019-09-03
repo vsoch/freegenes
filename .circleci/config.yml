@@ -13,7 +13,7 @@ commands:
     description: Pulls Quay.io docker images usable for our cache
     steps:
       - run: docker pull python:3.7.4-slim
-
+      - run: docker pull quay.io/vsoch/freegenes:devel
 
 orbs:
   # https://circleci.com/orbs/registry/orb/circleci/docker
@@ -29,7 +29,7 @@ workflows:
           deploy: false
           image: vsoch/freegenes
           tag: latest
-          extra_build_args: --cache-from=python:3.7.4-slim
+          extra_build_args: --cache-from=python:3.7.4-slim,quay.io/vsoch/freegenes:devel
           filters:
             branches:
               ignore: 
@@ -52,7 +52,7 @@ workflows:
           image: vsoch/freegenes
           registry: quay.io
           tag: latest
-          extra_build_args: --cache-from=python:3.7.4-slim
+          extra_build_args: --cache-from=python:3.7.4-slim,quay.io/vsoch/freegenes:devel
           filters:
             branches:
               ignore: /.*/
@@ -78,7 +78,7 @@ workflows:
           image: vsoch/freegenes
           registry: quay.io
           tag: devel
-          extra_build_args: --cache-from=python:3.7.4-slim
+          extra_build_args: --cache-from=python:3.7.4-slim,quay.io/vsoch/freegenes:devel
           before_build:
             - pull_cache
           filters:
