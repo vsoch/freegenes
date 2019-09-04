@@ -23,6 +23,7 @@ from fg.apps.orders.forms import (
 )
 
 from fg.apps.orders.models import Order
+from fg.apps.main.models import Distribution
 from ratelimit.decorators import ratelimit
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
