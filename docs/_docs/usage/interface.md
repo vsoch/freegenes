@@ -135,6 +135,8 @@ parts, or other) only if the tag is associated with said subtype.
 
 ## Maps
 
+### Lab Map
+
 If you are a staff in the lab, you can click on your username in the top right
 and select "Map" to see an expanded, lab map view:
 
@@ -156,6 +158,19 @@ And it will take you to the Lab map, with the selected plate highlighted in
 red.
 
 ![locate-to.png]({{ site.baseurl }}/docs/usage/locate-to.png)
+
+### Orders Map
+
+When you are logged in as a superuser or staff, on the main page there is a link
+for a map above the orders table. Clicking it will show a map of orders, with
+circles representing number of orders located above a zip code:
+
+![shipping-map.png]({{ site.baseurl }}/docs/usage/shipping-map.png)
+
+We don't store anything but the zip codes with counts on the server, and the
+data is obtained as a nightly task using the Shippo api. The current map
+is generated from testing data, as only a real Shippo token (not a testing one)
+will return real order data.
 
 ## Profile
 
