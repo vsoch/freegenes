@@ -44,6 +44,7 @@
 	      <tbody>{% for field in instance.json %}{% if field.value %}<tr>
         {% if field.admin %}{% if request.user.is_superuser %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% elif field.auth %}{% if request.user.is_authenticated %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}{% else %}<td>{{ field.key }}</td><td>{{ field.value }}</td>{% endif %}
       </tr>{% endif %}{% endfor %}
+      <tr><td>Number of Wells</td><td>{{ instance.wells.count }}</td></tr>
       {% if instance.container %}<tr><td>Container</td><td><a href="{{ instance.container.get_absolute_url }}">{{ instance.container.name }}</a></td></tr>{% endif %}
       {% if instance.protocol %}<tr><td>Protocol</td><td><a href="{{ instance.protocol.get_absolute_url }}">{{ instance.protocol.name }}</a></td></tr>{% endif %}
 	    </tbody>
