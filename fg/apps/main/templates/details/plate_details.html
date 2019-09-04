@@ -18,8 +18,8 @@
   <div class="row" style="margin-bottom:20px">
       <div class="col-md-12"><a href="{% url 'admin:main_collection_change' instance.uuid %}">
           {% if request.user.is_superuser or request.user.is_staff %}<button class="btn btn-primary">Edit</button></a>
-              <a href="{% url 'lab_map' %}?uuid={{ instance.uuid }}"><button class="btn btn-primary">Locate</button></a>{% endif %}
-           <a href="{% url 'download_plate_csv' instance.uuid %}"><button class="btn btn-primary">Download (csv)</button></a>
+              <a href="{% url 'lab_map' %}?uuid={{ instance.uuid }}"><button class="btn btn-primary">Locate</button></a>{% endif %}{% if instance.wells.count > 0 %}
+           <a href="{% url 'download_plate_csv' instance.uuid %}"><button class="btn btn-primary">Download (csv)</button></a>{% endif %}
       </div>
   </div>
   <div class="row" style="margin-bottom:20px">
