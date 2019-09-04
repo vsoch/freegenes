@@ -25,6 +25,7 @@ from fg.settings import (
 )
 
 import os
+import json
 
 
 ## Map
@@ -98,3 +99,21 @@ def lab_map_view(request):
                "selection": selection}
 
     return render(request, "maps/lab.html", context)
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def order_map_view(request):
+    '''A nightly job gets updated latitudes and longitudes from the shippo API,
+       render them here. The order coordinates are saved to /code/data/ordercoords.json
+    '''
+    data = []
+ 
+    order_coords = "/code/data/ordercoords.json"
+    if os.path.exists(order_coords):
+        with open(order_coords, 'r') as filey:
+            data = json.loads(filey.read())
+
+    print(data)
+    context = {"data": data}
+    return render(request, "maps/orders.html", context)

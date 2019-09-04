@@ -1,0 +1,63 @@
+{% extends "base/page.html" %}
+{% load staticfiles %f}
+{% block content %}
+
+<style>
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: 0.5;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
+</style>
+
+<div class="container">
+   <h1>Orders Map</h1>
+   <hr>
+   <div id="map" style="position: relative; width: 800px; height: 600px;"></div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.9/datamaps.world.min.js"></script>
+<script>
+
+var bubble_map = new Datamap({
+  element: document.getElementById("map"),
+  geographyConfig: {
+    popupOnHover: false,
+    highlightOnHover: false
+  },
+  fills: {
+    defaultFill: '#ABDDA4',
+    USA: 'blue',
+    RUS: 'red'
+  }
+});
+bubble_map.bubbles([{% for zip,datum in data.items %}{
+    name: 'Dummy Data {{ forloop.count }}',
+    fillKey: 'USA',
+    count: {{ datum.count }},
+    radius: {% widthratio datum.count 1 10 %},
+    latitude: {{ datum.lat }},
+    longitude: {{ datum.long }}
+  }{% if forloop.last %}{% else %},{% endif %}{% endfor %}], {
+  popupTemplate: function(geo, data) {
+    return '<div class="hoverinfo">Order:' + data.name + ', count: ' + data.count
+  }
+});         
+</script>
+{% endblock %}

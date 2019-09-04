@@ -161,3 +161,12 @@ vsoch is not longer staff.
 $ python manage.py createsuperuser
 ```
 
+## Automated Tasks
+
+We use basic cron jobs in the main uwsgi container to (temporarily) backup the database,
+along with (not yet added, as it needs testing) generate the map data for orders.
+
+```bash
+$ python manage.py generate_mapdata data/ordercoords.json
+$ python manage.py dumpdata > db.json
+```

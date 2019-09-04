@@ -34,6 +34,7 @@ urlpatterns = [
 
     # Maps
     url(r'map/?$', views.lab_map_view, name='lab_map'),
+    url(r'map/orders/?$', views.order_map_view, name='order_map'),
 
     # Catalog
     url(r'c/catalog/?$', views.catalog_view, name='catalog_view'),

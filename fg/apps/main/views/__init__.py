@@ -18,7 +18,10 @@ from .details import (
     tag_details
 )
 
-from .map import lab_map_view
+from .map import (
+    lab_map_view,
+    order_map_view
+)
     
 from .catalog import (
     catalog_view,

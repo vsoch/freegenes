@@ -35,6 +35,3 @@ data and permissions, but it's not technically impossible to do.
 
 
 <hr>
-
-**still under development**
-
