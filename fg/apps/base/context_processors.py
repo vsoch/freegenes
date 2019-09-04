@@ -18,7 +18,8 @@ def domain_processor(request):
 
 def help_processor(request):
     return {'HELP_CONTACT_EMAIL': settings.HELP_CONTACT_EMAIL,
-            'HELP_INSTITUTION_SITE': settings.HELP_INSTITUTION_SITE}
+            'HELP_INSTITUTION_SITE': settings.HELP_INSTITUTION_SITE,
+            'GOOGLE_ANALYTICS_ID': settings.GOOGLE_ANALYTICS_ID}
 
 def auth_processor(request):
     return {"ENABLE_GOOGLE_AUTH": settings.ENABLE_GOOGLE_AUTH,

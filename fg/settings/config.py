@@ -28,6 +28,7 @@ ENABLE_BITBUCKET_AUTH = False
 
 # Shipping (set this variable in your secrets.py
 SHIPPO_TOKEN=None
+GOOGLE_ANALYTICS_ID=None
 
 # DOMAIN NAMES
 ## IMPORTANT: if/when you switch to https, you need to change "DOMAIN_NAME"
