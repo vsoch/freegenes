@@ -310,4 +310,4 @@ VIEW_RATE_LIMIT_BLOCK=True # Given that someone goes over, are they blocked for 
 And see the [django-ratelimit](https://django-ratelimit.readthedocs.io/en/v1.0.0/usage.html) documentation
 for other options. 
 
-Next, you might want to [start your containers]({{ site.baseurl }}/docs/development/start/)
+Next, you might want to [start your containers]({{ site.baseurl }}/docs/development/start)
