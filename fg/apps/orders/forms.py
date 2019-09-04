@@ -33,6 +33,7 @@ class CheckoutForm(forms.Form):
     lab_address = forms.CharField(required=True)
     lab_address2 = forms.CharField(required=False)
     lab_zip = forms.CharField(required=True)
+    lab_phone = forms.CharField(required=True)
 
     # PI Name and title (signing the MTA)
     recipient_name = forms.CharField(required=True)
@@ -46,6 +47,7 @@ class CheckoutForm(forms.Form):
     shipping_address = forms.CharField(required=False)
     shipping_address2 = forms.CharField(required=False)
     shipping_zip = forms.CharField(required=False)
+    shipping_phone = forms.CharField(required=False)
 
 
 DRY_ICE_CHOICES = (

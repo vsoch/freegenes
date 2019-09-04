@@ -38,6 +38,11 @@
                          placeholder="Lab Address 2 (optional)" />
                 </div>
 
+                <div class="md-form mb-5">
+                  <input type='text' id='lab_phone' name='lab_phone' class='form-control' 
+                         placeholder="Lab Phone" required/>
+                </div>
+
                 <div class="row">
                   <div class="col-lg-4 col-md-12 mb-4">
                     <label for="lab_zip">Zip</label>
@@ -83,6 +88,11 @@
                 </div>
 
                 <div class="md-form mb-5">
+                  <input type='text' id='shipping_phone' name='shipping_phone' class='form-control' 
+                         placeholder="Shipping Phone" required/>
+                </div>
+
+                <div class="md-form mb-5">
                     <input type='text' placeholder="Zip code" id='shipping_zip' name='shipping_zip' class='form-control' required/>
                     <div class="invalid-feedback">
                       Zip code required.
@@ -122,11 +132,13 @@ use_same_shipping.addEventListener('change', function() {
     document.getElementById("shipping_to").required = false;
     document.getElementById("shipping_address").required = false;
     document.getElementById("shipping_zip").required = false;
+    document.getElementById("shipping_phone").required = false;
   } else {
     hideable_shipping_form.show();
     document.getElementById("shipping_to").required = true;
     document.getElementById("shipping_address").required = true;
     document.getElementById("shipping_zip").required = true;
+    document.getElementById("shipping_phone").required = true;
   }
 })
 
