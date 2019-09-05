@@ -22,13 +22,13 @@
     <!-- User isn't logged in yet! -->
     <div class="login-box">
 
-        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
+        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" style="color:white !important" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
 
         {% if ENABLE_ORCID_AUTH_SANDBOX %}<a class="social-button" id="orcid-connect" href="{% url 'social:begin' 'orcid-sandbox' %}?next={{ domain }}{{ request.path }}">Login with Orcid Sandbox</a>{% endif %}
 
         {% if ENABLE_ORCID_AUTH %}<a class="social-button" id="orcid-connect" href="{% url 'social:begin' 'orcid' %}?next={{ domain }}{{ request.path }}">Login with Orcid</a>{% endif %}
 
-        {% if ENABLE_GITHUB_AUTH %}<a class="social-button" id="github-connect" href="{% url 'social:begin' 'github' %}?next={{ domain }}{{ request.path }}">Login with Github</a>{% endif %}
+        {% if ENABLE_GITHUB_AUTH %}<a class="social-button" style="color:white !important" id="github-connect" href="{% url 'social:begin' 'github' %}?next={{ domain }}{{ request.path }}">Login with Github</a>{% endif %}
 
         {% if ENABLE_GITLAB_AUTH %}<a class="social-button" id="gitlab-connect" href="{% url 'social:begin' 'gitlab' %}?next={{ domain }}{{ request.path }}">Login with Gitlab</a>{% endif %}
 
