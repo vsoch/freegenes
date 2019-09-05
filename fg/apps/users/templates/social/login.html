@@ -22,7 +22,7 @@
     <!-- User isn't logged in yet! -->
     <div class="login-box">
 
-        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
+        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" style="color: !important" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
 
         {% if ENABLE_ORCID_AUTH_SANDBOX %}<a class="social-button" id="orcid-connect" href="{% url 'social:begin' 'orcid-sandbox' %}?next={{ domain }}{{ request.path }}">Login with Orcid Sandbox</a>{% endif %}
 

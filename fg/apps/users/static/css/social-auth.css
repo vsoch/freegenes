@@ -132,11 +132,11 @@
 #twitter-connect {
     background: rgb(255, 255, 255) url('/static/img/social-buttons/twitter.png') no-repeat scroll 5px 1px / 45px 45px padding-box border-box;
     border: 1px solid rgb(85, 172, 238);
-    color: #55ACEE;
+    color: #55ACEE !important;
 }
 
 #twitter-connect:hover {
-    color: white;
+    color: white !important;
     border-color: rgb(85, 172, 238);
     background: rgb(85, 172, 238) url('/static/img/social-buttons/twitter-white.png') no-repeat scroll 5px 1px / 45px 45px padding-box border-box;
     -webkit-transition: all .8s ease-out;
