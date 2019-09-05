@@ -152,16 +152,11 @@ class Institution(models.Model):
     '''An institution is an organization of people. An institution can optionally
        sign a master agreement, the default is set to False to indicate not signed.
     '''
-    SIGNED_MASTER_CHOICES = [
-        ('NOT_SIGNED', False),
-        ('SIGNED', True) 
-    ]
-
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=250, blank=False)
 
     # Master MTAs are available on biobricks, if signed_master False need to look up
-    signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default=False)
+    signed_master = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('institution_details', args=[self.uuid])
