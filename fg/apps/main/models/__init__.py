@@ -161,7 +161,7 @@ class Institution(models.Model):
     name = models.CharField(max_length=250, blank=False)
 
     # Master MTAs are available on biobricks, if signed_master False need to look up
-    signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default='NOT_SIGNED')
+    signed_master = models.BooleanField(choices=SIGNED_MASTER_CHOICES, default=False)
 
     def get_absolute_url(self):
         return reverse('institution_details', args=[self.uuid])

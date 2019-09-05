@@ -39,7 +39,9 @@ urlpatterns = [
     # Catalog
     url(r'c/catalog/?$', views.catalog_view, name='catalog_view'),
     url(r'c/catalog/collections/?$', views.collections_catalog_view, name='collections_catalog'),
+    url(r'c/catalog/containers/?$', views.containers_catalog_view, name='containers_catalog'),
     url(r'c/catalog/distributions/?$', views.distributions_catalog_view, name='distributions_catalog'),
+    url(r'c/catalog/organisms/?$', views.organisms_catalog_view, name='organisms_catalog'),
     url(r'c/catalog/tags/?$', views.tags_catalog_view, name='tags_catalog'),
     url(r'c/catalog/tags/(?P<selection>.+)/?$', views.tags_catalog_view, name='tags_catalog_selection'),
     url(r'c/catalog/parts/?$', views.parts_catalog_view, name='parts_catalog'),

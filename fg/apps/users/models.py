@@ -67,11 +67,14 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     active = models.BooleanField(default=True)
 
+    # The user can choose to set his or her institution
+    institution = models.ForeignKey('main.Institution', on_delete=models.PROTECT, default=None, null=True, blank=True)
+
     # has the user agreed to terms?
     agree_terms = models.BooleanField(default=False)
     agree_terms_date = models.DateTimeField(blank=True,
                                             default=None,
-                                            null=True)     
+                                            null=True)
 
     def get_cart(self):
         '''Get a user's cart (an order that is not yet submit). A user

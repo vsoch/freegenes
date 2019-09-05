@@ -178,9 +178,11 @@ The user profile is accessible from the top right after the user is logged in:
 
 ![profile-menu.png]({{ site.baseurl }}/docs/usage/profile-menu.png)
 
-Currently, profile views are limited to simple account management and
-getting access to an API token. 
+The profile view allows the user to manage the account, including navigation
+to the admin interface (if allowed), account deletion, and Institution selection.
+Additionally, the API token is presented:
 
 ![profile.png]({{ site.baseurl }}/docs/usage/profile.png)
 
-When users can create others (and do other actions) this view will be extended.
+If a user has not selected an institution, he or she is alterted to do so. If
+the user wants to add a new institution, a box is presented to allow for this.

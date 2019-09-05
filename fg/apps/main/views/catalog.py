@@ -13,8 +13,10 @@ from django.shortcuts import render
 from ratelimit.decorators import ratelimit
 
 from fg.apps.main.models import (
+    Container,
     Collection,
     Distribution,
+    Organism,
     Part,
     Plate,
     PlateSet,
@@ -39,6 +41,16 @@ def catalog_view(request):
 def collections_catalog_view(request):
     context = {"collections": Collection.objects.all()}
     return render(request, "catalogs/collections.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def containers_catalog_view(request):
+    context = {"containers": Container.objects.all()}
+    return render(request, "catalogs/containers.html", context=context)
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def organisms_catalog_view(request):
+    context = {"organisms": Organism.objects.all()}
+    return render(request, "catalogs/organisms.html", context=context)
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def platesets_catalog_view(request):

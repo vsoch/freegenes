@@ -4,7 +4,7 @@
         <h3>{{ profile.username }}</h3>
         <hr>
 
-        {% if request.user.is_superuser %}<a target="_blank" href="{% url 'admin:index' %}"><button class="btn btn-danger">Admin</button></a>{% endif %}
+        {% if request.user.is_superuser %}<a target="_blank" href="{% url 'admin:index' %}"><button class="btn btn-secondary">Admin</button></a>{% endif %}
     </div>
 </div>
 
@@ -27,13 +27,27 @@
        <div style="margin-left:15px" class="col-md-8 alert alert-info" id="token_well" role="alert">
        {{ request.user.token }}
        </div>
-       <div class="col-md-3" style="padding-top:10px; margin-left:15px">
-           <button id="token" 
-                   class="btn copyme" 
-                   data-clipboard-target="#token">
-                   <i class="fa fa-copy"></i></button>
+    </div>
+
+    <div class="row" style="padding-top:50px">
+       <div class="col-md-12">
+       <hr>
+       <h3>Institution</h3>
+            {% if request.user.institution %}{% else %}<p class="alert alert-info">Use the selection box below to select your institution.</p>{% endif %}
+            <form method="POST" action="{% url 'change_institution' %}">
+                {% csrf_token %}
+		<select name="uuid" class="custom-select">
+                  {% if request.user.institution %}<option value="{{ request.user.institution.uuid }}" selected>{{ request.user.institution.name }}</option>{% else %}<option></option>{% endif %}
+                  {% for institution in institutions %}<option value="{{ institution.uuid }}">{{ institution.name }}</option>{% endfor %}</select> {% if request.user.institution %}{% else %}
+		 <div class="form-group" style='margin-top:10px'>
+		    <input type="text" name="institution" class="form-control" id="addInstitution" aria-describedby="addHelp" placeholder="Enter institution name">
+		    <small id="addHelp" class="form-text text-muted">Don't see your Institution? Add it here.</small>
+		  </div>{% endif %}
+                   <button class="btn btn-secondary btn-small" style="float:right" type="submit">Select Institution</button>
+            </form>
        </div>
     </div>
-    {% else %}
+
+{% else %}
     <div style="padding-top:20px" class="alert alert-info" role="alert">You aren't authorized to see this. Sneaky!</div>
-    {% endif %}
+{% endif %}

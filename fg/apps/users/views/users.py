@@ -8,6 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from fg.apps.main.models import Institution
 from fg.apps.users.models import User
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
@@ -40,8 +41,39 @@ def view_profile(request, username=None):
     else:
         user = get_object_or_404(User, username=username)
 
-    context = {'profile': user}
+    context = {'profile': user,
+               'institutions': Institution.objects.all()}
     return render(request, 'users/profile.html', context)
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def change_institution(request):
+    '''change a user's institution
+    '''
+    if request.method == "POST":
+        uuid = request.POST.get('uuid')
+        new_institution = request.POST.get('institution')
+
+        # First priority - adding a new instutition
+        if new_institution:
+            try:
+                institution = Institution.objects.create(name=new_institution)
+                messages.info(request, "Successfully added institution %s" % institution.name)
+                print('success')
+            except:
+                print('error')
+                messages.info(request, "There was an error adding %s" % new_institution)
+
+        elif uuid:
+            try:
+                institution = Institution.objects.get(uuid=uuid)
+                request.user.institution = institution
+                request.user.save()
+                messages.info(request, "Successfully changed institution to %s" % institution.name)
+            except Institution.DoesNotExist:
+                messages.info(request, "That institution cannot be found.")
+
+        return redirect('profile')  
 
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)

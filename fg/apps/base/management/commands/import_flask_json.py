@@ -13,13 +13,18 @@ from django.core.management.base import (
     CommandError
 )
 from fg.apps.main.models import *
+from fg.settings import SHIPPO_TOKEN
 from fg.apps.orders.models import *
 from fg.apps.main.utils import load_json
 from dateutil.parser import parse
 import logging
 import os
+import shippo
 import shutil
 import sys
+
+if not SHIPPO_TOKEN:
+    print('You must include a Shippo token in fg/settings in order to import previous orders.')
 
 def update_dates(instance, entry, create_field='time_created', update_field='time_updated'):
     '''a helper function to update an objects dates (to match what is in the
@@ -468,7 +473,6 @@ class Command(BaseCommand):
             plans = load_json(plans_file)
 
         # Order ################################################################
-        # no plans are exported from the API
 
         orders_file = os.path.join(folder, 'order-full.json')
         if os.path.exists(orders_file):
@@ -485,5 +489,22 @@ class Command(BaseCommand):
                     order.distributions.add(Distribution.objects.get(uuid=d))
                 order = update_dates(order, entry)
                                                              
+
+        # Shipment ################################################################
+
+        shipment_file = os.path.join(folder, 'shipment-full.json')
+        if os.path.exists(shipment_file):
+            shipments = load_json(shipment_file)
+
+            # This won't work with test token...
+
+            for shipment in shipments:
+                order =  Order.objects.get(uuid=shipment['order_uuid'])
+                transaction_id = shipment['object_id']
+                # label = shippo.Transaction.retrieve(transaction_id, 
+                #                                    api_key=SHIPPO_TOKEN)
+
+                order.transaction = {"object_id": transaction_id}
+                order.save()
 
     # We aren't representing address, shipment, parcel, need to have this linked

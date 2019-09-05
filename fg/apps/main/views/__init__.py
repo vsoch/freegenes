@@ -26,7 +26,9 @@ from .map import (
 from .catalog import (
     catalog_view,
     collections_catalog_view,
+    containers_catalog_view,
     distributions_catalog_view,
+    organisms_catalog_view,
     platesets_catalog_view,
     tags_catalog_view,
     samples_catalog_view,
