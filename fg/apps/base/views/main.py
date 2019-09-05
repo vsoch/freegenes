@@ -46,6 +46,14 @@ def about_view(request):
     return render(request, 'main/about.html')
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def terms_view(request):
+    return render(request, 'terms/usage_agreement_fullwidth.html')
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def privacy_view(request):
+    return render(request, 'terms/privacy_agreement.html')
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def dashboard_view(request):
     '''Show the logged in regular user their orders, or an admin/staff
        all orders. Also show stats for the node, not including Schema.
@@ -86,7 +94,3 @@ def dashboard_view(request):
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def contact_view(request):
     return render(request, 'main/contact.html')
-
-@ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def tools_view(request):
-    return render(request, 'main/tools.html')
