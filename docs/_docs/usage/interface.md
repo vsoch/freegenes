@@ -109,16 +109,18 @@ and return a list of results:
 
 ![search-result.png]({{ site.baseurl }}/docs/usage/search-result.png)
 
-The results currently don't link to detail views (but will). The user will
-need to be authenticated to see the details (or it could be they can
-see some derivative). Under development is also a category based view,
+The results link to details views for their respective entities. The user will
+need to be authenticated to see some of the details, but for the most part,
+information is public. There is also a category based view,
 where a user that knows what he or she is looking for can browse the category
 directly:
 
 ![catalog.png]({{ site.baseurl }}/docs/usage/catalog.png)
 
-And then view a listing of entities for a particular catalog of interest. For
-example, here is the Collections catalog.
+Categories are split into "Virtuals," or virtual representations of lab objects
+that are relevant for browsing users, and "Physicals" that are relevant for the lab
+staff, and only viewable by an admin user. Viewing any particular listing of entities 
+will show the catalog of interest. For example, here is the Collections catalog.
 
 ![catalog-collections.png]({{ site.baseurl }}/docs/usage/catalog-collections.png)
 
