@@ -39,7 +39,7 @@ you need to edit the `docker-compose.yml` and uncomment binds to your host:
 ```bash
 uwsgi:
   restart: always
-  image: vanessa/freegenes
+  image: {{ site.container }}
   volumes:
     - .:/code
     - ./static:/var/www/static
@@ -65,5 +65,5 @@ Note that this solution [would require restarting the container](https://github.
 Finally, you must build the docker image with the build argument ENABLE_PAM set to true:
 
 ```bash
-$ docker build --build-arg ENABLE_PAM=true -t vanessa/freegenes .
+$ docker build --build-arg ENABLE_PAM=true -t {{ site.container }} .
 ```

@@ -2,8 +2,6 @@
 
 This is start of work to deploy freegenes with Django
 
-**under development**
-
 - [Documentation](https://vsoch.github.io/freegenes-django)
 
 ![docs/assets/img/freegenes.png](docs/assets/img/freegenes.png)
@@ -20,7 +18,7 @@ FreeGenes Django consists of several Docker images, and they are integrated
 to work together using [docker-compose.yml](docker-compose.yml). 
 The images are the following:
 
- - **vanessa/freegenes**: is the main uwsgi application, which serves a Django (python-based) application.
+ - **quay.io/vsoch/freegenes**: is the main uwsgi application, which serves a Django (python-based) application.
  - **nginx**: pronounced (engine-X) is the webserver. The starter application is configured for http, however you should follow the instructions to set up https properly. Note that we build a custom nginx image that takes advantage of the [nginx upload module](https://www.nginx.com/resources/wiki/modules/upload/).
  - **worker**: is the same uwsgi image, but with a running command that is specialized to perform tasks. The tasks are run via [django-rq](https://github.com/rq/django-rq) that uses a
  - **redis**: database to organize the jobs themselves.

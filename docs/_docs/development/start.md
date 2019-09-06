@@ -25,14 +25,14 @@ After those steps, you should be ready to start your node.
 If you haven't built the primary container yet:
 
 ```bash
-$ docker build -t vanessa/freegenes .
+$ docker build -t {{ site.container }} .
 ```
 
 Additionally, the application container is built at [quay.io/vsoch/freegenes](https://quay.io/repository/vsoch/freegenes) and can be pulled and tagged appropriately:
 
 ```bash
 $ docker pull quay.io/vsoch/freegenes:devel
-$ docker tag quay.io/vsoch/freegenes:devel vanessa/freegenes
+$ docker tag quay.io/vsoch/freegenes:devel {{ site.container }}
 ```
 
 Specifically, we build the following tags via the [.circleci recipe](https://github.com/vsoch/freegenes/blob/master/.circleci/config.yml):
@@ -65,8 +65,8 @@ $ docker-compose logs -f uwsgi
 
 ## Importing Data
 
-If you want to export data from the [previous Flask](), you'll need to export your
-`FREEGENES_LOGIN` and `FREEGENES_PASSWORD` to the environment:
+If you want to export data from the [previous Flask](https://github.com/Koeng101/flask_freegenes), 
+you'll need to export your `FREEGENES_LOGIN` and `FREEGENES_PASSWORD` to the environment:
 
 ```bash
 export FREEGENES_LOGIN=username

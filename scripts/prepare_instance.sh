@@ -76,6 +76,6 @@ if [ ! -d $INSTALL_ROOT/freegenes ]; then
     git clone https://www.github.com/vsoch/freegenes.git
 
     cd freegenes
-    docker build -t vanessa/freegenes .
+    docker build -t quay.io/vsoch/freegenes .
     # docker-compose up -d
 fi

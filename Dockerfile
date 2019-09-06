@@ -1,7 +1,7 @@
 FROM python:3.7.4-slim
 ENV DEBIAN_FRONTEND noninteractive
 
-# docker build -t vanessa/freegenes .
+# docker build -t quay.io/vsoch/freegenes .
 
 ARG ENABLE_LDAP=false
 ARG ENABLE_PAM=false

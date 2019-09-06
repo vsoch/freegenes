@@ -34,7 +34,7 @@ ARG ENABLE_SAML=false
 Therefore, if you want to install the requirements of all current supported plugins, you can build the image as follows: 
 
 ```bash
-docker build --build-arg ENABLE_LDAP=true --build-arg ENABLE_PAM=true --build-arg ENABLE_SAML=true -t vanessa/freegenes .
+docker build --build-arg ENABLE_LDAP=true --build-arg ENABLE_PAM=true --build-arg ENABLE_SAML=true -t {{ site.container }} .
 ```
 
 ## Writing a Plugin

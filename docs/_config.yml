@@ -34,7 +34,8 @@ github_repo: "freegenes"
 # Optional
 twitter: vsoch
 linkedin: vsochat
-dockerhub: vanessa
+registry: https://quay.io/repository/vsoch/freegenes?tab=info
+container: quay.io/vsoch/freegenes
 
 # Should there be feedback buttons at the bottom of pages?
 feedback: true

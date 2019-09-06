@@ -17,7 +17,7 @@ To enable SAML authentication you must:
   * Build the docker image with the build argument ENABLE_SAML set to true:
 
 ```bash
-$ docker build --build-arg ENABLE_SAML=true -t vanessa/freegenes .
+$ docker build --build-arg ENABLE_SAML=true -t {{ site.container }} .
 ```
 
 If you haven't yet created a secrets.py, a good start is to do the following:

@@ -3,7 +3,7 @@ db:
 
 uwsgi:
   restart: always
-  image: vanessa/freegenes
+  image: quay.io/vsoch/freegenes
   volumes:
     - .:/code
     - ./static:/var/www/static
@@ -16,7 +16,7 @@ uwsgi:
 
 nginx:
   restart: always
-  image: nginx
+  image: quay.io/vsoch/freegenes
   ports:
     - "80:80"
     - "443:443"
@@ -36,7 +36,7 @@ redis:
   image: redis:latest
 
 scheduler:
-  image: vanessa/freegenes
+  image: quay.io/vsoch/freegenes
   command: python /code/manage.py rqscheduler
   volumes:
     - .:/code
@@ -47,7 +47,7 @@ scheduler:
     - db
 
 worker:
-  image: vanessa/freegenes
+  image: quay.io/vsoch/freegenes
   command: python /code/manage.py rqworker default
   volumes:
     - .:/code
