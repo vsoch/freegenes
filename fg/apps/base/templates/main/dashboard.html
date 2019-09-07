@@ -1,8 +1,9 @@
 {% extends "base/page.html" %}
 {% load staticfiles %}
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
+
 <div class="container" style='padding-top:200px'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
   <div class="row" style="padding-bottom:50px">
     <div class="col-md-12">
       <h1>Dashboard</h1>
@@ -86,15 +87,18 @@
          </div>
       </div>
     </div>
+  {% if request.user.is_authenticated %}
   <div class="row" style='margin-top:100px'>
-    {% if request.user.is_authenticated %}<div class="col-md-12">
-      <h1>{% if request.user.is_superuser or request.user.is_staff %}Orders{% else %}Your Orders{% endif %}</h1>
-      {% if request.user.is_staff or request.user.is_superuser %}<a href="{% url 'order_map' %}"><button class="btn btn-primary">Map</button></a>{% endif %}
+    <div class="col-md-12">
+      <a href="{% url 'order_map' %}"><button class="btn btn-primary">Map</button></a>
+      <a href="{% url 'catalog_view' %}"><button class="btn btn-secondary">Browse</button></a>{% if orders.count > 0 %}
+      <h1 style="float:right">{% if request.user.is_superuser or request.user.is_staff %}Outgoing Orders{% else %}Your Orders{% endif %}</h1>
       <hr>
-      {% include "tables/order_table.html" with table_id="order-table" %}
-    </div>{% endif %}
+      {% include "tables/order_table.html" with table_id="order-table" %}{% endif %}
+    </div>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 {% block pagescripts %}
 <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
@@ -106,6 +110,7 @@ $(document).ready(function() {
   $('#order-table').DataTable();
 
 var ctx = document.getElementById("dashboard-counts").getContext('2d');
+ctx.height = 200;
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
@@ -117,6 +122,10 @@ var myChart = new Chart(ctx, {
     }]
   },
   options: {
+    maintainAspectRatio: false,
+    legend: {
+      display: false
+    },
     scales: {
       yAxes: [{
         ticks: {
