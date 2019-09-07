@@ -8,6 +8,8 @@
     <div class="col-md-12">
       <h1>Dashboard</h1>
       <hr>
+      <a href="{% url 'order_map' %}"><button class="btn btn-primary">Map</button></a>
+      <a href="{% url 'catalog_view' %}"><button class="btn btn-secondary">Browse</button></a>
     </div>
   </div>
 <div class="row">
@@ -88,11 +90,13 @@
       </div>
     </div>
   {% if request.user.is_authenticated %}
-  <div class="row" style='margin-top:100px'>
+  <div class="row" style="margin-top:100px">
     <div class="col-md-12">
-      <a href="{% url 'order_map' %}"><button class="btn btn-primary">Map</button></a>
-      <a href="{% url 'catalog_view' %}"><button class="btn btn-secondary">Browse</button></a>{% if orders.count > 0 %}
-      <h1 style="float:right">{% if request.user.is_superuser or request.user.is_staff %}Outgoing Orders{% else %}Your Orders{% endif %}</h1>
+      <h1 style="padding-bottom:20px; float:right">{% if request.user.is_superuser or request.user.is_staff %}Outgoing Orders{% else %}Your Orders{% endif %}</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">{% if orders.count > 0 %}
       <hr>
       {% include "tables/order_table.html" with table_id="order-table" %}{% endif %}
     </div>

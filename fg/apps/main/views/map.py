@@ -30,7 +30,6 @@ import json
 
 ## Map
 
-@login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def lab_map_view(request):
     '''the lab map view shows a map of all containers and platesets,
