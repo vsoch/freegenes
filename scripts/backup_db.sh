@@ -13,5 +13,8 @@ for db in "users" "main" "orders"
     python /code/manage.py dumpdata $db > /code/backup/$db.json
 done
 
-# All in one file
-python /code/manage.py dumpdata main users orders > /code/backup/db.json
+# All models in one file, for loading with loaddata
+python /code/manage.py dumpdata main users orders > /code/backup/models.json
+
+# Everything
+python /code/manage.py dumpdata > /code/backup/db.json
