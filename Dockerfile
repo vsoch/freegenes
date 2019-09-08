@@ -55,8 +55,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install crontab to run tasks - keep backup last 2 days
 RUN apt-get update && apt-get install -y cron
-RUN echo "0 1 * * * /bin/cp /code/db.json /code/db-1d.json" >> /code/cronjob
-RUN echo "0 2 * * * /usr/local/bin/python /code/manage.py dumpdata --exclude auth.permission --exclude contenttypes > /code/db.json" >> /code/cronjob
+RUN echo "0 1 * * * /bin/bash /code/scripts/backup_db.sh" >> /code/cronjob
 RUN crontab /code/cronjob
 
 CMD /code/run_uwsgi.sh
