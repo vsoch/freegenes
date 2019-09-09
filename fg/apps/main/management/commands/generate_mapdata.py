@@ -16,12 +16,42 @@ from fg.apps.main.utils import load_json
 from fg.settings import SHIPPO_TOKEN
 
 from uszipcode import SearchEngine
+from geopy.geocoders import Nominatim
+
 import logging
 import os
 import json
 import requests
 import shutil
 import sys
+
+def address_lookup(lookup):
+    '''a helper function to use a lookup (a to_address or from_address
+       returned from the Shippo API) to return a location object.
+       If the address is not found, returns None
+    '''
+    address = lookup.get('street1','')
+    geolocator = Nominatim(user_agent="freegenes")
+    
+    # City
+    if lookup.get('city'):
+        address = "%s, %s" %(address, lookup['city'])
+  
+    # State
+    if lookup.get('state'):
+        address = "%s %s" %(address, lookup['state'])
+
+    # Zip
+    if lookup.get('zip'):
+        address = "%s %s" %(address, lookup['zip'])
+
+    # Country
+    if lookup.get('country'):
+        address = "%s, %s" %(address, lookup['country'])
+         
+    return geolocator.geocode(address) 
+
+
 
 class Command(BaseCommand):
     '''Generate data for the freegenes map, using the shippo API. The map
@@ -32,9 +62,29 @@ class Command(BaseCommand):
        Format is as follows:
 
 	{
-	    "00012": {
-		"lat": 37.77,
-		"long": -122.44,
+	    "11217": {
+		"lat": 40.68,
+		"long": -73.98,
+		"count": 1
+	    },
+	    "60660": {
+		"lat": 41.98,
+		"long": -87.66,
+		"count": 1
+	    },
+	    "60177": {
+		"lat": 41.99,
+		"long": -88.31,
+		"count": 1
+	    },
+	    "V6A 1M3": {
+		"lat": 49.2818536,
+		"long": -123.0876828,
+		"count": 1
+	    },
+	    "02135": {
+		"lat": 42.35,
+		"long": -71.15,
 		"count": 1
 	    }
 	}
@@ -48,46 +98,73 @@ class Command(BaseCommand):
             raise CommandError("Please provide an output file as the only argument")
 
         # The input folder must exist!
-        output_file = options['input_folder'][0]
+        output_file = options['output_file'][0]
 
         url="https://api.goshippo.com/orders/"
         headers={"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
+
+        # If we get here, there are orders to parse!
+        coords = dict()
+
+        # First usage will download database to root (9MB)
+        search = SearchEngine(simple_zipcode=True)
+        geolocator = Nominatim(user_agent="freegenes")
+
         response = requests.get(url, headers=headers)
 
-        if response.status_code == 200:
+        # Continue parsing until we don't have next
+        while response.status_code == 200:
+
             results = response.json()
             if "results" not in results:
                 print("No results in response.")
                 sys.exit(1)
 
-        else:
-            print("Error with request, %s:%s" %(response.status_code, response.reason))
-            sys.exit(1)
+            listing = results['results']
 
+            # Assemble list of latitudes, longitudes
+            for result in listing:
 
-        # If we get here, there are orders to parse!
-        coords = dict()
-        results = results['results']
+                if "to_address" in result:
 
-        # First usage will download database to root (9MB)
-        search = SearchEngine(simple_zipcode=True)
+                    zipcode = result['to_address']['zip'].split('-')[0]
+                    lat = None
+                    lng = None
 
-        # Assemble list of latitudes, longitudes
-        for result in results:
-            if "to_address" in result:
-                if result['to_address']['zip']:
-                    code = result['to_address']['zip']
-                    zipcode = search.by_zipcode(code).to_dict()
+                    # If the country is the US, this is most accurage
+                    if result['to_address']['country'] in ['US', 'USA']:
+                        location = search.by_zipcode(zipcode).to_dict()
+                        lat = location.get('lat')
+                        lng = location.get('lng')
 
-                    # The radius of the circle will depend on the count
-                    if code not in coords:
-                        coords[code] = {"lat": zipcode['lat'],
-                                        "long": zipcode['lng'],
-                                        'count': 0}
+                    # Second try use entire address with geopy
+                    if not lat or not lng:
+                        location = address_lookup(result['to_address'])
+                        if location:
+                            lat = location.latitude
+                            lng = location.longitude
 
-                    coords[code]['count'] +=1
-                    coords.append([zipcode['lat'], zipcode['lng']]) 
-                    
+                    # Third try, use zip code / country only
+                    if not lat or not lng:
+                        country = result['to_address']['country']
+                        location = geolocator.geocode("%s %s" %(zipcode, country))
+                        if location:
+                            lat = location.latitude
+                            lng = location.longitude
+                   
+                    if lat and lng:
+
+                        # The radius of the circle will depend on the count
+                        if zipcode not in coords:
+                            coords[zipcode] = {"lat": lat,
+                                               "long": lng,
+                                               'count': 0}
+
+                        coords[zipcode]['count'] +=1
+
+            # Get the next page
+            response = requests.get(results['next'], headers=headers)
+
         # Write to output file
         print('Writing to file...')
         with open(output_file, 'w') as filey:

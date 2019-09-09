@@ -48,7 +48,7 @@ var bubble_map = new Datamap({
   }
 });
 bubble_map.bubbles([{% for zip,datum in data.items %}{
-    name: 'Dummy Data {{ forloop.count }}',
+    name: '{{ zip }}',
     fillKey: 'USA',
     count: {{ datum.count }},
     radius: {% widthratio datum.count 1 10 %},
@@ -56,7 +56,7 @@ bubble_map.bubbles([{% for zip,datum in data.items %}{
     longitude: {{ datum.long }}
   }{% if forloop.last %}{% else %},{% endif %}{% endfor %}], {
   popupTemplate: function(geo, data) {
-    return '<div class="hoverinfo">Order:' + data.name + ', count: ' + data.count
+    return '<div class="hoverinfo">Order: ' + data.name + ', count: ' + data.count
   }
 });         
 </script>
