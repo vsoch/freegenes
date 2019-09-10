@@ -100,6 +100,11 @@ class Command(BaseCommand):
         # The input folder must exist!
         output_file = options['output_file'][0]
 
+        # We can only use production token
+        if "test" in SHIPPO_TOKEN:
+            print("Generation of mapdata is only possible with the live Shippo Token.")
+            sys.exit(0)
+
         url="https://api.goshippo.com/orders/"
         headers={"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
 
