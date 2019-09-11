@@ -84,6 +84,13 @@ an account is to export a `SHIPPO_TOKEN` in your secrets.py:
 SHIPPO_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
+Shippo usually can provide a test and a live token, so you can first test with the testing token. Additionally,
+if you use FedEx and want to add a Customer_Reference field, define this in your secrets:
+
+```python
+SHIPPO_CUSTOMER_REFERENCE="1111111-1-DENRC"
+```
+
 
 ### Authentication Secrets
 

@@ -28,6 +28,7 @@ ENABLE_BITBUCKET_AUTH = False
 
 # Shipping (set this variable in your secrets.py
 SHIPPO_TOKEN=None
+SHIPPO_CUSTOMER_REFERENCE=None
 GOOGLE_ANALYTICS_ID=None
 
 # DOMAIN NAMES

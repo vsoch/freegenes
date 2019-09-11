@@ -26,6 +26,7 @@ from fg.settings import (
     NODE_INSTITUTION,
     HELP_CONTACT_EMAIL,
     SHIPPO_TOKEN,
+    SHIPPO_CUSTOMER_REFERENCE,
     VIEW_RATE_LIMIT as rl_rate, 
     VIEW_RATE_LIMIT_BLOCK as rl_block
 )
@@ -193,9 +194,13 @@ def create_shipment(addresses, data):
     '''
     extra = {}
 
+    # Does the user have a customer reference?
+    if SHIPPO_CUSTOMER_REFERENCE:
+        extra['reference_1'] = SHIPPO_CUSTOMER_REFERENCE
+
     # Does the shipment need dry ice?
     if data.get('dryice_options', 'No') == 'Yes':
-        extra = {'dry_ice': {"contains_dry_ice": True, "weight": "2"}}
+        extra['dry_ice'] = {"contains_dry_ice": True, "weight": "2"}
 
     return shippo.Shipment.create(
                address_from = addresses["From"],
