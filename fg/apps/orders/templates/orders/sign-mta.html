@@ -65,7 +65,7 @@ $("#openmta-form").submit(function(e){
 		    var height = doc.internal.pageSize.getHeight() -20;
 		    height = ratio * width;
 		    doc.addImage(imgData, 'PDF', 20, 20, width-10, height-10);
-		    doc.save('{{ order.user.username | slugify }}-{{ order.name | slugify }}-OpenMTA.pdf');
+		    doc.save('{{ order.user.username | slugify }}-{{ order.name | slugify }}-{% now "Y-m-d" %}-OpenMTA.pdf');
 		}
 	    });
             return;
