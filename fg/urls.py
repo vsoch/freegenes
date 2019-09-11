@@ -18,6 +18,7 @@ from fg.apps.api import urls as api_urls
 from fg.apps.base import urls as base_urls
 from fg.apps.main import urls as main_urls
 from fg.apps.orders import urls as orders_urls
+from fg.apps.factory import urls as factory_urls
 from fg.apps.users import urls as user_urls
 from django.contrib import admin
 from rest_framework.schemas import get_schema_view
@@ -44,6 +45,7 @@ urlpatterns = [
     url(r'^api/schema/$', schema_view, name='api-schema'),
     url(r'^api/docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     url(r'^o/', include(orders_urls)),
+    url(r'^f/', include(factory_urls)),
     url(r'^', include(main_urls)),
     url(r'^', include(user_urls)),
     url(r'^django-rq/', include('django_rq.urls'))
