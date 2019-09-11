@@ -662,7 +662,7 @@ class MaterialTransferAgreement(models.Model):
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    institution = models.ForeignKey('Institution', on_delete=models.DO_NOTHING)
+    institution = models.ForeignKey('Institution', help_text="The recipient institution", on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return "<MTA:%s>" % self.agreement_file.name
