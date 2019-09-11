@@ -19,6 +19,7 @@ from fg.apps.main.utils import load_json
 from dateutil.parser import parse
 import logging
 import os
+import requests
 import shippo
 import shutil
 import sys
@@ -492,18 +493,36 @@ class Command(BaseCommand):
 
         # Shipment ################################################################
 
+        if "test" in SHIPPO_TOKEN:
+            print("Shipments can only be imported with live (non test) Shippo token")
+            sys.exit(0)
+
+        url="https://api.goshippo.com/orders/"
+        headers={"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            print('Cannot retrieve %s: %s %s' %(url, response.status_code, response.reason))
+            sys.exit(1) 
+
+        orders = response.json()['results']
+
         shipment_file = os.path.join(folder, 'shipment-full.json')
         if os.path.exists(shipment_file):
             shipments = load_json(shipment_file)
 
-            # This won't work with test token...
-
             for shipment in shipments:
                 order =  Order.objects.get(uuid=shipment['order_uuid'])
-                transaction_id = shipment['object_id']
-                # label = shippo.Transaction.retrieve(transaction_id, 
-                #                                    api_key=SHIPPO_TOKEN)
+                transaction_id = shipment['transaction_id']
 
+                try:
+                    label = shippo.Transaction.retrieve(transaction_id, 
+                                                        api_key=SHIPPO_TOKEN)
+                except:
+                    print('Transaction not found for %s' % transaction_id)
+                    continue
+
+                order.label = label
                 order.transaction = {"object_id": transaction_id}
                 order.save()
 
