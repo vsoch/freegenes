@@ -30,6 +30,12 @@ urlpatterns = [
     url(r'^e/robot/(?P<uuid>.+)/?$', views.robot_details, name='robot_details'),
     url(r'^e/sample/(?P<uuid>.+)/?$', views.sample_details, name='sample_details'),
     url(r'^e/schema/(?P<uuid>.+)/?$', views.schema_details, name='schema_details'),
+
+    # Tags (filtered to types)
+    url(r'^e/tag/(?P<uuid>.+)/organisms/?$', views.tag_organisms_details, name='tag_organisms_details'),
+    url(r'^e/tag/(?P<uuid>.+)/parts/?$', views.tag_parts_details, name='tag_parts_details'),
+    url(r'^e/tag/(?P<uuid>.+)/collections/?$', views.tag_collections_details, name='tag_collections_details'),
+    url(r'^e/tag/(?P<uuid>.+)/authors/?$', views.tag_authors_details, name='tag_authors_details'),
     url(r'^e/tag/(?P<uuid>.+)/?$', views.tag_details, name='tag_details'),
 
     # Maps

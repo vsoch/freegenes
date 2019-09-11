@@ -22,6 +22,13 @@ from .map import (
     lab_map_view,
     order_map_view
 )
+
+from .tags import (
+    tag_organisms_details,
+    tag_parts_details,
+    tag_collections_details,
+    tag_authors_details
+)
     
 from .catalog import (
     catalog_view,

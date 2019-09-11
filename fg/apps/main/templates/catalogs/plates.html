@@ -5,8 +5,8 @@
 <div class="container" style="padding-top:200px;">
   <div class="row" style="padding-bottom:50px">
     <div class="col-md-6">
-      <h1>Plates Catalog</h1>
-      <p>Here you can explore FreeGenes Plates</p>
+      <h1>{% if title %}{{ title }}{% else %}Plates Catalog{% endif %}</h1>
+      <p>{% if description %}{{ description }}{% else %}Here you can explore FreeGenes Plates{% endif %}</p>
       <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
     </div>
     <div class="col-md-6">
