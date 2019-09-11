@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     'fg.apps.base',
     'fg.apps.main',
     'fg.apps.orders',
-    'fg.apps.users'
+    'fg.apps.users',
+    'fg.apps.factory'
 ]
 
 THIRD_PARTY_APPS = [
