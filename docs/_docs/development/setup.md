@@ -123,6 +123,34 @@ As mentioned previously, other authentication methods, such as LDAP, are impleme
 For authentication plugins, we will walk through the setup of each in detail here. 
 For other plugins, you should look at the [plugins]({{ site.baseurl }}/docs/plugins/) documentation now before proceeding. For all of the below, you should put the content in your `secrets.py` under settings. Note that if you are deploying locally, you will need to put localhost (127.0.0.1) as your domain, and Github is now the only one that worked reliably without an actual domain for me.
 
+### Globus OAuth2
+
+Complete instructions for Globus are [here](https://globus-integration-examples.readthedocs.io/en/latest/django.html#develop-web-application). You'll need to go to [https://developers.globus.org/](https://developers.globus.org/) to get your client key and secret, and also designate the redirect urls:
+
+```
+https://<your_server_host_name/<prefix>/complete/globus/
+``` 
+
+For scopes, I chose:
+
+```
+Profile
+View identity Set
+Email
+Openid
+View identities on Globus Auth
+```
+
+And then add the key, secret, and extra args to your secrets.py in the settings folder.
+
+```python
+SOCIAL_AUTH_GLOBUS_KEY = '<your_Globus_Auth_Client_ID>'
+SOCIAL_AUTH_GLOBUS_SECRET = '<your_Globus_Auth_Client_Secret>'
+SOCIAL_AUTH_GLOBUS_AUTH_EXTRA_ARGUMENTS = {
+    'access_type': 'offline',
+}
+```
+
 ### Orcid OAuth2
 
 [Orcid](https://python-social-auth.readthedocs.io/en/latest/backends/orcid.html) allows for

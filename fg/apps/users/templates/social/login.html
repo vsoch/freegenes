@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{% static "css/social-auth.css"%}">
 {% if 'ldap_auth' in PLUGINS_ENABLED %}<link rel="stylesheet" href="{% static "css/ldap_auth.css"%}">{% endif %}
 {% if 'saml_auth' in PLUGINS_ENABLED %}<link rel="stylesheet" href="{% static "css/saml_auth.css"%}">{% endif %}
+{% if ENABLE_GLOBUS_AUTH %}<link rel="stylesheet" href="{% static "css/globus_auth.css"%}">{% endif %}
 
 <div class="container" style='padding-top:200px'>
   <div class="row">
@@ -22,11 +23,13 @@
     <!-- User isn't logged in yet! -->
     <div class="login-box">
 
-        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" style="color: !important" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
+        {% if ENABLE_TWITTER_AUTH %}<a class="social-button" style="color: black !important" id="twitter-connect" href="{% url 'social:begin' 'twitter' %}?next={{ domain }}{{ request.path }}">Login with Twitter</a>{% endif %}
 
         {% if ENABLE_ORCID_AUTH_SANDBOX %}<a class="social-button" id="orcid-connect" href="{% url 'social:begin' 'orcid-sandbox' %}?next={{ domain }}{{ request.path }}">Login with Orcid Sandbox</a>{% endif %}
 
         {% if ENABLE_ORCID_AUTH %}<a class="social-button" id="orcid-connect" href="{% url 'social:begin' 'orcid' %}?next={{ domain }}{{ request.path }}">Login with Orcid</a>{% endif %}
+
+        {% if ENABLE_GLOBUS_AUTH %}<a class="social-button" id="globus-login" style="color:black !important" href="{% url 'social:begin' 'globus' %}?next={{ domain }}{{ request.path }}">Login with Globus</a>{% endif %}
 
         {% if ENABLE_GITHUB_AUTH %}<a class="social-button" style="color:black !important" id="github-connect" href="{% url 'social:begin' 'github' %}?next={{ domain }}{{ request.path }}">Login with Github</a>{% endif %}
 

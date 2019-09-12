@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 # AUTHENTICATION
 
 # Which social auths do you want to use?
+ENABLE_GLOBUS_AUTH = True
 ENABLE_GOOGLE_AUTH = False
 ENABLE_ORCID_AUTH = False
 ENABLE_ORCID_AUTH_SANDBOX = False
