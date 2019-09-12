@@ -20,7 +20,7 @@ from fg.settings import (
     VIEW_RATE_LIMIT_BLOCK as rl_block
 )
 
-def _upload_mta(request, uuid, template="orders/sign-mta.html"):
+def _upload_mta(request, uuid, template="orders/sign-mta.html", redirect_checkout=True):
     '''a general view to handle uploading the MTA form, is used for both the
        admin and user upload forms, but each return different templates.
     '''
@@ -39,7 +39,9 @@ def _upload_mta(request, uuid, template="orders/sign-mta.html"):
             mta = form.save()
             order.material_transfer_agreement = mta
             order.save()
-            return redirect('checkout')
+            if redirect_checkout:
+                return redirect('checkout')
+            return redirect('order_details', uuid=order.uuid)
     else:
         form = MTAForm()
     context = {'form': form, 'order': order}
@@ -63,6 +65,6 @@ def admin_upload_mta(request, uuid):
        but a different template.
     '''
     if request.user.is_staff or request.user.is_superuser:
-        return _upload_mta(request, uuid, template='orders/upload-mta.html')
+        return _upload_mta(request, uuid, template='orders/upload-mta.html', redirect_checkout=False)
     messages.warning(request, 'You are not allowed to perform this action.')
     redirect('orders')
