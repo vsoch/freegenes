@@ -12,7 +12,7 @@
                     </thead>
                     <tbody>{% for sample in samples %}
                         <tr>
-                            <td><a href="{{ sample.part.get_absolute_url }}">{{ sample.part.name }}</a></td>
+                            <td><a href="{{ sample.part.get_absolute_url }}">{{ sample.part.name }}<br><a href="{{ sample.get_absolute_url }}">Sample Details</a></a></td>
                             <td>{% if sample.evidence %}{{ sample.evidence}}{% endif %}</td>
                             <td>{% if sample.derived_from %}<a href="{{ sample.derived_from.get_absolute_url }}">{{ sample.derived_from.uuid }}</a>{% endif %}</td>
                             <td>{{ sample.sample_type }}</td>

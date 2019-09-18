@@ -1,0 +1,62 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<style>
+.tab-pane {
+  padding-top:30px;
+}
+</style>
+
+<div class="container" style='padding-top:200px'>
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+      <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
+      <h4>
+    </div>
+  </div>
+{% if request.user.is_superuser or request.user.is_staff %}<div class="row" style="margin-bottom:20px">
+      <div class="col-md-12"><a href="{% url 'admin:main_sample_change' instance.uuid %}">
+          <button class="btn btn-primary">Edit</button></a>
+      </div>
+  </div>{% endif %}
+  <div class="row">
+    <div class="col-md-12">
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-details" role="tabpanel" aria-labelledby="nav-details-tab">
+	    <table class="table table-bordered" id="{{ instance.get_label }}-table" width="100%" cellspacing="0"><thead>
+	      <tr>
+	       <th>Key</th>
+	       <th>Value</th>
+	      </tr>
+	    </thead>
+	      <tbody>
+                  <tr><td>Part</td><td><a href="{{ instance.part.get_absolute_url }}">{{ instance.part.name }}</a></td></tr>
+                  {% if instance.evidence %}<tr><td>Evidence</td><td>{{ instance.evidence }}</td></tr>{% endif %}
+                  {% if instance.derived_from %}<tr><td>Derived From</td><td><a href="{{ instance.derived_from.get_absolute_url }}">{{ instance.derived_from.uuid }}</a></td></tr>{% endif %}
+                  <tr><td>Sample Type</td><td>{{ instance.sample_type }}</td></tr>
+                  <tr><td>Sample Status</td><td>{{ instance.status }}</td></tr>
+                  <tr><td>Sample Vendor</td><td>{{ instance.vendor }}</td></tr>
+                  <tr><td>Wells</td><td>{% for well in instance.wells.all %}{{ well.address }} in Container <a href="{{ well.plate_wells.first.container.get_absolute_url }}">{{ well.plate_wells.first.container.name }}</a> - Plate <a href="{{ well.plate_wells.first.get_absolute_url }}">{{ well.plate_wells.first.name }}</a><br>{% endfor %}</td></tr>
+	    </tbody>
+	   </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#samples-table').DataTable();
+});
+</script>
+{% endblock %}
