@@ -2,7 +2,7 @@
 
 [![Docker Repository on Quay](https://quay.io/repository/vsoch/freegenes/status "Docker Repository on Quay")](https://quay.io/repository/vsoch/freegenes)
 
- - [Documentation](https://vsoch.github.io/freegenes-django)
+ - [Documentation](https://vsoch.github.io/freegenes/)
 
 ![docs/assets/img/freegenes.png](docs/assets/img/freegenes.png)
 
