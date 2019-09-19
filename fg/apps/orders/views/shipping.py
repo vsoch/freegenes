@@ -71,7 +71,7 @@ class ShippingView(View):
         if not order.material_transfer_agreement:
             messages.warning(self.request, "This order needs an MTA before proceeding.")
             redirect('order_details', args=(order.uuid,))
-            
+ 
         form = ShippingForm()
         context = {
             'form': form,
@@ -81,7 +81,7 @@ class ShippingView(View):
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
-        '''This can be written if form data is ever sent to the server
+        '''Create the shipment from the order page.
 
            Parameters
            ==========
@@ -89,13 +89,13 @@ class ShippingView(View):
         '''
         form = ShippingForm(self.request.POST or None)
         try:
-            order = Order.objects.get(user=self.request.user)
+            order = Order.objects.get(uuid=kwargs.get('uuid'))
             if form.is_valid():
 
                 # Get cleaned form data
                 data = form.cleaned_data
                 data['shipping_email'] = self.request.user.email
-                addresses = create_addresses(data)    
+                addresses = create_addresses(data)
 
                 # Ensure that both addresses are valid
                 for address_type, address_data in addresses.items():
@@ -123,7 +123,6 @@ def create_transaction(request, uuid):
        that was chosen, which already is associated with the particular parcel.
     '''
     try:
-        # An order cannot be already processed (received is True)
         order = Order.objects.get(uuid=uuid)
     except Order.DoesNotExist:
         raise Http404
