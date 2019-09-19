@@ -47,11 +47,14 @@ server {
         alias /var/www/static;
     }
 
+    location ~ (\.php|.aspx|.asp|myadmin) {
+      deny all;
+    }
+
     location / {
             include /etc/nginx/uwsgi_params.par;
             uwsgi_pass uwsgi:3031;
             uwsgi_max_temp_file_size 10024m;
-        }
-
+    }
 }
 
