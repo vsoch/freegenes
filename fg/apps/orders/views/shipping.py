@@ -25,6 +25,7 @@ from ratelimit.decorators import ratelimit
 from fg.settings import (
     NODE_INSTITUTION,
     HELP_CONTACT_EMAIL,
+    HELP_CONTACT_PHONE,
     SHIPPO_TOKEN,
     SHIPPO_CUSTOMER_REFERENCE,
     VIEW_RATE_LIMIT as rl_rate, 
@@ -232,6 +233,7 @@ def create_addresses(data):
         street1 = data.get('from_address'),
         street2 = data.get('from_address2'),
         zip = data.get('from_zip'),
+        phone = HELP_CONTACT_PHONE,
         api_key=SHIPPO_TOKEN,
         country = "US", 
         email = HELP_CONTACT_EMAIL,
@@ -243,6 +245,7 @@ def create_addresses(data):
         street1 = data.get('shipping_address'),
         street2 = data.get('shipping_address2'),
         zip = data.get('shipping_zip'),
+        phone = data.get('shipping_phone'),
         api_key=SHIPPO_TOKEN,
         country = "US", 
         email = data.get('shipping_email'),

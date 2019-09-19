@@ -58,7 +58,8 @@ DRY_ICE_CHOICES = (
 class ShippingForm(forms.Form):
     '''the shipping form is filled out by the lab staff using the addresses
        sent via email. The institution (lab) name, and email are taken from
-       settings.config (HELP_INSTITUTION_EMAIL and NODE_INSTITUTION
+       settings.config (HELP_INSTITUTION_EMAIL and NODE_INSTITUTION) along
+       with the phone number (HELP_INSTITUTION_PHONE)
     ''' 
 
     # If shipping address is different
@@ -66,6 +67,7 @@ class ShippingForm(forms.Form):
     shipping_address = forms.CharField(required=True)
     shipping_address2 = forms.CharField(required=False)
     shipping_zip = forms.CharField(required=True)
+    shipping_phone = forms.CharField(required=True)
 
     # TO Lab Name and Address
     from_name = forms.CharField(required=True)

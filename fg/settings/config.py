@@ -47,6 +47,7 @@ MANAGERS = ADMINS
 # Future BioNode Parameters
 
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
+HELP_CONTACT_PHONE = None
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_INSTITUTION = 'Stanford University'
 NODE_URI = "srcc"
