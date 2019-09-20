@@ -45,6 +45,9 @@ parcel_default = {
     "mass_unit": "lb"
 }
 
+# Default dry ice weight
+
+DRY_ICE_WEIGHT = "2"
 
 class ShippingView(View):
     '''Checkout a cart, meaning finishing up an order and placing it. We check
@@ -59,9 +62,9 @@ class ShippingView(View):
            ==========
            uuid: the unique ID for the order, must exist.
         '''
-        if not self.request.user.is_staff or self.request.user.is_superuser:
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
             messages.warning(self.request, "You don't have permission to see this view.")
-            redirect('catalog_view')
+            return redirect('catalog_view')
 
         try:
             order = Order.objects.get(uuid=kwargs.get('uuid'))
@@ -71,7 +74,7 @@ class ShippingView(View):
         # If no MTA, redirect back to the order page with instructions to get it
         if not order.material_transfer_agreement:
             messages.warning(self.request, "This order needs an MTA before proceeding.")
-            redirect('order_details', args=(order.uuid,))
+            return redirect('order_details', uuid=str(order.uuid))
  
         form = ShippingForm()
         context = {
@@ -97,13 +100,19 @@ class ShippingView(View):
                 data = form.cleaned_data
                 data['shipping_email'] = self.request.user.email
                 addresses = create_addresses(data)
+ 
+                # Ensure that ice weight is greater than parcel weight
+                if data.get('dryice_options', 'No') == 'Yes':
+                    parcel_weight = data.get('parcel_weight', parcel_default['weight'])                
+                    if float(parcel_weight) < float(DRY_ICE_WEIGHT):
+                        messages.info(self.request, "Parcel weight must be greater than dry ice weight (2 pounds)") 
+                        return redirect('create_shipment', uuid=str(order.uuid))
 
                 # Ensure that both addresses are valid
                 for address_type, address_data in addresses.items():
                     if not address_data['validation_results']['is_valid']:
-                        messages = "<br>".join(address_data['validation_results']['messages'])
-                        messages.error(self.request, '%s address is invalid. %s' %(address_type, address_data)) 
-                        redirect('create_shipment', args=(order.uuid,))
+                        messages.info(self.request, address_data) 
+                        return redirect('create_shipment', uuid=str(order.uuid))
 
                 # Create the shipment, return to view
                 shipment = create_shipment(addresses, data)
@@ -148,7 +157,7 @@ def create_transaction(request, uuid):
 
         if transaction['object_state'] != 'VALID':
             messages.error(request, 'There was an error creating that transaction.')
-            return redirect('order_details', args=(order.uuid,))
+            return redirect('order_details', uuid=str(order.uuid))
 
         # There is some delay to create the label, so we make the user wait
 
@@ -194,13 +203,17 @@ def create_shipment(addresses, data):
     '''
     extra = {}
 
+    # Update the parcel attributes
+    for attr in ['length', 'weight', 'height', 'width']:
+        parcel_default[attr] = data.get('parcel_%s' % attr, parcel_default[attr])
+
     # Does the user have a customer reference?
     if SHIPPO_CUSTOMER_REFERENCE:
         extra['reference_1'] = SHIPPO_CUSTOMER_REFERENCE
 
     # Does the shipment need dry ice?
     if data.get('dryice_options', 'No') == 'Yes':
-        extra['dry_ice'] = {"contains_dry_ice": True, "weight": "2"}
+        extra['dry_ice'] = {"contains_dry_ice": True, "weight": DRY_ICE_WEIGHT}
 
     return shippo.Shipment.create(
                address_from = addresses["From"],
