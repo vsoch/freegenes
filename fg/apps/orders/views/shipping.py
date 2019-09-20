@@ -47,8 +47,6 @@ parcel_default = {
 
 # Default dry ice weight
 
-DRY_ICE_WEIGHT = "2"
-
 class ShippingView(View):
     '''Checkout a cart, meaning finishing up an order and placing it. We check
        for the MTA, along with ensuring that the order exists, period.
@@ -102,10 +100,11 @@ class ShippingView(View):
                 addresses = create_addresses(data)
  
                 # Ensure that ice weight is greater than parcel weight
-                if data.get('dryice_options', 'No') == 'Yes':
+                if data.get('dryice_options', 'No') != 'No':
+                    dryice_weight = data.get('dryice_options')
                     parcel_weight = data.get('parcel_weight', parcel_default['weight'])                
-                    if float(parcel_weight) < float(DRY_ICE_WEIGHT):
-                        messages.info(self.request, "Parcel weight must be greater than dry ice weight (2 pounds)") 
+                    if float(parcel_weight) < float(dryice_weight):
+                        messages.info(self.request, "Parcel weight must be greater than dry ice weight") 
                         return redirect('create_shipment', uuid=str(order.uuid))
 
                 # Ensure that both addresses are valid
@@ -212,8 +211,8 @@ def create_shipment(addresses, data):
         extra['reference_1'] = SHIPPO_CUSTOMER_REFERENCE
 
     # Does the shipment need dry ice?
-    if data.get('dryice_options', 'No') == 'Yes':
-        extra['dry_ice'] = {"contains_dry_ice": True, "weight": DRY_ICE_WEIGHT}
+    if data.get('dryice_options', 'No') != 'No':
+        extra['dry_ice'] = {"contains_dry_ice": True, "weight": data.get('dryice_options')}
 
     return shippo.Shipment.create(
                address_from = addresses["From"],

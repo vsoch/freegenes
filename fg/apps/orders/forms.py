@@ -51,7 +51,9 @@ class CheckoutForm(forms.Form):
 
 
 DRY_ICE_CHOICES = (
-    ('Yes', 'Contains Dry Ice'),
+    ('5', 'Add 5 Pounds Dry Ice'),
+    ('2', 'Add 2 Pounds Dry Ice'),
+    ('1', 'Add 1 Pound Dry Ice'),
     ('No', 'No Dry Ice')
 )
 
@@ -79,6 +81,6 @@ class ShippingForm(forms.Form):
     parcel_width = forms.CharField(required=True, label="Width in inches")
     parcel_height = forms.CharField(required=True, label="Height in inches")
     parcel_weight = forms.CharField(required=True, label="Weight in pounds")
-
+    
     dryice_options = forms.ChoiceField(
         widget=forms.RadioSelect, choices=DRY_ICE_CHOICES)
