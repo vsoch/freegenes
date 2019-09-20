@@ -3,6 +3,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Status</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
                             <th>Signed MTA</th>
                             <th>Notes</th>
                             <th>Distributions</th>
@@ -12,6 +14,8 @@
                         <tr>
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                             <td>{% if order.label %}Complete{% else %}Processing{% endif %}</td>
+                            <td>{{ order.time_created }}</td>
+                            <td>{{ order.time_updated }}</td>
                             <td>{% if order.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
                             <td>{{ order.notes | truncatechars:100 }}</td>
                             <td>{% for dist in order.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>
