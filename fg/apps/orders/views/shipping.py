@@ -121,7 +121,7 @@ class ShippingView(View):
 
         except Order.DoesNotExist:                
             message.error(self.request, 'That order does not exist.')
-            redirect('orders')
+            return redirect('orders')
 
 
 @login_required
@@ -156,7 +156,7 @@ def create_transaction(request, uuid):
         order.add_transaction(transaction)
 
         if transaction['object_state'] != 'VALID':
-            messages.error(request, 'There was an error creating that transaction.')
+            messages.info(request, 'There was an error creating that transaction.')
             return redirect('order_details', uuid=str(order.uuid))
 
         # There is some delay to create the label, so we make the user wait
