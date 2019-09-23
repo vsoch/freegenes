@@ -10,23 +10,23 @@
         <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>{% block title %}FreeGenes{% endblock %}</title>
+        <title>{% block title %}{{ NODE_NAME }}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FreeGenes Node" />
+        <meta name="description" content="{{ NODE_NAME }} Node" />
         <meta name="keywords" content="synthetic biology, freegenes" />
         <meta name="author" content="vsoch" />
 
         <link rel="icon" type="image/ico" href="/static/img/favicon.ico"/>
 
         <!-- Facebook and Twitter integration -->
-        <meta property="og:title" content="FreeGenes: Node for opensource genomics"/>
+        <meta property="og:title" content="{{ NODE_NAME }}: Node for opensource genomics"/>
         <meta property="og:image" content=""/>
         <meta property="og:url" content=""/>
-        <meta property="og:site_name" content="FreeGenes Node"/>
-        <meta property="og:description" content="FreeGenes Node"/>
-        <meta name="twitter:title" content="biobricks" />
+        <meta property="og:site_name" content="{{ NODE_NAME }} Node"/>
+        <meta property="og:description" content="{{ NODE_NAME }} Node"/>
+        <meta name="twitter:title" content="{{ NODE_TWITTER }}" />
         <meta name="twitter:image" content="{% static 'img/logo/logo.png' %}" />
-        <meta name="twitter:url" content="https://www.twitter.com/biobricks" />
+        <meta name="twitter:url" content="https://www.twitter.com/{{ NODE_TWITTER }}" />
         <meta name="twitter:card" content="" />
 
         {% include "base/google_analytics.html" %}

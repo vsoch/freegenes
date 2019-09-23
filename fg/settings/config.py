@@ -32,6 +32,12 @@ SHIPPO_TOKEN=None
 SHIPPO_CUSTOMER_REFERENCE=None
 GOOGLE_ANALYTICS_ID=None
 
+# Twist API
+
+FREEGENES_TWIST_TOKEN=None
+FREEGENES_TWIST_EUTOKEN=None
+FREEGENES_TWIST_EMAIL=None
+
 # DOMAIN NAMES
 ## IMPORTANT: if/when you switch to https, you need to change "DOMAIN_NAME"
 # to have https, otherwise some functionality will not work (e.g., GitHub webhooks)
@@ -44,14 +50,15 @@ DOMAIN_NAKED = DOMAIN_NAME_HTTP.replace('http://', '')
 ADMINS = (('vsochat', 'vsochat@gmail.com'),)
 MANAGERS = ADMINS
 
-# Future BioNode Parameters
+# BioNode Parameters
 
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
 HELP_CONTACT_PHONE = None # "123-456-7890"
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_INSTITUTION = 'Stanford University'
-NODE_URI = "srcc"
-NODE_NAME = "Stanford Research Computing Center"
+NODE_URI = "freegenes"
+NODE_NAME = "FreeGenes"
+NODE_TWITTER = "biobricks"
 
 # Defaults for Physical Models
 

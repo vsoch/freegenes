@@ -40,7 +40,7 @@
  
     <section id="about" class="about section">
         <div class="container">
-            <h2 class="title text-center">What is FreeGenes?</h2>
+            <h2 class="title text-center">What is {{ NODE_NAME }}?</h2>
             <div class="row">
                 <div class="item col-lg-4 col-md-6 col-12">
                     <div class="icon-holder">
@@ -71,7 +71,7 @@
                 </div>
                 <div class="clearfix visible-md"></div>
                 <p class="text-center learn-more"><a class="btn btn-fg-primary" href="{% url 'about' %}">Learn More</a>
-                  <a class="btn btn-fg-primary" href="{% url 'catalog_view' %}">Browse FreeGenes</a></p>
+                  <a class="btn btn-fg-primary" href="{% url 'catalog_view' %}">Browse {{ NODE_NAME }}</a></p>
             </div> 
 
         </div>

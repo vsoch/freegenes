@@ -1,19 +1,29 @@
 {% extends "base/page.html" %}
 {% load staticfiles %}
 {% block content %}
+<style>
+.logo-title {
+  color: #074f66;
+}
+</style>
+
 <div class="container" style='padding-top:200px'>
   {% include "messages/message.html" %}
   <div class="row">
-    <div class="col-md-12" style="padding-bottom:50px">
-      <h1>{% if title %}{{ title }}{% else %}Collections Catalog{% endif %}</h1>
-      <p>{% if description %}{{ description }}{% else %}Here you can explore {{ NODE_NAME }} Collections{% endif %}</p>
-      <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h1>Twist Orders</h1>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      {% include "tables/collection_table.html" with table_id="collections-table" %}
-   </div>
+      {% if orders %}
+           {% include "tables/twist_orders.html" %}{% else %}
+<p class="alert alert-info">You don't have any Twist orders, or your credentials were not found to look them up.</a>{% endif %}
+    </div>
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -23,7 +33,6 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
-  $('#collections-table').DataTable();
+  {% if orders %}$("#orders-table").DataTable();{% endif %}
 });
-</script>
 {% endblock %}

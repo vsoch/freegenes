@@ -13,8 +13,9 @@ from django.conf import settings
 def domain_processor(request):
     return {'domain': settings.DOMAIN_NAME,
             'DOMAIN_NAKED': settings.DOMAIN_NAKED,
-            'REGISTRY_URI': settings.NODE_URI,
-            'REGISTRY_NAME': settings.NODE_NAME}
+            'NODE_URI': settings.NODE_URI,
+            'NODE_NAME': settings.NODE_NAME,
+            'NODE_TWITTER': settings.NODE_TWITTER}
 
 def help_processor(request):
     return {'HELP_CONTACT_EMAIL': settings.HELP_CONTACT_EMAIL,
