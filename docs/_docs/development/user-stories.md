@@ -117,8 +117,30 @@ itself (will require thought / some research about how others do it).
 The protocol for generating the actual order and shipment would be followed,
 and the user sent a notification of shipment when it's shipped.
 
-### View Current Orders
+### View Incoming Orders
 
-I'm an admin in the Endy Lab, and I want to log in to see existing orders.
-I should have an admin interface to log in, and see a list of orders and their statuses.
+In order to get new materials into our system, we need to do DNA synthesis.
+DNA synthesis takes virtuals in our systems (parts) and turns them into physicals
+(samples in wells). Physically, this means we pay a DNA synthesis provider
+to do the chemical reactions necessary. 
+
+With FreeGenes, we are ordering a lot of genes through a company called Twist. We want
+to be able to track the progress of each external order to see how building each collection is going.
+
+External orders are associated contain many parts (and parts can be in many external orders). Within an
+order, parts can 4 different states: Design failed, in production, build failed, or complete. An external
+order itself can have 4 different statuses - Unordered, In-Production, Cancelled, or Complete. 
+
+An external order will be associated with an order from Twist, which can be accessed through their API.
+We want to track a couple different things going on with external orders within 1 page:
+
+- Number of Genes in external order
+- Numbers of Genes with each status in external order
+- Estimated Price of external order
+- Status of external order
+- Collection(s) associated with external order
+- Number of genes until completion of each collection (number of parts in collection vs number of parts with a sequence verified sample (plus number of those genes in production))
+
+
+
 

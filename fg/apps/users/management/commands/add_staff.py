@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    '''add staff will add admin and manager privledges to freegenes. 
+    '''add staff will add admin and manager privileges to freegenes. 
        The super user is an admin that can access the administrative
        interface, and pretty much do anything.
     '''

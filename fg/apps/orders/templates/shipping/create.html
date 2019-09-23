@@ -3,6 +3,7 @@
 
 {% block content %}
     <div class="container wow fadeIn" style="padding-top:150px">
+     {% include "messages/message.html" %}
       <h2 class="my-5 h2 text-center">Create Shipment</h2>
       <div class="row">
         <div class="col-md-8 mb-4">
@@ -44,6 +45,7 @@ $("#load-button").click(function() {
       $("input[name='shipping_address']").val(localStorage.getItem('shipping_address'));
       $("input[name='shipping_zip']").val(localStorage.getItem('shipping_zip'));
       $("input[name='shipping_address2']").val(localStorage.getItem('shipping_address2'));   
+      $("input[name='shipping_phone']").val(localStorage.getItem('shipping_phone'));   
 
       $("input[name='from_name']").val(localStorage.getItem('from_name'));
       $("input[name='from_address']").val(localStorage.getItem('from_address'));
@@ -76,6 +78,7 @@ $("form").submit(function(event) {
       localStorage.setItem('shipping_address', $("input[name='shipping_address']").val());
       localStorage.setItem('shipping_zip', $("input[name='shipping_zip']").val());
       localStorage.setItem('shipping_address2', $("input[name='shipping_address2']").val());
+      localStorage.setItem('shipping_phone', $("input[name='shipping_phone']").val());
    
       localStorage.setItem('from_name', $("input[name='from_name']").val());
       localStorage.setItem('from_address', $("input[name='from_address']").val());

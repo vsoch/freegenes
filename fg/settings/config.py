@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 # AUTHENTICATION
 
 # Which social auths do you want to use?
+ENABLE_GLOBUS_AUTH = True
 ENABLE_GOOGLE_AUTH = False
 ENABLE_ORCID_AUTH = False
 ENABLE_ORCID_AUTH_SANDBOX = False
@@ -28,6 +29,7 @@ ENABLE_BITBUCKET_AUTH = False
 
 # Shipping (set this variable in your secrets.py
 SHIPPO_TOKEN=None
+SHIPPO_CUSTOMER_REFERENCE=None
 GOOGLE_ANALYTICS_ID=None
 
 # DOMAIN NAMES
@@ -45,6 +47,7 @@ MANAGERS = ADMINS
 # Future BioNode Parameters
 
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
+HELP_CONTACT_PHONE = None # "123-456-7890"
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_INSTITUTION = 'Stanford University'
 NODE_URI = "srcc"

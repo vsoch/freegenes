@@ -1,12 +1,12 @@
 {% extends "base/page.html" %}
 {% load staticfiles %}
 {% block content %}
-
 <div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
   <div class="row">
     <div class="col-md-12" style="padding-bottom:50px">
-      <h1>Organisms Catalog</h1>
-      <p>Here you can explore FreeGenes organisms</p>
+      <h1>{% if title %}{{ title }}{% else %}Organisms Catalog{% endif %}</h1>
+      <p>{% if description %}{{ description }}{% else %}Here you can explore FreeGenes organisms{% endif %}</p>
       <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
     </div>
   </div>

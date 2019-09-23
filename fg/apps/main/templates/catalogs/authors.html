@@ -5,14 +5,14 @@
   {% include "messages/message.html" %}
   <div class="row">
     <div class="col-md-12" style="padding-bottom:50px">
-      <h1>{% if title %}{{ title }}{% else %}Collections Catalog{% endif %}</h1>
-      <p>{% if description %}{{ description }}{% else %}Here you can explore FreeGenes Collections{% endif %}</p>
+      <h1>{% if title %}{{ title }}{% else %}Authors Catalog{% endif %}</h1>
+      <p>{% if description %}{{ description }}{% else %}Here you can explore FreeGenes Authors{% endif %}</p>
       <p><a href="{% url 'catalog_view' %}"><< Back to Catalogs</a></p> 
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      {% include "tables/collection_table.html" with table_id="collections-table" %}
+      {% include "tables/author_table.html" with table_id="authors-table" %}
    </div>
   </div>
 </div>
@@ -23,7 +23,7 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
-  $('#collections-table').DataTable();
+  $('#authors-table').DataTable();
 });
 </script>
 {% endblock %}

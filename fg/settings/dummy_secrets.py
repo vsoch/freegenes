@@ -12,8 +12,15 @@
 # Social Authentication
 # Set keys and secrets for social authentication methods that you have
 # enabled in config.py.
-# See https://singularityhub.github.io/sregistry/install.html for full details
 # =============================================================================
+
+# Globus OAuth2
+
+# SOCIAL_AUTH_GLOBUS_KEY = '<your_Globus_Auth_Client_ID>'
+# SOCIAL_AUTH_GLOBUS_SECRET = '<your_Globus_Auth_Client_Secret>'
+# SOCIAL_AUTH_GLOBUS_AUTH_EXTRA_ARGUMENTS = {
+#    'access_type': 'offline',
+#}
 
 # Orcid OAuth2
 

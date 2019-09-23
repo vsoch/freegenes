@@ -2,11 +2,13 @@
 
 {% block content %}
     <div class="container wow fadeIn" style="padding-top:150px">
+     {% include "messages/message.html" %}
       <h2 class="my-5 h2 text-center">Create Shipment</h2>
       <div class="row">
         <div class="col-md-8 mb-4">
+            {% if shipment.messages %}<p class="alert alert-info alert-dismissible">{% for message in shipment.messages %}{{ message.text }}<br>{% endfor %}</p>{% endif %}
           <h2 id="upload">Shipment</h2>
-            {% if shipment.status == "SUCCESS" %}
+            {% if shipment.status in "SUCCESS,QUEUED" %}
             <form action="{% url 'create_transaction' order.uuid %}" method="POST">
                 {% csrf_token %}
 		<div class="form-group">
@@ -22,6 +24,7 @@
 		    <h5 class="card-title">{{ rate.duration_terms }}</h5>
 		    <p class="card-text"><img src="{{ rate.provider_image_200 }}">{% if rate.attributes %}<ul>
                         {% for attribute in rate.attributes %}<li>{{ attribute }}</li>{% endfor %}</ul>{% endif %}
+                        {% if rate.messages %}{% for message in rate.messages %}{{ message.text }}{% endfor %}{% endif %}
                     </p>
 		  </div>
 		</div>

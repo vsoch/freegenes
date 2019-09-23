@@ -84,6 +84,13 @@ an account is to export a `SHIPPO_TOKEN` in your secrets.py:
 SHIPPO_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
+Shippo usually can provide a test and a live token, so you can first test with the testing token. Additionally,
+if you use FedEx and want to add a Customer_Reference field, define this in your secrets:
+
+```python
+SHIPPO_CUSTOMER_REFERENCE="1111111-1-DENRC"
+```
+
 
 ### Authentication Secrets
 
@@ -115,6 +122,34 @@ As mentioned previously, other authentication methods, such as LDAP, are impleme
 
 For authentication plugins, we will walk through the setup of each in detail here. 
 For other plugins, you should look at the [plugins]({{ site.baseurl }}/docs/plugins/) documentation now before proceeding. For all of the below, you should put the content in your `secrets.py` under settings. Note that if you are deploying locally, you will need to put localhost (127.0.0.1) as your domain, and Github is now the only one that worked reliably without an actual domain for me.
+
+### Globus OAuth2
+
+Complete instructions for Globus are [here](https://globus-integration-examples.readthedocs.io/en/latest/django.html#develop-web-application). You'll need to go to [https://developers.globus.org/](https://developers.globus.org/) to get your client key and secret, and also designate the redirect urls:
+
+```
+https://<your_server_host_name/<prefix>/complete/globus/
+``` 
+
+For scopes, I chose:
+
+```
+Profile
+View identity Set
+Email
+Openid
+View identities on Globus Auth
+```
+
+And then add the key, secret, and extra args to your secrets.py in the settings folder.
+
+```python
+SOCIAL_AUTH_GLOBUS_KEY = '<your_Globus_Auth_Client_ID>'
+SOCIAL_AUTH_GLOBUS_SECRET = '<your_Globus_Auth_Client_Secret>'
+SOCIAL_AUTH_GLOBUS_AUTH_EXTRA_ARGUMENTS = {
+    'access_type': 'offline',
+}
+```
 
 ### Orcid OAuth2
 
@@ -263,10 +298,11 @@ ensuring that the `DOMAIN_NAME` above uses https. It's up to the deployer to set
 
 You need to define a FreeGenes node uri, and different contact information:
 
-> **Important** The `HELP_CONTACT_EMAIL` is used for the Shippo API, as the from address email. Ensure that it's a valid email that can be received by lab personell. The `NODE_INSTITUTION` is also used for the company field.
+> **Important** The `HELP_CONTACT_EMAIL` and `HELP_CONTACT_PHONE` are used for the Shippo API. Ensure that both are valid contacts that can be received by lab personell. The `NODE_INSTITUTION` is also used for the company field.
 
 ```python
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
+HELP_CONTACT_PHONE = '123-456-7890'
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_INSTITUTION = 'Stanford University'
 NODE_URI = "srcc"

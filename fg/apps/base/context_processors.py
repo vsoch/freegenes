@@ -22,7 +22,8 @@ def help_processor(request):
             'GOOGLE_ANALYTICS_ID': settings.GOOGLE_ANALYTICS_ID}
 
 def auth_processor(request):
-    return {"ENABLE_GOOGLE_AUTH": settings.ENABLE_GOOGLE_AUTH,
+    return {"ENABLE_GLOBUS_AUTH": settings.ENABLE_GLOBUS_AUTH,
+            "ENABLE_GOOGLE_AUTH": settings.ENABLE_GOOGLE_AUTH,
             "ENABLE_ORCID_AUTH": settings.ENABLE_ORCID_AUTH,
             "ENABLE_ORCID_AUTH_SANDBOX": settings.ENABLE_ORCID_AUTH_SANDBOX,
             "ENABLE_TWITTER_AUTH": settings.ENABLE_TWITTER_AUTH,

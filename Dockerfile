@@ -31,14 +31,14 @@ ADD . /code/
 # PLUGINS
 # You are free to uncomment the plugins that you want to use
 
-# Install LDAP (uncomment if wanted)
+# Install LDAP
 RUN if $ENABLE_LDAP; then pip install python3-ldap ; fi;
 RUN if $ENABLE_LDAP; then pip install django-auth-ldap ; fi;
 
-# Install PAM Authentication (uncomment if wanted)
+# Install PAM Authentication
 RUN if $ENABLE_PAM; then pip install django-pam ; fi;
 
-# Install SAML (uncomment if wanted)
+# Install SAML
 RUN if $ENABLE_SAML; then pip install python3-saml ; fi;
 RUN if $ENABLE_SAML; then pip install social-auth-core[saml] ; fi;
 

@@ -51,14 +51,17 @@ class CheckoutForm(forms.Form):
 
 
 DRY_ICE_CHOICES = (
-    ('Yes', 'Contains Dry Ice'),
+    ('5', 'Add 5 Pounds Dry Ice'),
+    ('2', 'Add 2 Pounds Dry Ice'),
+    ('1', 'Add 1 Pound Dry Ice'),
     ('No', 'No Dry Ice')
 )
 
 class ShippingForm(forms.Form):
     '''the shipping form is filled out by the lab staff using the addresses
        sent via email. The institution (lab) name, and email are taken from
-       settings.config (HELP_INSTITUTION_EMAIL and NODE_INSTITUTION
+       settings.config (HELP_INSTITUTION_EMAIL and NODE_INSTITUTION) along
+       with the phone number (HELP_INSTITUTION_PHONE)
     ''' 
 
     # If shipping address is different
@@ -66,6 +69,7 @@ class ShippingForm(forms.Form):
     shipping_address = forms.CharField(required=True)
     shipping_address2 = forms.CharField(required=False)
     shipping_zip = forms.CharField(required=True)
+    shipping_phone = forms.CharField(required=True)
 
     # TO Lab Name and Address
     from_name = forms.CharField(required=True)
@@ -77,6 +81,6 @@ class ShippingForm(forms.Form):
     parcel_width = forms.CharField(required=True, label="Width in inches")
     parcel_height = forms.CharField(required=True, label="Height in inches")
     parcel_weight = forms.CharField(required=True, label="Weight in pounds")
-
+    
     dryice_options = forms.ChoiceField(
         widget=forms.RadioSelect, choices=DRY_ICE_CHOICES)
