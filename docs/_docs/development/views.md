@@ -40,7 +40,7 @@ based on regular expression) well organized.
 
  - **/u** corresponds to user or profile views (indicates "user")
  - **/o** external order and shipment views (under apps/orders)
- - **/l** lab (factory) views, correspond with "internal" module
+ - **/f** factory views, correspond with factory module
  - **/c** catalog pages are under the letter c
    - **/c/<type>/** would correspond to a specific catalog
  - **/api** correponds to API endpoints

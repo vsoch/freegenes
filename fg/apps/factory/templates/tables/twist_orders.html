@@ -1,0 +1,37 @@
+{% load factory_template_tags %}
+    <table class="table" class="table table-bordered" id="orders-table" width="100%" cellspacing="0">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Order Name</th>
+            <th>Project Name</th>
+            <th>Total Items</th>
+            <th>Total Amount</th>
+            <th>Order Type</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Received At</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{% url 'twist_order' order.sfdc_id %}">{{ order.order_name }}</a> {% if order.high_priority %}<span style="margin-left:5px" class="badge badge-warning">high priority</span>{% endif %}</td>
+            <td>{{ order.project_name }}</td>
+            <td>{{ order.total_items }}</td>
+            <td>$ {{ order.total_amount }}</td>
+            <td>{{ order.type }}</td>
+            <td>{{ order.category }}</td>
+            <td>{{ order.status }}</td>
+            <td>{% with order.created_date|split:"T" as created %}{{ created.0 }}{% endwith %}</td>
+            <td>{% with order.received_date|split:"T" as received %}{{ received.0 }}{% endwith %}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='5'>You don't have any orders from Twist, or your authentication tokens are missing.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>

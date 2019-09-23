@@ -1,0 +1,49 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+<style>
+.logo-title {
+  color: #074f66;
+}
+</style>
+
+<div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h2>Twist Order</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">{% if items %}
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+                <a class="nav-item nav-link" id="nav-items-tab" data-toggle="tab" href="#nav-items" role="tab" aria-controls="nav-items" aria-selected="true">Items</a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-details" role="tabpanel" aria-labelledby="nav-details-tab">
+           {% include "tables/twist_order.html" with order=items %}
+            </div>
+            <div class="tab-pane fade show" id="nav-items" role="tabpanel" aria-labelledby="nav-items-tab">
+           {% include "tables/twist_items.html" with items=items.order_items %}
+            </div>
+        </div>{% else %}
+<p class="alert alert-info">You don't have an associated order, or your credentials were not found to look them up.</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  {% if items %}$("#items-table").DataTable({
+    "pageLength": 50
+   });{% endif %}
+});
+</script>
+{% endblock %}

@@ -12,7 +12,8 @@ from fg.apps.main.models import Institution
 from fg.apps.users.models import User
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
-    VIEW_RATE_LIMIT_BLOCK as rl_block
+    VIEW_RATE_LIMIT_BLOCK as rl_block,
+    NODE_NAME
 )
 
 from django.contrib.auth import logout
@@ -87,5 +88,5 @@ def delete_account(request):
     # Log the user out
     logout(request)
     request.user.is_active = False
-    messages.info(request, "Thank you for using FreeGenes!")
+    messages.info(request, "Thank you for using %s!" % NODE_NAME)
     return redirect('index')

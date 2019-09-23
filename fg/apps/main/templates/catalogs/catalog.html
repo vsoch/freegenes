@@ -5,8 +5,8 @@
   {% include "messages/message.html" %}
   <div class="row">
     <div class="col-md-12" style="padding-bottom:50px">
-      <h1>FreeGenes Catalog</h1>
-      <p>Here you can explore FreeGenes by Category</p>
+      <h1>{{ NODE_NAME }} Catalog</h1>
+      <p>Here you can explore {{ NODE_NAME }} by Category</p>
     </div>
   </div>
   <div class="row">
@@ -32,7 +32,7 @@
       <p>A container represents a physical object in the lab.
       <hr>
       <a href="{% url 'plates_catalog' %}"><h4>Plates</h4></a>
-      <p>Explore plates in FreeGenes
+      <p>Explore plates in {{ NODE_NAME }}
       <hr>
       <a href="{% url 'platesets_catalog' %}"><h4>PlateSets</h4></a>
       <p>PlateSets make up distributions.

@@ -1,0 +1,48 @@
+    <div class="table-responsive text-nowrap">
+    <table class="table" id="order-table">
+        <thead>
+        <tr>
+            <th scope="col">Field</th>
+            <th scope="col">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Type</td>
+            <td>{{ order.type }} {% if order.high_priority %}<span class="badge badge-warning" style="margin-left:5px">high priority</span>{% endif %}</td>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td>{{ order.status }}</td>
+        </tr>
+        <tr>
+            <td>Received Date</td>
+            <td>{{ order.received_date }}</td>
+        </tr>
+        <tr>
+            <td>Due Date</td>
+            <td>{{ order.due_date }}</td>
+        </tr>
+        <tr>
+            <td>Category</td>
+            <td>{{ order.category }}</td>
+        </tr>
+        <tr>
+            <td>Items</td>
+            <td>{% if order.total_items %}Total Items: {{ order.total_items }}<br>{% endif %}
+                {% if order.total_quantity %}Total Quantity: {{ order.total_quantity }}<br>{% endif %}
+                In production items: {{ order.in_production_items }}<br>
+                Failed items: {{ order.failed_items }}<br>
+                Cancelled items: {{ order.cancelled_items }}<br>
+                Completed items: {{ order.completed_items }}<br>
+                Closed items: {{ order.closed_items }}<br>
+                Mixed items: {{ order.mixed_items }}
+            </td>
+        </tr>
+        <tr>
+            <td>Container Code</td>
+            <td>{{ order.container_code }}</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>

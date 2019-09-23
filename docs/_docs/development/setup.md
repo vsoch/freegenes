@@ -91,6 +91,27 @@ if you use FedEx and want to add a Customer_Reference field, define this in your
 SHIPPO_CUSTOMER_REFERENCE="1111111-1-DENRC"
 ```
 
+### Twist Secrets
+
+The [Twist API](https://twistapi.docs.apiary.io) is an optional integration
+that you can use to import orders. You should define the following parameters
+in your config.py, in the case that you want to use it:
+
+The email associated with the Twist account
+
+```python
+FREEGENES_TWIST_EMAIL=username@domain.com
+```
+
+And then enter a twist token and end user token that you've been granted:
+
+```python
+FREEGENES_TWIST_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxx
+FREEGENES_TWIST_EUTOKEN=xxxxxxxxxxxxxxxxxxxxxx
+```
+
+If you don't define these variables, they will be set to None and the
+option to import orders from Twist simply won't be presented.
 
 ### Authentication Secrets
 

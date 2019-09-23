@@ -1,0 +1,31 @@
+{% load factory_template_tags %}
+                <table class="table table-bordered" id="items-table" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                            <th>Size</th>
+                            <th>Estimated Shipping Date</th>
+                            <th>Last Event</th>
+                            <th>Vector Name</th>
+                            <th>Insertion Site Name</th>
+                            <th>Delayed Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for item in items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.type }}</td>
+                            <td>{{ item.status }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.size }}</td>
+                            <td>{% with item.estimated_shipping_date|split:"T" as shipping %}{{ shipping.0 }}{% endwith %}</td>
+                            <td>{{ item.last_event }}</td>
+                            <td>{{ item.vector_name }}</td>
+                            <td>{{ item.insertion_site_name }}</td>
+                            <td>{{ item.delayed_status }}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

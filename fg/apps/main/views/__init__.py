@@ -18,10 +18,7 @@ from .details import (
     tag_details
 )
 
-from .map import (
-    lab_map_view,
-    order_map_view
-)
+from .map import order_map_view
 
 from .tags import (
     tag_organisms_details,
