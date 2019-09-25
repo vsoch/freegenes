@@ -1,0 +1,72 @@
+{% extends "base/page.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container" style="padding-top:150px">
+    {% include "messages/message.html" %}
+    {% include "style/spinner.html" %}
+
+      <div class="row">
+        <div class="col-md-12">
+        <h2>Import Plates</h2>
+        <p>We have identified {{ plate_ids|length }} plates from the compiled PlateMap for this order. Please select a name and a container in the lab for each.</p>
+	<form action="{% url 'twist_order_import' order_id %}" method="POST" class="card-body">
+
+              {% csrf_token %}
+              <div class='plate_import_form'>
+              {% for plate_id, meta in plate_ids.items %}
+                <div class="row">
+                  <div class="col-lg-3 col-md-12 mb-3">
+                    <label for="plate_{{ plate_id }}">Name</label>
+                    <input type='text' id="plate_{{ plate_id }}" name="plate_{{ plate_id }}" 
+                           class='form-control' required/>
+                  </div>
+                  <div class="col-lg-3 col-md-6 mb-3">
+                    <label for="plate_container_{{ plate_id }}">Container</label>
+			<select id="plate_container_{{ plate_id }}" 
+                                name="plate_container_{{ plate_id }}" 
+                                class="browser-default custom-select" required>{% for container in containers %}
+			  <option value="{{ container.uuid }}">{{ container.name }}</option>{% endfor %}
+			</select>
+                  </div>
+                  <div class="col-lg-2 col-md-6 mb-2">
+                    <label for="plate_form_{{ plate_id }}">Plate Form</label>
+			<select id="plate_form_{{ plate_id }}" 
+                                name="plate_form_{{ plate_id }}" 
+                                class="browser-default custom-select" required>{% for plate_form in plate_forms %}
+			  <option value="{{ plate_form.0 }}">{{ plate_form.0 }}</option>{% endfor %}
+			</select>
+                  </div>
+                  <div class="col-lg-2 col-md-12 mb-2">
+                    <label for="plate_height_{{ plate_id }}">Plate Height</label>
+                    <input type='number' min="0" id="plate_height_{{ plate_id }}" name="plate_height_{{ plate_id }}" 
+                           class='form-control' required/>
+                  </div>
+                  <div class="col-lg-2 col-md-12 mb-2">
+                    <label for="plate_length_{{ plate_id }}">Plate Length</label>
+                    <input type='number' min="0" id="plate_length_{{ plate_id }}" name="plate_length_{{ plate_id }}" 
+                           class='form-control' required/>
+                  </div>
+                </div>{% endfor %}
+              </div>
+
+              <hr class="mb-4">
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Create import task</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock content %}
+
+{% block pagescripts %}
+<script>
+$("form").submit(function(event) {
+   console.log("Import requested for {{ order_id }}")
+   $("#fade").show();
+   $("#loading-image").show();
+   $("#fade").attr("hidden", true)
+});
+</script>
+{% endblock pagescripts %}

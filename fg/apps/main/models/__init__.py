@@ -26,6 +26,7 @@ from fg.settings import (
     DEFAULT_PLATE_HEIGHT,
     DEFAULT_PLATE_LENGTH
 )
+from sortedm2m.fields import SortedManyToManyField
 from .schemas import MODULE_SCHEMAS
 from .validators import (
     validate_dna_string,
@@ -175,6 +176,37 @@ class Institution(models.Model):
 ################################################################################
 # Parts ########################################################################
 ################################################################################
+
+class CompositePart(models.Model):
+    '''a composite part is a virtual representation of a group of parts.
+    '''
+    COMPOSITE_TYPE = [
+        ('base_part', 'base_part'),
+    ]
+
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    name = models.CharField(max_length=250, blank=False)
+    description = models.CharField(max_length=500, blank=True, null=True)
+
+    composite_id = models.CharField(max_length=250) # to differentiate between composite_ids and gene_ids
+    composite_part = models.CharField(max_length=250, choices=COMPOSITE_TYPE, null=True, blank=True)
+
+    sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    parts = SortedManyToManyField("main.Part")
+
+    def get_absolute_url(self):
+        return reverse('compositepart_details', args=[self.uuid])
+
+    def get_label(self):
+        return "compositepart"
+
+    class Meta:
+        app_label = 'main'
+
 
 class Part(models.Model):
     '''A parts object is a virtual representation of genetic element(s).
@@ -692,6 +724,7 @@ class Plate(models.Model):
 
     PLATE_TYPE = [
         ('archive_glycerol_stock','archive_glycerol_stock'),
+        ('plasmid_plate','plasmid_plate'),
         ('glycerol_stock','glycerol_stock'),
         ('culture','culture'),
         ('distro','distro'),
@@ -717,7 +750,7 @@ class Plate(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    plate_vendor_id = models.CharField(max_length=250, blank=True, null=True)
+    plate_vendor_id = models.CharField(max_length=250, blank=True, null=True, unique=True)
 
     # Track the number of times a plate has been frozen and thawed, each freeze damages the cells
     thaw_count = models.IntegerField(default=0)
@@ -929,7 +962,10 @@ class Sample(models.Model):
     # the population so there are more mutations). We think it's status is 
     # confirmed, but the only evidence we have is that it was "Derived" from a confirmed sample.
     derived_from = models.ForeignKey('Sample', on_delete=models.PROTECT, blank=True, null=True)
-    part = models.ForeignKey('Part', on_delete=models.PROTECT, blank=False)
+
+    # Parts, not required since it could be composite or part
+    part = models.ForeignKey('Part', on_delete=models.PROTECT, blank=True, null=True)
+    composite_part = models.ForeignKey('CompositePart', on_delete=models.PROTECT, blank=True, null=True)
 
     # needed to automate sequencing
     index_forward = models.TextField(validators=[validate_dna_string], blank=True, null=True)

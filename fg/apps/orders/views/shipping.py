@@ -92,6 +92,8 @@ class ShippingView(View):
         form = ShippingForm(self.request.POST or None)
         try:
             order = Order.objects.get(uuid=kwargs.get('uuid'))
+
+            # If the form is valid, return that the shipment was created
             if form.is_valid():
 
                 # Get cleaned form data
@@ -117,6 +119,13 @@ class ShippingView(View):
                 shipment = create_shipment(addresses, data)
                 context = {"shipment": shipment, "order": order}
                 return render(self.request, "shipping/created.html", context)
+
+            # Otherwise, return form again.
+            context = {
+                'form': form,
+                'order': order
+            }
+            return render(self.request, "shipping/create.html", context)
 
         except Order.DoesNotExist:                
             message.error(self.request, 'That order does not exist.')
