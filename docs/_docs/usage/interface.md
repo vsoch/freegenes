@@ -7,6 +7,7 @@ description: A typical user might want to search, or create an order
 
  - [Dashboard](#dashboard) for user and staff navigation
  - [Orders](#orders) to sign an MTA and request distributions
+ - [Factory](#factory) views for the lab staff to design genes
  - [Shipments](#shipments) for the label to receive and process orders
  - [Search](#search) and catalog views
  - [Maps](#maps) for finding plates.
@@ -61,6 +62,36 @@ but rather sends an email with the form to the lab. This is done for three reaso
  1. It's an easy way to notify the lab of an order
  2. It eliminates the need to store personal information on the server
  3. We can have better certainty of having the latest shipping information.
+
+## Orders
+
+
+The Factory views page is only viewable by staff and superusers. We start
+with a selection of options for the lab staff, which is currently sparse because
+we are only working on importing from Twist (but many other functions are likely
+to result):
+
+![factory_incoming.png]({{ site.baseurl }}/docs/usage/factory_incoming.png)
+
+When you click to review twist orders, we use the Twist API to see the listing:
+
+![factory_orders.png]({{ site.baseurl }}/docs/usage/factory_orders.png)
+
+Clicking on any particular order will show metadata for the order.
+
+![factory_twist_order_1.png]({{ site.baseurl }}/docs/usage/factory_twist_order_1.png)
+
+and plates for the order:
+
+![factory_twist_order_2.png]({{ site.baseurl }}/docs/usage/factory_twist_order_2.png)
+
+If the order has shipments associated, the user is given the option to import them
+into the FreeGenes Factory:
+
+![factory_plate_import.png]({{ site.baseurl }}/docs/usage/factory_plate_import.png)
+
+
+This will fire off a task (run async on the server) to do the import.
 
 ## Shipments
 
