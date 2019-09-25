@@ -118,6 +118,20 @@ strategy of importing Plate Maps (export from Twist) to import plates.
 You don't need any secrets here.
 
 
+### Map Tokens
+
+The Orders Map (a map of all historical orders found at the route /map/orders) is generated using Mapbox GL JS (https://docs.mapbox.com/mapbox-gl-js/api/).
+
+In order for the JS library to generate the map, you need to supply a valid Mapbox access token ("mapboxgl.accessToken" in the JavaScript that creates the map). This variable is populated from the MAPBOX_ACCESS_TOKEN in your settings/config.py or in settings/secrets.py as follows:
+
+```python
+MAPBOX_ACCESS_TOKEN = 'XXXXX'
+```
+
+This token is passed from the server to the Orders Map template and can be set as a configuration variable.
+
+By default, the default public Mapbox token is used and defined in "/fg/settings/config.py". This will work perfectly fine for all the basic map features, but if you are expanding the feature set of the map, you will need to register a Mapbox token and replace the default public one with your own.
+
 ### Authentication Secrets
 
 One thing that cannot be donein advance is to produce application keys and secrets to give your FreeGenes node for each social provider that you want to allow users (and yourself) to login with. We are going to use a framework called [python social auth](https://python-social-auth-docs.readthedocs.io/en/latest/configuration/django.html) to achieve this, and in fact you can add a [number of providers](http://python-social-auth-docs.readthedocs.io/en/latest/backends/index.html).
