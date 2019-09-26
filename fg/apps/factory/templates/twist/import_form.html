@@ -65,7 +65,7 @@
 $(document).ready(function() {
   var url = "{% url 'cache_twist_order' order_id %}";
   let data = new FormData();
-  data.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').attr('value');
+  data.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').attr('value'));
   fetch(url, {
     method: 'POST',
     body: data,
