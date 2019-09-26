@@ -8,14 +8,18 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.core.cache import caches
 from freegenes.client.twist import Client
 from fg.apps.main.models import Plate
 
 from fg.settings import (
     FREEGENES_TWIST_TOKEN,
     FREEGENES_TWIST_EUTOKEN,
-    FREEGENES_TWIST_EMAIL
+    FREEGENES_TWIST_EMAIL,
+    CACHES
 )
+
+import json
 
 def get_client():
     '''use the parameters for the Twist tokens to create a client. If it's
@@ -57,10 +61,22 @@ def get_unique_plates(order_id):
        waiting. If possible, we might want to cache the rows response
        somewhere in the future.
     '''
-    client = get_client()
-    plate_ids = dict()
+    # First try looking up in cache
+    cache_name = list(CACHES.keys())[0] # default
+    cache_key = 'twist_order_platemaps_%s' % order_id
+    cache = caches[cache_name]
 
-    if not client:
+    # Check if the order already is cached
+    plate_ids = cache.get(cache_key, dict())
+
+    # We need to load json back into list of lists
+    if plate_ids:
+        plate_ids = json.loads(plate_ids)
+
+    client = get_client()
+
+    # If we don't have a client, or we do have plate ids, return
+    if not client or plate_ids:
         return plate_ids
 
     # We need to look up all rows to populate the form
@@ -79,4 +95,8 @@ def get_unique_plates(order_id):
             if plate_id not in plate_ids:
                 plate_ids[plate_id] = {"product_type": row[headers.index("Product type")],
                                        "name": row[headers.index("Name")]}
+
+    # Save to cache (10 minutes)
+    cache.set(cache_key, json.dumps(plate_ids), 600)
+
     return plate_ids

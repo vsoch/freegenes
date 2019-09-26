@@ -87,7 +87,7 @@ def twist_order_import(request, uuid):
     # We need to present the form to the user
     if request.method == "GET":
 
-        # We need to derive the unique plates from the data
+        # We need to derive the unique plates from the data (uses cache)
         plate_ids = get_unique_plates(uuid)
  
         if not plate_ids:
@@ -107,9 +107,6 @@ def twist_order_import(request, uuid):
         # We are interested in fields for plate_container and plate
         fields = {k:v for k,v in request.POST.items() if k.startswith('plate')}
  
-        import pickle
-        pickle.dump(dict(request.POST), open("/code/post.pkl", "wb"))
-
         # Submit a job to the server
         django_rq.enqueue(import_order_task, uuid=uuid, fields=fields)
         messages.info(request, "A task has been submit to the server to import this order.")
@@ -119,6 +116,21 @@ def twist_order_import(request, uuid):
 
 
 # Tasks
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def cache_twist_order(uuid):
+    '''Given an order unique ID, this request is done concurrently from the
+       server when a user navigates to the form to see details or request import 
+       of an order. We can run this in advance and save the metadata to cache
+       to (hopefully) save time.
+    '''
+    if request.method == "POST" and request.user.is_staff or request.user.is_superuser:
+        # Function only serves to set cache
+        plate_ids = get_unique_plates(uuid)
+        return JsonResponse({"message": "Success"})
+    return JsonResponse({"message": "error"})
+
 
 def import_order_task(uuid, fields):
     '''Based on an order id (uuid is the order sfdc_id in Twist)
@@ -198,9 +210,9 @@ def import_order_task(uuid, fields):
                                                  length=int(plate_length[0]),
                                                  status="Stocked")
 
-                # Save the object to lookup to add wells to
-                if plate:
-                    plates[plate.plate_vendor_id] = plate
+            # Save the object to lookup to add wells to
+            if plate:
+                plates[plate.plate_vendor_id] = plate
 
     # We will only import wells for existing parts
     existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
@@ -223,7 +235,7 @@ def import_order_task(uuid, fields):
                                            volume=50,
                                            media="glycerol_lb")
 
-            elif product_type == "Clonal genes"
+            elif product_type == "Clonal genes":
                 quantity = int(row[headers.index("Yield (ng)")])
                 well = Well.objects.create(address=well_location,
                                            volume=0, # dried DNA

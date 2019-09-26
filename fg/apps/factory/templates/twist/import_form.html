@@ -62,11 +62,29 @@
 
 {% block pagescripts %}
 <script>
+$(document).ready(function() {
+  var url = "{% url 'cache_twist_order' order_id %}";
+  fetch(url, {method: 'POST'}).then(res => res.json())
+  .then(function(response) {
+    var response = JSON.stringify(response) 
+    console.log('Success:', response)
+    // On an error (order already submit, wrong user) don't send form
+    if (response['message'] == "error"){
+       event.preventDefault();
+    }
+  })
+  .catch(function(response) {
+     var response = JSON.stringify(response);
+     console.log("Error", response)
+     event.preventDefault();
+  })
+});
+
 $("form").submit(function(event) {
    console.log("Import requested for {{ order_id }}")
    $("#fade").show();
    $("#loading-image").show();
-   $("#fade").attr("hidden", true)
+   $("#fade").attr("hidden", true);
 });
 </script>
 {% endblock pagescripts %}
