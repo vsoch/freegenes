@@ -63,7 +63,8 @@ but rather sends an email with the form to the lab. This is done for three reaso
  2. It eliminates the need to store personal information on the server
  3. We can have better certainty of having the latest shipping information.
 
-## Orders
+
+## Factory
 
 
 The Factory views page is only viewable by staff and superusers. We start
