@@ -16,7 +16,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">{% if items %}
-        {% if items.shipments|length > 0 %}<a href="{% url 'twist_order_import' items.sfdc_id %}"><button class="btn btn-primary">Import</button>{% endif %}
+        {% if items.shipments|length > 0 %}<a href="{% url 'twist_order_import' items.sfdc_id %}"><button class="btn btn-primary">Import</button></a>{% endif %}
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
