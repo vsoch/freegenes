@@ -193,7 +193,7 @@ class CompositePart(models.Model):
     description = models.CharField(max_length=500, blank=True, null=True)
 
     composite_id = models.CharField(max_length=250) # to differentiate between composite_ids and gene_ids
-    composite_part = models.CharField(max_length=250, choices=COMPOSITE_TYPE, null=True, blank=True)
+    composite_type = models.CharField(max_length=250, choices=COMPOSITE_TYPE, null=True, blank=True)
 
     sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
     parts = SortedManyToManyField("main.Part")
