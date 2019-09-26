@@ -64,6 +64,7 @@ def get_unique_plates(order_id):
     # First try looking up in cache
     cache_name = list(CACHES.keys())[0] # default
     cache_key = 'twist_order_platemaps_%s' % order_id
+    print("Cache key for plate ids is %s" % cache_key)
     cache = caches[cache_name]
 
     # Check if the order already is cached

@@ -92,7 +92,7 @@ def twist_order_import(request, uuid):
  
         if not plate_ids:
             messages.info(request, "Unable to retrieve client for Twist, consult with admin about API tokens.")
-            return redirect('twist_order', uuid=uuid, user_id=request.user.id)
+            return redirect('twist_order', uuid=uuid)
 
         context = {"order_id": uuid,
                    "plate_ids": plate_ids,
