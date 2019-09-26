@@ -34,6 +34,9 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
-  {% if orders %}$("#orders-table").DataTable();{% endif %}
+  {% if orders %}$("#orders-table").DataTable({
+    "pageLength": 50
+  });{% endif %}
 });
+</script>
 {% endblock %}
