@@ -66,7 +66,6 @@ but rather sends an email with the form to the lab. This is done for three reaso
 
 ## Factory
 
-
 The Factory views page is only viewable by staff and superusers. We start
 with a selection of options for the lab staff, which is currently sparse because
 we are only working on importing from Twist (but many other functions are likely
@@ -91,8 +90,8 @@ into the FreeGenes Factory:
 
 ![factory_plate_import.png]({{ site.baseurl }}/docs/usage/factory_plate_import.png)
 
-
-This will fire off a task (run async on the server) to do the import.
+This will fire off a task (run async on the server) to do the import. Additionally,
+navigating to the page fires off an async task to cache some of the data that is needed.
 
 ## Shipments
 
