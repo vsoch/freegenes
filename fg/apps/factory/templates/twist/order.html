@@ -11,12 +11,13 @@
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
        {% include "messages/message.html" %}
+       {% include "style/spinner.html" %}
        <h2>Twist Order</h2>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">{% if items %}
-        {% if items.shipments|length > 0 %}<a href="{% url 'twist_order_import' items.sfdc_id %}"><button class="btn btn-primary">Import</button></a>{% endif %}
+        {% if items.shipments|length > 0 %}<a id="twist_import_button" href="{% url 'twist_order_import' items.sfdc_id %}"><button class="btn btn-primary">Import</button></a>{% endif %}
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
@@ -42,6 +43,13 @@
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(document).ready(function() {
+
+  // When the user clicks to import, show the loader
+  $("#twist_import_button").click(function(){
+     $("#fade").show();
+     $("#loading-image").show();
+     $("#fade").attr("hidden", true);
+  })
   {% if items %}$("#items-table").DataTable({
     "pageLength": 50
    });{% endif %}

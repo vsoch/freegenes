@@ -64,7 +64,13 @@
 <script>
 $(document).ready(function() {
   var url = "{% url 'cache_twist_order' order_id %}";
-  fetch(url, {method: 'POST'}).then(res => res.json())
+  let data = new FormData();
+  data.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').attr('value');
+  fetch(url, {
+    method: 'POST',
+    body: data,
+    credentials: 'same-origin'
+   }).then(res => res.json())
   .then(function(response) {
     var response = JSON.stringify(response) 
     console.log('Success:', response)
