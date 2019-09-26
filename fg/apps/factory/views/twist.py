@@ -115,11 +115,9 @@ def twist_order_import(request, uuid):
     return redirect('dashboard')
 
 
-# Tasks
-
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def cache_twist_order(uuid):
+def cache_twist_order(request, uuid):
     '''Given an order unique ID, this request is done concurrently from the
        server when a user navigates to the form to see details or request import 
        of an order. We can run this in advance and save the metadata to cache
@@ -131,6 +129,8 @@ def cache_twist_order(uuid):
         return JsonResponse({"message": "Success"})
     return JsonResponse({"message": "error"})
 
+
+# Tasks
 
 def import_order_task(uuid, fields):
     '''Based on an order id (uuid is the order sfdc_id in Twist)
@@ -150,12 +150,18 @@ def import_order_task(uuid, fields):
         ...
         } 
     '''
-    from fg.apps.main.models import Part
+    from fg.apps.main.models import (Part, Plate, Well)
     from fg.apps.users.models import User
     from fg.apps.factory.twist import get_client
     
     print('RUNNING IMPORT ORDER TASK WITH UUID %s' % uuid)
     client = get_client()
+
+    # Stop early if no client
+    if not client:
+        print("Unable to import client. Are tokens for Twist defined in settings?")
+        return
+
     rows = client.order_platemaps(sfdc_id=uuid)
     print("Found %s total entries" % (len(rows) -1))
 
@@ -180,39 +186,49 @@ def import_order_task(uuid, fields):
         product_type = plate_lookup[plate_id][headers.index("Product type")]
 
         # Create the plate if both exist
-        if container_id and plate_name:
+        if not container_id:
+            print("Missing container id, skipping plate %s." % plate_id)
+            continue
 
-            container = Container.objects.get(uuid=container_id[0])
-            try:
-                plate = Plate.objects.get(plate_vendor_id=plate_id)
+        container = Container.objects.get(uuid=container_id[0])
 
-            # We want to create only if doesn't exist!
-            except Plate.DoesNotExist:
+        # Try looking up the plate
+        try:
+            plate = Plate.objects.get(plate_vendor_id=plate_id)
 
-                plate = None
-                if product_type == "Clonal Genes":
-                    plate = Plate.objects.create(name=plate_name[0],
-                                                 container=container,
-                                                 plate_vendor_id=plate_id,
-                                                 plate_type="plasmid_plate",
-                                                 plate_form=plate_form[0],
-                                                 height=int(plate_height[0]),
-                                                 length=int(plate_length[0]),
-                                                 status="Stocked")
+        # We want to create only if doesn't exist!
+        except Plate.DoesNotExist:
+            plate = None
 
-                elif product_type == "Glycerol stock":
-                    plate = Plate.objects.create(name=plate_name[0],
-                                                 container=container,
-                                                 plate_vendor_id=plate_id,
-                                                 plate_type="glycerol_stock",
-                                                 plate_form=plate_form[0],
-                                                 height=int(plate_height[0]),
-                                                 length=int(plate_length[0]),
-                                                 status="Stocked")
+            # We can only create with a plate_name and container
+            if not plate_name:
+                print("Missing plate name, skipping plate %s." % plate_od)
+                continue
+
+            if product_type == "Clonal Genes":
+                plate = Plate.objects.create(name=plate_name[0],
+                                             container=container,
+                                             plate_vendor_id=plate_id,
+                                             plate_type="plasmid_plate",
+                                             plate_form=plate_form[0],
+                                             height=int(plate_height[0]),
+                                             length=int(plate_length[0]),
+                                             status="Stocked")
+
+            elif product_type == "Glycerol stock":
+                plate = Plate.objects.create(name=plate_name[0],
+                                             container=container,
+                                             plate_vendor_id=plate_id,
+                                             plate_type="glycerol_stock",
+                                             plate_form=plate_form[0],
+                                             height=int(plate_height[0]),
+                                             length=int(plate_length[0]),
+                                             status="Stocked")
 
             # Save the object to lookup to add wells to
             if plate:
                 plates[plate.plate_vendor_id] = plate
+
 
     # We will only import wells for existing parts
     existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
@@ -220,12 +236,12 @@ def import_order_task(uuid, fields):
     # Now create the wells, add to their correct plate
     for row in rows:
         name = row[headers.index("Name")]
+        plate_id = row[headers.index("Plate ID")]
 
         # Only import existing parts
-        if name in existing:
+        if name in existing and plate_id in plates:
  
             product_type = plate_lookup[plate_id][headers.index("Product type")]
-            plate_id = row[headers.index("Plate ID")]
             well_location = row[headers.index('Well Location')]
             plate = plates[plate_id]
 
@@ -242,4 +258,10 @@ def import_order_task(uuid, fields):
                                            quantity=quantity)
 
             if well:
+                well.save()
                 plate.wells.add(well)
+                plate.save()
+
+    # Confirm number of wells per plate
+    for plate_id, plate in plates.items():
+        print("Added %s wells to plate %s" %(plate.wells.count(), plate.name))
