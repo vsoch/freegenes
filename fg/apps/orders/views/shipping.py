@@ -98,8 +98,11 @@ class ShippingView(View):
 
                 # Get cleaned form data
                 data = form.cleaned_data
+                print(data)
+
                 data['shipping_email'] = self.request.user.email
                 addresses = create_addresses(data)
+                print(addresses)
  
                 # Ensure that ice weight is greater than parcel weight
                 if data.get('dryice_options', 'No') != 'No':
@@ -117,6 +120,7 @@ class ShippingView(View):
 
                 # Create the shipment, return to view
                 shipment = create_shipment(addresses, data)
+                print(shipment)
                 context = {"shipment": shipment, "order": order}
                 return render(self.request, "shipping/created.html", context)
 
@@ -260,7 +264,7 @@ def create_addresses(data):
         email = HELP_CONTACT_EMAIL,
         validate = True
     )
-        
+    
     address_to = shippo.Address.create(
         name = data.get('shipping_to'),
         street1 = data.get('shipping_address'),
@@ -272,6 +276,10 @@ def create_addresses(data):
         email = data.get('shipping_email'),
         validate = True
     )
+
+    # Enforce that address is residential
+    address_from['is_residential'] = False    
+    address_to['is_residential'] = False    
 
     return {'To': address_to,
             'From': address_from}
