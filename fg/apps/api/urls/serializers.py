@@ -16,6 +16,7 @@ from fg.apps.main.models import (
     Author,
     Container,
     Collection,
+    CompositePart,
     Distribution,
     Institution,
     Module,
@@ -33,6 +34,7 @@ from fg.apps.main.models import (
 )
 
 from fg.apps.orders.models import Order
+from .permissions import IsStaffOrSuperUser
 from rest_framework import (
     generics,
     serializers,
@@ -237,6 +239,73 @@ CollectionViewSet.list = limited_list
 CollectionViewSet.get = limited_get
 
 
+# Composite Part
+
+class CompositePartSerializer(serializers.ModelSerializer):
+
+    label = serializers.SerializerMethodField('get_label')
+    parts = serializers.PrimaryKeyRelatedField(many=True, queryset=Part.objects.all())
+
+    def get_label(self, instance):
+        return "compositepart"
+
+    class Meta:
+        model = CompositePart
+
+        # Extra keyword arguments for create
+        fields = ('uuid', 'time_created', 'time_updated', 'name', 
+                  'description', 'composite_id', 'composite_type',
+                  'direction_string', 'sequence', 'parts', 'label')
+
+
+class CompositePartViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsStaffOrSuperUser,)
+
+    def get_queryset(self):
+        return CompositePart.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        '''create a new composite part! We require existing part ids, along
+           with a name and direction string. The client should already have
+           handled doing the processing to derive the direction string
+           and part ids, we just validate that the parts are in the sequence.
+        '''
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # We need at least one part
+        parts = serializer.validated_data.get('parts')
+
+        if len(parts) < 2:
+            raise serializers.ValidationError('You must provide more than one part for a composite part') 
+
+        # If no direction string provided, create default
+        direction_string = serializer.validated_data.get('direction_string')
+        sequence = serializer.validated_data.get('sequence')
+
+        # Validate that length of part ids == length of direction string
+        if len(parts) != len(direction_string):
+            raise serializers.ValidationError('Direction string must be equal length to number of parts provided.') 
+
+        # Ensure that each part is at least included in the sequence
+        for i, part in enumerate(parts):
+            direction = direction_string[i]
+
+            # Check if forward and reverse isn't there.
+            if part.optimized_sequence not in sequence and part.optimized_sequence[::-1] not in sequence:
+                raise serializers.ValidationError('%s with direction %s not in sequence' %(part.uuid, direction)) 
+
+        # Then perform create
+        self.perform_create(serializer, sequence)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer, sequence):
+        serializer.save(sequence=sequence)
+
+    serializer_class = CompositePartSerializer
+
+
 # Distributions
 
 class DistributionSerializer(serializers.ModelSerializer):
@@ -424,6 +493,7 @@ class OrganismViewSet(viewsets.ReadOnlyModelViewSet):
         return Organism.objects.all()
 
     serializer_class = OrganismSerializer
+
 
 
 # Part

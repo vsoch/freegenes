@@ -18,6 +18,7 @@ from fg.apps.api.urls.serializers import (
     AuthorViewSet,
     ContainerViewSet,
     CollectionViewSet,
+    CompositePartViewSet,
     DistributionViewSet,
     InstitutionViewSet,
     ModuleViewSet,
@@ -40,6 +41,7 @@ from fg.apps.api.urls.serializers import (
 router = routers.DefaultRouter()
 router.register(r'^authors', AuthorViewSet, base_name="author")
 router.register(r'^containers', ContainerViewSet, base_name="container")
+router.register(r'^compositeparts', CompositePartViewSet, base_name="compositepart")
 router.register(r'^distributions', DistributionViewSet, base_name="distribution")
 router.register(r'^institutions', InstitutionViewSet, base_name="institution")
 router.register(r'^operations', OperationViewSet, base_name="operation")

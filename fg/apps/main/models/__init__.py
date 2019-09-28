@@ -29,6 +29,7 @@ from fg.settings import (
 from sortedm2m.fields import SortedManyToManyField
 from .schemas import MODULE_SCHEMAS
 from .validators import (
+    validate_direction_string,
     validate_dna_string,
     validate_name, 
     validate_json_schema
@@ -181,7 +182,7 @@ class CompositePart(models.Model):
     '''a composite part is a virtual representation of a group of parts.
     '''
     COMPOSITE_TYPE = [
-        ('base_part', 'base_part'),
+        ('base_part_plasmid', 'base_part_plasmid'),
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -189,13 +190,21 @@ class CompositePart(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
 
-    name = models.CharField(max_length=250, blank=False)
+    name = models.CharField(max_length=250, blank=False, unique=True)
     description = models.CharField(max_length=500, blank=True, null=True)
 
-    composite_id = models.CharField(max_length=250) # to differentiate between composite_ids and gene_ids
+    # to differentiate between composite_ids and gene_ids
+    composite_id = models.CharField(max_length=250, null=True, blank=True) 
     composite_type = models.CharField(max_length=250, choices=COMPOSITE_TYPE, null=True, blank=True)
 
-    sequence = models.TextField(validators=[validate_dna_string], blank=True, null=True)
+    # Must be same length as parts, e.g., ABC might correspond with any of <<> <>< >>> etc.
+    # < means reversed
+    # > means no change or forwardd (current direction)
+    direction_string = models.CharField(max_length=250, null=False, blank=False,
+                                        validators=[validate_direction_string],
+                                        help_text="String of equal length to parts to designate directions (<<>)")
+
+    sequence = models.TextField(validators=[validate_dna_string], default=None)
     parts = SortedManyToManyField("main.Part")
 
     def get_absolute_url(self):

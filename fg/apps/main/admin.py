@@ -13,6 +13,7 @@ from fg.apps.main.models import (
     Author,
     Container,
     Collection,
+    CompositePart,
     Distribution,
     Institution,
     Module,
@@ -38,6 +39,9 @@ class ContainerAdmin(admin.ModelAdmin):
 
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'parent', 'time_updated', 'time_created',)
+
+class CompositePartAdmin(admin.ModelAdmin):
+    list_display = ('name', 'composite_id', 'composite_type', 'description', 'time_updated', 'time_created')
 
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'time_updated', 'time_created', )
@@ -85,6 +89,7 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Container, ContainerAdmin)
 admin.site.register(Collection, CollectionAdmin)
+admin.site.register(CompositePart, CompositePartAdmin)
 admin.site.register(Distribution, DistributionAdmin)
 admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(Module, ModuleAdmin)
