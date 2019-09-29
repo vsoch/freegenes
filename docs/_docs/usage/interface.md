@@ -201,9 +201,15 @@ circles representing number of orders located above a zip code:
 ![shipping-map.png]({{ site.baseurl }}/docs/usage/shipping-map.png)
 
 We don't store anything but the zip codes with counts on the server, and the
-data is obtained as a nightly task using the Shippo api. The current map
-is generated from testing data, as only a real Shippo token (not a testing one)
-will return real order data.
+data is obtained as a nightly task using the Shippo api. Specifically, this means
+that [generate_mapdata.py](https://github.com/vsoch/freegenes/blob/master/fg/apps/main/management/commands/generate_mapdata.py) is run via [this cron job](https://github.com/vsoch/freegenes/blob/master/Dockerfile#L58) that is created on the container build. A Shippo (non testing) API token is required to generate the data, and as you can see from the cron command, the actual command (run in the container) is 
+
+```bash
+$ python manage.py generate_mapdata
+```
+
+with the working directory as /code. If you need to test this script, it's recommended to
+get dummy data (or real data from the server) and run manually.
 
 ## Profile
 
