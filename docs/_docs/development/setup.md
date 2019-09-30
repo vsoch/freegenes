@@ -91,6 +91,26 @@ if you use FedEx and want to add a Customer_Reference field, define this in your
 SHIPPO_CUSTOMER_REFERENCE="1111111-1-DENRC"
 ```
 
+### SendGrid Secrets
+
+To send PDFs (and other emails) from the server, we use SendGrid. This means
+that you need to [sign up](https://app.sendgrid.com/) for an account (the basic account with 100 emails
+per day is free) and then add the `SENDGRID_API_KEY` to your settings/config.py:
+
+```python
+SENDGRID_API_KEY=xxxxxxxxxxxxxxx
+```
+
+To create your key:
+
+ 1. Go to [SendGrid](https://app.sendgrid.com/) and click on Settings -> Api keys in the left bar
+ 2. Click the blue button to "Create API key"
+ 3. Give your key a meaningful name (e.g., freegenes_dev_test)
+ 4. Choose "Restricted Access" and give "Full Access" to mail send by clicking the bar on the far right circle.
+ 5. Copy it to a safe place, likely your settings/config.py (it is only shown once!)
+
+If the value is found to be None, emails will not be sent.
+
 ### Twist Secrets
 
 The [Twist API](https://twistapi.docs.apiary.io) is an optional integration
@@ -319,7 +339,7 @@ ensuring that the `DOMAIN_NAME` above uses https. It's up to the deployer to set
 
 You need to define a FreeGenes node uri, and different contact information:
 
-> **Important** The `HELP_CONTACT_EMAIL` and `HELP_CONTACT_PHONE` are used for the Shippo API. Ensure that both are valid contacts that can be received by lab personell. The `NODE_INSTITUTION` is also used for the company field.
+> **Important** The `HELP_CONTACT_EMAIL` and `HELP_CONTACT_PHONE` are used for the Shippo API, and the `HELP_CONTACT_EMAIL` is used for SendGrid (if you provide an api key for it). Ensure that both are valid contacts that can be received by lab personell. The `NODE_INSTITUTION` is also used for the company field.
 
 ```python
 HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'

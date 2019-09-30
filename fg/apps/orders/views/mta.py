@@ -13,16 +13,31 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from fg.apps.orders.forms import MTAForm
 from fg.apps.orders.models import Order
-
+from fg.apps.orders.email import send_email
 from ratelimit.decorators import ratelimit
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
-    VIEW_RATE_LIMIT_BLOCK as rl_block
+    VIEW_RATE_LIMIT_BLOCK as rl_block,
+    SENDGRID_API_KEY,
+    NODE_NAME,
+    HELP_CONTACT_EMAIL
 )
 
-def _upload_mta(request, uuid, template="orders/sign-mta.html", redirect_checkout=True):
+def _upload_mta(request, uuid, 
+                template="orders/sign-mta.html",
+                redirect_checkout=True,
+                email_to=None):
+
     '''a general view to handle uploading the MTA form, is used for both the
        admin and user upload forms, but each return different templates.
+
+       Parameters
+       ==========
+       uuid: the unique id of the order associated with the MTA
+       template: the template to return
+       redirect_checkout: redirect to checkout, otherwise to order details
+       email_to: if defined, and SENDGRID_API_KEY too, send PDF attached 
+                 to email to this contact.
     '''
     # The order must exist, we look up based on uuid
     try:
@@ -39,6 +54,20 @@ def _upload_mta(request, uuid, template="orders/sign-mta.html", redirect_checkou
             mta = form.save()
             order.material_transfer_agreement = mta
             order.save()
+
+            # If a to email is provided, and the sendgrid api key present
+            if email_to and SENDGRID_API_KEY:
+                subject = "Material Transfer Agreement (test)"
+                message = '''<strong>Attached, please find the signed MTA. 
+                            This will (eventually) be emailed to an institution contact
+                            when protocol is established.</strong>'''
+                filename = ("signed-mta-%s.pdf" % NODE_NAME).lower()
+                send_email(email_to=email_to,
+                           subject=subject,
+                           message=message,
+                           attachment=mta.agreement_file.path,
+                           filename=filename)
+
             if redirect_checkout:
                 return redirect('checkout')
             return redirect('order_details', uuid=order.uuid)
@@ -62,9 +91,17 @@ def upload_mta(request, uuid):
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def admin_upload_mta(request, uuid):
     '''the admin view to upload the MTA - the same variables and functionality,
-       but a different template.
+       but a different template. For this view, if a SendGrid key is defined,
+       we also send the MTA to the FreeGenes admin (and in the future, when a user
+       email is available, to them).
     '''
     if request.user.is_staff or request.user.is_superuser:
-        return _upload_mta(request, uuid, template='orders/upload-mta.html', redirect_checkout=False)
+
+        # Upload, and send email attachment (testing) back to lab
+        return _upload_mta(request, uuid, 
+                           template='orders/upload-mta.html',
+                           redirect_checkout=False,
+                           email_to=HELP_CONTACT_EMAIL)
+
     messages.warning(request, 'You are not allowed to perform this action.')
     redirect('orders')
