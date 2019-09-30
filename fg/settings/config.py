@@ -38,6 +38,10 @@ FREEGENES_TWIST_TOKEN=None
 FREEGENES_TWIST_EUTOKEN=None
 FREEGENES_TWIST_EMAIL=None
 
+# SendGrid
+
+SENDGRID_API_KEY=None
+
 # DOMAIN NAMES
 ## IMPORTANT: if/when you switch to https, you need to change "DOMAIN_NAME"
 # to have https, otherwise some functionality will not work (e.g., GitHub webhooks)
