@@ -47,7 +47,7 @@ def order_details(request, uuid):
         return render(request, "details/order_details.html", context={'instance': order})
 
     messages.warning(request, "You don't have permission to see this view.")
-    redirect('catalog_view')
+    return redirect('catalog_view')
 
 
 # Cart Operations
