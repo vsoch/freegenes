@@ -12,7 +12,7 @@
     <div class="col-md-12" style="padding-bottom:20px">
        {% include "messages/message.html" %}
        {% include "style/spinner.html" %}
-       <h2>Twist Order</h2>
+       {% if items %}<h2>Twist Order</h2>{% endif %}
     </div>
   </div>
   <div class="row">
@@ -31,8 +31,7 @@
             <div class="tab-pane fade show" id="nav-items" role="tabpanel" aria-labelledby="nav-items-tab">
            {% include "tables/twist_items.html" with items=items.order_items %}
             </div>
-        </div>{% else %}
-<p class="alert alert-info">You don't have an associated order, or your credentials were not found to look them up.</a>{% endif %}
+        </div>{% endif %}
     </div>
   </div>
 </div>
