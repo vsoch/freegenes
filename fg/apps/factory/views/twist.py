@@ -69,7 +69,10 @@ def twist_order(request, uuid):
     items = []
     client = get_client()
     if client:
-        items = client.order_items(uuid)
+        try:
+            items = client.order_items(uuid)
+        except:
+            messages.info(request, "The quote matching the query does not exist")
 
     context = {"items": items}
     return render(request, 'twist/order.html', context)
