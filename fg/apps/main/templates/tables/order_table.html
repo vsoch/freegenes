@@ -10,7 +10,7 @@
                             <th>Distributions</th>
                         </tr>
                     </thead>
-                    <tbody>{% for order in orders %}{% if order.label or order.ordered %}
+                    <tbody>{% for order in orders %}{% if order.ordered or order.received %}
                         <tr>
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                             <td>{% if order.label %}Complete{% else %}Processing{% endif %}</td>
