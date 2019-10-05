@@ -92,7 +92,7 @@
   {% if request.user.is_authenticated %}
   <div class="row" style="margin-top:100px">
     <div class="col-md-12">
-      <h1 style="padding-bottom:20px; float:right">{% if request.user.is_superuser or request.user.is_staff %}Outgoing Orders{% else %}Your Orders{% endif %}</h1>
+      <h1 style="padding-bottom:20px; float:right">{% if request.user.is_superuser or request.user.is_staff %}Shipments{% else %}Your Orders{% endif %}</h1>
     </div>
   </div>
   <div class="row">
