@@ -91,10 +91,12 @@ class Order(models.Model):
 
     def clean(self):
         '''a user is only allowed to have one order that isn't ordered (a cart)
+           if staff puts a new order into the system (user None) this is allowed.
         '''
-        message = 'User %s has a pending order, only one cart is allowed.' % self.user.username
-        if Order.objects.filter(ordered=False).count() >= 1:
-            raise ValidationError(message)
+        if self.user is not None:
+            message = 'User %s has a pending order, only one cart is allowed.' % self.user.username
+            if Order.objects.filter(ordered=False, user=self.user.username).count() >= 1:
+                raise ValidationError(message)
 
     class Meta:
         app_label = 'main'
