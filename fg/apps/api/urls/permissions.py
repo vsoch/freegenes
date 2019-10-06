@@ -8,17 +8,17 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import (
+    BasePermission, 
+    SAFE_METHODS
+)
 
 class IsStaffOrSuperUser(BasePermission):
     '''Allows access to staff (admin) or superuser.
     '''
     def has_permission(self, request, view):
 
-        # List and read are always allowed for non staff / superuser
-        if view.action in ['list', 'read']:
+        if request.user.is_staff or request.user.is_superuser:
             return True
 
-        is_staff = request.user.is_staff or request.user.is_superuser
-        return bool(request.user and is_staff)
-
+        return request.method in SAFE_METHODS
