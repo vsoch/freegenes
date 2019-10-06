@@ -323,7 +323,7 @@ class Collection(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
-    name = models.CharField(max_length=250, blank=False)
+    name = models.CharField(max_length=250, blank=False, unique=True)
 
     # This was originally the collection "README"
     description = models.CharField(max_length=5000, blank=False)
@@ -537,7 +537,7 @@ class Module(models.Model):
     # move any associated modules to belong to the container parent. The root
     # container is not allowed to be deleted.
     container = models.ForeignKey('Container', on_delete=models.DO_NOTHING, blank=False)
-    name = models.CharField(max_length=250, blank=False, validators=[validate_name])
+    name = models.CharField(max_length=250, blank=False, validators=[validate_name], unique=True)
 
     # This is generally bad practice to have a notes field - what is this for?
     notes = models.CharField(max_length=500)
@@ -921,11 +921,6 @@ class Sample(models.Model):
         ('Mutated', 'Mutated')
     ]
 
-    COLLABORATOR_CHOICES = [
-        ('OUTSIDE', True), 
-        ('WITHIN_INSTITUTION', False)
-    ]
-
     SAMPLE_TYPE = [
         ('Plasmid', 'Plasmid'),
         ('Illumina_Library', 'Illumina_Library')
@@ -950,7 +945,7 @@ class Sample(models.Model):
     ]
 
     # Default is outside collaborator (more conservative)
-    outside_collaborator = models.BooleanField(choices=COLLABORATOR_CHOICES, default=True)
+    outside_collaborator = models.BooleanField(default=True)
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sample_type = models.CharField(max_length=32, choices=SAMPLE_TYPE, blank=True, null=True)
@@ -1160,7 +1155,8 @@ class Plan(models.Model):
 
     # If a parent plan is deleted, it's children are meaningless, however
     # a plan that is executed cannot be deleted (see plan pre_delete signal).
-    parent = models.ForeignKey('Plan', on_delete=models.CASCADE)
+    # a plan does not necessarily require a parent
+    parent = models.ForeignKey('Plan', on_delete=models.CASCADE, blank=True, null=True)
 
     # An operation with plans cannot be deleted
     operation = models.ForeignKey('Operation', on_delete=models.PROTECT)

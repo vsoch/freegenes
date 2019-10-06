@@ -41,15 +41,22 @@ from fg.apps.api.urls.serializers import (
 router = routers.DefaultRouter()
 router.register(r'^authors', AuthorViewSet, base_name="author")
 router.register(r'^containers', ContainerViewSet, base_name="container")
+router.register(r'^collections', CollectionViewSet, base_name="collection")
 router.register(r'^compositeparts', CompositePartViewSet, base_name="compositepart")
 router.register(r'^distributions', DistributionViewSet, base_name="distribution")
 router.register(r'^institutions', InstitutionViewSet, base_name="institution")
+router.register(r'^modules', ModuleViewSet, base_name="module")
 router.register(r'^operations', OperationViewSet, base_name="operation")
 router.register(r'^orders', OrderViewSet, base_name="order")
 router.register(r'^organisms', OrganismViewSet, base_name="organism")
+router.register(r'^parts', PartViewSet, base_name="part")
 router.register(r'^plans', PlanViewSet, base_name="plan")
+router.register(r'^platesets', PlateSetViewSet, base_name="plateset")
+router.register(r'^plates', PlateViewSet, base_name="plate")
+router.register(r'^protocols', ProtocolViewSet, base_name="protocol")
 router.register(r'^robots', RobotViewSet, base_name="robots")
 router.register(r'^schemas', SchemaViewSet, base_name="schemas")
+router.register(r'^samples', SampleViewSet, base_name="samples")
 router.register(r'^tags', TagViewSet, base_name="tag")
 
 urlpatterns = [
@@ -57,28 +64,5 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', authviews.obtain_auth_token),
-
-    # Viewsets defined here have different serializers for single vs. list views
-
-    url(r'^collections/?$', CollectionViewSet.as_view()),
-    url(r'^collections/(?P<id>.+?)/?$', CollectionViewSet.as_view()),
-
-    url(r'^modules/?$', ModuleViewSet.as_view()),
-    url(r'^modules/(?P<id>.+?)/?$', ModuleViewSet.as_view()),
-
-    url(r'^parts/?$', PartViewSet.as_view()),
-    url(r'^parts/(?P<id>.+?)/?$', PartViewSet.as_view()),
-
-    url(r'^plates/?$', PlateViewSet.as_view()),
-    url(r'^plates/(?P<id>.+?)/?$', PlateViewSet.as_view()),
-
-    url(r'^platesets/?$', PlateSetViewSet.as_view()),
-    url(r'^platesets/(?P<id>.+?)/?$', PlateSetViewSet.as_view()),
-
-    url(r'^protocols/?$', ProtocolViewSet.as_view()),
-    url(r'^protocols/(?P<id>.+?)/?$', ProtocolViewSet.as_view()),
-
-    url(r'^samples/?$', SampleViewSet.as_view()),
-    url(r'^samples/(?P<id>.+?)/?$', SampleViewSet.as_view()),
 
 ]
