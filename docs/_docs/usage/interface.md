@@ -73,25 +73,18 @@ to result):
 
 ![factory_incoming.png]({{ site.baseurl }}/docs/usage/factory_incoming.png)
 
-When you click to review twist orders, we use the Twist API to see the listing:
+When you click to import a twist plate map (csv), you are presented with a form to 
+upload it:
 
-![factory_orders.png]({{ site.baseurl }}/docs/usage/factory_orders.png)
+![twist_import_1.png]({{ site.baseurl }}/docs/usage/twist_import_1.png)
 
-Clicking on any particular order will show metadata for the order.
+When you click Submit, if the plate doesn't already exist, you'll be asked for
+metadata about it:
 
-![factory_twist_order_1.png]({{ site.baseurl }}/docs/usage/factory_twist_order_1.png)
+![twist_import_2.png]({{ site.baseurl }}/docs/usage/twist_import_2.png)
 
-and plates for the order:
-
-![factory_twist_order_2.png]({{ site.baseurl }}/docs/usage/factory_twist_order_2.png)
-
-If the order has shipments associated, the user is given the option to import them
-into the FreeGenes Factory:
-
-![factory_plate_import.png]({{ site.baseurl }}/docs/usage/factory_plate_import.png)
-
-This will fire off a task (run async on the server) to do the import. Additionally,
-navigating to the page fires off an async task to cache some of the data that is needed.
+And then you can click the submit button to add to FreeGenes. Note that this
+view creates plates and wells, but does not generate samples.
 
 ## Shipments
 
