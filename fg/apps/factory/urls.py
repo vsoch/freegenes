@@ -14,10 +14,7 @@ import fg.apps.factory.views as views
 
 urlpatterns = [
     url(r'^$', views.factory_view, name='factory'),
-    url(r'^twist/orders?/$', views.twist_orders, name='twist_orders'),
-    url(r'^twist/order/import/(?P<uuid>.+)$', views.twist_order_import, name='twist_order_import'),
-    url(r'^twist/order/(?P<uuid>.+)$', views.twist_order, name='twist_order'),
-    url(r'^twist/cache/order/(?P<uuid>.+)$', views.cache_twist_order, name='cache_twist_order'),
+    url(r'^twist/plates/import$', views.twist_import_plates, name='twist_import_plates'),
 
     # Lab Map
     url(r'map/?$', views.lab_map_view, name='lab_map'),
