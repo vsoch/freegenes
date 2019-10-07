@@ -111,27 +111,12 @@ To create your key:
 
 If the value is found to be None, emails will not be sent.
 
-### Twist Secrets
+### Twist Import
 
-The [Twist API](https://twistapi.docs.apiary.io) is an optional integration
-that you can use to import orders. You should define the following parameters
-in your config.py, in the case that you want to use it:
+The Twist API is buggy and getting tokens is challenging, so we use a simple
+strategy of importing Plate Maps (export from Twist) to import plates.
+You don't need any secrets here.
 
-The email associated with the Twist account
-
-```python
-FREEGENES_TWIST_EMAIL=username@domain.com
-```
-
-And then enter a twist token and end user token that you've been granted:
-
-```python
-FREEGENES_TWIST_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxx
-FREEGENES_TWIST_EUTOKEN=xxxxxxxxxxxxxxxxxxxxxx
-```
-
-If you don't define these variables, they will be set to None and the
-option to import orders from Twist simply won't be presented.
 
 ### Authentication Secrets
 
