@@ -65,7 +65,7 @@ but rather sends an email with the form to the lab. This is done for three reaso
 
 
 ## Factory
-b
+
 The base of the factory is creating gene orders, and there are several simple models to do
 this.
 
@@ -80,8 +80,8 @@ Most of the updates to these models can be handled with the Admin interface, but
 for custom functionality we also have the Factory views page.
 This page is only viewable by staff and superusers. We start
 with a selection of options for the lab staff, which is currently sparse because
-we are only working on importing from Twist (but many other functions are likely
-to result):
+we are only working on importing from Twist and creating orders
+(but many other functions are likely to result):
 
 ![factory_incoming.png]({{ site.baseurl }}/docs/usage/img/factory_incoming.png)
 
