@@ -18,9 +18,11 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.shortcuts import redirect
 
+from fg.apps.factory.models import FactoryOrder
 from fg.apps.main.models import (
     Container, 
     Plate,
+    Sample,
     Well
 )
 
@@ -63,12 +65,30 @@ def twist_import_plates(request):
                 
                 # We need to derive the unique plates from the data (uses cache)
                 plate_ids = get_unique_plates(rows)
-                return JsonResponse({"plate_ids": plate_ids})
+                response = {"plate_ids": plate_ids}
+
+                # If already imported, tell the user
+                if len(plate_ids) == 0:
+                    response['message'] = "All plates from this sheet have been imported."               
+
+                return JsonResponse(response)
+
+            # The user must also provide a factory order, and on/off generate samples
+            factory_order = request.POST.get('factory_order')
+            generate_samples = request.POST.get('generate_samples', 'off') == "on"
 
             # Case 2: we have the fields! Import the plates
-            count = import_plate_task(rows, fields)
-            messages.info(request, "You have successfully imported %s plates." % count)
-            return redirect('dashboard')
+            message = import_plate_task(rows=rows, 
+                                        fields=fields,
+                                        factory_order=factory_order, 
+                                        generate_samples=generate_samples)
+
+            messages.info(request, message)
+            return redirect('factory')
+
+        # Form isn't valid
+        else:
+            return JsonResponse({"message": form.errors})
 
     context = {
         "form": UploadTwistPlatesForm(),
@@ -80,7 +100,7 @@ def twist_import_plates(request):
 
 # Tasks
 
-def import_plate_task(rows, fields):
+def import_plate_task(rows, fields, factory_order, generate_samples=False):
     '''Using the rows (plate map) import plates and wells (physicals) into 
        FreeGenes.
 
@@ -88,12 +108,14 @@ def import_plate_task(rows, fields):
        ==========
        rows: rows from Twist, including the header
        fields: a lookup for plate_(id) and plate_container_(id), e.g.,
+       factory_order: should be the uuid of the chosen factory order.
+       generate_samples: if True, generate samples to correspond with each part.
 
-        {'plate_pSHPs0625B637913SH': ['name1'], 
-         'plate_container_pSHPs0625B637913SH': ['05f2815e-7ff6-42d6-b42a-26d8273b133c'], 
-         'plate_length_pSHPs0625B637913SH': ['12'], 
-         'plate_height_pSHPs0625B637913SH': ['8'], 
-         'plate_form_pSHPs0625B637913SH': ['standard96'],
+        {'plate_pSHPs0725B133922SH': 'name1', 
+         'plate_container_pSHPs0725B133922SH': 'f8780f18-fe74-4fa3-87ec-1718aa8352e4', 
+         'plate_length_pSHPs0725B133922SH': '12', 
+         'plate_height_pSHPs0725B133922SH': '8', 
+         'plate_form_pSHPs0725B133922SH': 'standard96',
         ...
         } 
 
@@ -122,6 +144,13 @@ def import_plate_task(rows, fields):
     # Separate header list 
     headers = rows.pop(0)
 
+    # Get the Factory Order
+    if factory_order:
+        try:
+            factory_order = FactoryOrder.objects.get(uuid=factory_order)
+        except:
+            pass
+
     # First create the plates - we need a lookup row for plate metadata
     plate_lookup = dict()
     for row in rows:
@@ -130,8 +159,13 @@ def import_plate_task(rows, fields):
     plate_ids = list(plate_lookup.keys())
     plates = dict()
 
-    # Get plate names in advance
+    # Get plate names in advance. We are required to have all parts
     names = set([row[headers.index("Name")] for row in rows])
+    existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
+
+    # We are required to have all parts represented
+    if len(existing) != len(names):
+        return "All parts are required to exist for import, import cancelled."
 
     for plate_id in plate_ids:
 
@@ -185,17 +219,22 @@ def import_plate_task(rows, fields):
             # Save the object to lookup to add wells to
             if plate:
                 plates[plate.plate_vendor_id] = plate
+                
+                # And if we have a factory order object
+                if factory_order:
+                    print("Adding %s to %s" %(plate, factory_order))
+                    factory_order.plates.add(plate)
+                    factory_order.save()
 
+    # Sample lookup will hold samples for this order associated with parts
+    samples = dict()    
 
-    # We will only import wells for existing parts
-    existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
-    
     # Now create the wells, add to their correct plate
     for row in rows:
-        name = row[headers.index("Name")]
+        name = row[headers.index("Name")] # gene_id of the part
         plate_id = row[headers.index("Plate ID")]
 
-        # Only import existing parts
+        # Only import existing parts (they should all exist, per check above)
         if name in existing and plate_id in plates:
  
             product_type = plate_lookup[plate_id][headers.index("Product type")]
@@ -219,7 +258,31 @@ def import_plate_task(rows, fields):
                 plate.wells.add(well)
                 plate.save()
 
+                # Look up the associated part
+                part = Part.objects.get(gene_id=name)
+
+                # Look for a Sample for a Part WITHIN a FactoryOrder
+                sample = None
+                for plate in factory_order.plates.all():
+
+                   # Look for a sample already associated with plate from the factory order      
+                    for plate_well in plate.wells.all():
+                        contenders = Sample.objects.filter(wells=plate_well)
+                        if contenders.count() > 0:
+                            sample = contenders[0]
+                            break
+
+                # If we didn't find a sample already associated with the Factory order, create it
+                if not sample:
+                    sample = Sample.objects.create(vendor=factory_order.vendor.name,
+                                                   part=part)
+  
+                sample.save()
+                sample.wells.add(well)
+                sample.save()
+
+
     # Confirm number of wells per plate
     for plate_id, plate in plates.items():
         print("Added %s wells to plate %s" %(plate.wells.count(), plate.name))
-    return len(plates)
+    return "%s plates were imported successfully." % len(plates)

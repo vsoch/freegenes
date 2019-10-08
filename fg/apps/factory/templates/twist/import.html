@@ -14,6 +14,15 @@
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
        <h1>Import Twist Plates</h1>
+       <a href="{% url 'admin:factory_factoryorder_add' %}" target="_blank">
+           <button style="float:right" 
+                   title="If you haven't added the order yet, you can do so here."
+                   class="btn btn-primary">Add Factory Order</button></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+       <p class="alert alert-info" id="response-messages" style="display:none"></p>
     </div>
   </div>
   <div class="row">
@@ -67,7 +76,16 @@ $(document).ready(function() {
       $("#submit-button").remove();
       
       // {"plate_ids":{"pSHPs0725B133922SH":{"product_type":"Clonal Genes","name":"BBF10K_003247"}}}
-      console.log('Success:', response)
+      console.log('Response:', response)
+
+      // If a message is provided, show it
+      if ("message" in response) {
+         $("#response-messages").text(response['message'])
+         $("#response-messages").show();
+      } else {
+         $("#response-messages").text()
+         $("#response-messages").hide();
+      }
 
       plate_ids = response["plate_ids"]
       console.log(plate_ids);

@@ -16,12 +16,17 @@
   </div>
   <div class="row">
     <div class="col-md-4">
+      <h2>Factory Orders</h2>
+      <div class="list-group">
+         <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_vendor_add' %}">Add Vendor</a>
+         <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_factoryorder_add' %}">Add Factory Order</a>
+      </div>
+    </div>
+    <div class="col-md-4">
       <h2>Twist</h2>
       <div class="list-group">
          <a class="list-group-item list-group-item-action" href="{% url 'twist_import_plates' %}">Import Twist Plates (csv)</a>
       </div>
-    </div>
-    <div class="col-md-4">
     </div>
     <div class="col-md-4">
     </div>
