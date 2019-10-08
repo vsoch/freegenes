@@ -12,16 +12,15 @@ You can use the [API Client](https://pypi.org/project/freegenes/) to more easily
 interact with it (documentation [here](https://vsoch.github.io/freegenes-python/)).
 At this interface, you can browse endpoints (listed on the left side bar):
 
-![freegenes-api.png]({{ site.baseurl }}/docs/usage/freegenes-api.png)
+![freegenes-api.png]({{ site.baseurl }}/docs/usage/img/freegenes-api.png)
 
 Along with testing them interactively, either to list entities, or to request a specific
 entity based on it's unique id:
 
-![freegenes-api-test.png]({{ site.baseurl }}/docs/usage/freegenes-api-test.png)
+![freegenes-api-test.png]({{ site.baseurl }}/docs/usage/img/freegenes-api-test.png)
 
-For endpoints with large listings or metadata (for example, some objects have descriptions or notes
-that can be large, or lists of wells) the listed view removes these fields, and the user
-is required to ask for a uuid directly to see the complete data.
+For any endpoint that modified the database (e.g., POST to create, or PATCH, DELETE)
+you are required to not only be authenticated, but also to be a staff or superuser.
 
 ## Clients
 

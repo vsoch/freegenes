@@ -8,11 +8,16 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
+
+import os
+import time
 import uuid
 
 ################################################################################
@@ -99,17 +104,4 @@ class Order(models.Model):
                 raise ValidationError(message)
 
     class Meta:
-        app_label = 'main'
-
-
-# Thinking: holding the shipment information in the system is allocating too much
-# responsibility to it - the farthest representation I think we should take
-# is to represent an order, with a set of items and a number. The shipping
-# details (addresses) along with status are out of scope for the FreeGenes
-# database. We need to have another integration that can handle this, that doesn't
-# require storing PI with FreeGenes. 
-
-# The following should be represented elsewhere (personal information)
-# Shipment
-# Address
-# Parcel
+        app_label = 'orders'

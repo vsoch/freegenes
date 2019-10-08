@@ -18,7 +18,6 @@ def get_unique_plates(rows):
        that a Plate is already in the database based on the
        plate.vendor_plate_id.
     '''
-    print(rows)
     plate_ids = {}
 
     # We need to look up all rows to populate the form
