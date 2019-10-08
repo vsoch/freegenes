@@ -376,6 +376,7 @@ class Container(models.Model):
          ('rack', 'rack'),
          ('incubator', 'incubator'),
          ('shaking_incubator', 'shaking incubator'),
+         ('world', 'world'),
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
