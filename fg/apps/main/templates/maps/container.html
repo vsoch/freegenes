@@ -27,7 +27,7 @@
 
 data = {% for parent in container.breadcrumb %}{
     "name": "{{ parent.name }}",
-    "url": "{{ parent.get_absolute_url }}",
+    "url": "{% if parent.get_absolute_url %}{{ parent.get_absolute_url }}{% else %}#{% endif %}",
     "children": [{% if parent.uuid == container.uuid %}
 {% for plate in container.plate_set.all %}{"name": "{{ plate.name }}", "url": "{{ plate.get_absolute_url }}"}{% if forloop.last %}{% else %},{% endif %}{% endfor %}]{% endif %}{% endfor %}{% for parent in container.breadcrumb %}{% if parent.uuid == container.uuid %}{% else %} }]{% endif %}{% endfor %} }
 
@@ -162,8 +162,11 @@ function click(d) {
   } else {
     d.children = d._children;
     d._children = null;
+
     // If the user clicks a plate, go to it's url
-    document.location = d.data.url;
+    if (d.data.url) {
+       document.location = d.data.url;
+    }
   }
   update(d);
 }

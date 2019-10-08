@@ -175,8 +175,11 @@ function click(d) {
   } else {
     d.children = d._children;
     d._children = null;
+
     // If the user clicks a plate, go to it's url
-    document.location = d.data.url;
+    if (d.data.url) {
+       document.location = d.data.url;
+    }
   }
   update(d);
 }
