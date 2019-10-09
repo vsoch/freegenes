@@ -15,7 +15,7 @@
                             <td><a href="{{ part.get_absolute_url }}">{{ part.name }}</a></td>
                             <td>{% if part.author %}<a href="{{ part.author.get_absolute_url }}">{{ part.author.name }}</a>{% endif %}</td>
                             <td>{{ part.part_type }}</td>
-                            <td>{{ part.description | truncatechars:100 }}</td>
+                            <td>{{ part.description }}</td>
                             <td>{{ part.status }}</td>
                             <td>{{ part.gene_id }}</td>
                             <td>{% for tag in part.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>

@@ -17,7 +17,7 @@
                             <td>{{ order.time_created | date:'Y-m-d' }}</td>
                             <td>{{ order.time_updated | date:'Y-m-d' }}</td>
                             <td>{% if order.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
-                            <td>{{ order.notes | truncatechars:100 }}</td>
+                            <td>{{ order.notes }}</td>
                             <td>{% for dist in order.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>
                         </tr>{% endif %}{% endfor %}
                     </tbody>

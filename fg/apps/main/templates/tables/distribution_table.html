@@ -10,7 +10,7 @@
                     <tbody>{% for dist in distributions %}
                         <tr>
                             <td><a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a></td>
-                            <td>{{ dist.description | truncatechars:100 }}</td>
+                            <td>{{ dist.description }}</td>
                             <td>{% for plateset in dist.platesets.all %}<a href="{{ plateset.get_absolute_url }}">{{ plateset.name }}</a>{% endfor %}</td>
                             {% if request.user.is_authenticated %}<td><a href="{% url 'add-to-cart' dist.uuid %}"><button class="btn btn-primary {% if dist in request.user.get_cart_items %}disabled{% endif %}">Add to Cart</button></a></td>{% endif %}
                         </tr>{% endfor %}

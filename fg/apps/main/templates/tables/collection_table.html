@@ -10,7 +10,7 @@
                     <tbody>{% for collection in collections %}
                         <tr>
                             <td><a href="{{ collection.get_absolute_url }}">{{ collection.name }}</a></td>
-                            <td>{{ collection.description | truncatechars:100 }}</td>
+                            <td>{{ collection.description }}</td>
                             <td>{% if collection.parent %}<a href="{{ collection.parent.get_absolute_url }}">{{ collection.parent.name }}</a>{% endif %}</td>
                             <td>{% for tag in collection.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
                         </tr>{% endfor %}
