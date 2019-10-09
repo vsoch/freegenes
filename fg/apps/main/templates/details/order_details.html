@@ -47,9 +47,9 @@
         <tr>
           <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
         </tr>
-        {% if instance.label %}{% else %}<tr>
+        {% if instance.label %}{% else %}{% if request.user.is_superuser or request.user.is_staf %}{% else %}<tr>
           <td>Checkout</td><td><a href="{% url 'checkout' %}"><button style="margin:0px" class="btn btn-sm btn-warning">Checkout</button></a></td>
-        </tr>{% endif %}
+        </tr>{% endif %}{% endif %}
         <tr>
           <td>Notes</td><td>{{ instance.notes }}</td>
         </tr>
