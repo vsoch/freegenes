@@ -814,6 +814,31 @@ class Plate(models.Model):
             {"key": "Length", "value": self.length}]
         return fields
 
+    def generate_wells(self):
+        '''Given a set length and height, generate plate wells, but only
+           if the plate does not have any. We return the number of wells
+           created.
+        '''
+        # Imported data will already have wells added, skip this
+        if self.wells.count() > 0:
+            print("Plate already has wells.")
+            return 0
+
+        # Well positions are generated based on the plate dimensions
+        positions = []
+    
+        for letter in list(string.ascii_uppercase[0:self.height]):
+            for number in range(self.length):
+                positions.append((letter, number+1))
+
+        # Create wells, add to plate
+        for location in [x[0]+str(x[1]) for x in positions]:
+            well = Well.objects.create(address=location, volume=0)
+            well.save()
+            self.wells.add(well)
+
+        self.save()
+
     def get_absolute_url(self):
         return reverse('plate_details', args=[self.uuid])
 
@@ -829,6 +854,7 @@ class Plate(models.Model):
     class Meta:
         app_label = 'main'
 
+    # wells are deleted with a pre_delete signal
     wells = models.ManyToManyField('main.Well', blank=True, default=None,
                                    related_name="plate_wells",
                                    related_query_name="plate_wells")
@@ -1016,12 +1042,12 @@ class Well(models.Model):
         return reverse('well_details', args=[self.uuid])
 
     def __str__(self):
-        if self.media and self.organism:
-            return "<Well:%s,%s>" %(self.media, self.organism.name)
-        elif self.media:
-            return self.media
+        if self.address and self.organism:
+            return "<Well:%s,%s>" %(self.address, self.organism.name)
+        elif self.organism:
+            return "<Well:%s>" %(self.organism.name)
         else:
-            return self.organism.name
+            return "<Well:%s>" %(self.address)
 
     def __repr__(self):
         return self.__str__()
@@ -1216,3 +1242,5 @@ class PlanData(models.Model):
 
     class Meta:
         app_label = 'main'
+
+from .signals import protect_containers, delete_wells, protect_plan
