@@ -106,4 +106,4 @@ class Order(models.Model):
                 raise ValidationError(message)
 
     class Meta:
-        app_label = 'main'
+        app_label = 'orders'
