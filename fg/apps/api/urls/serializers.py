@@ -440,7 +440,7 @@ class PlateSerializer(serializers.ModelSerializer):
         fields = ('uuid', 'time_created', 'time_updated', 'plate_type', 
                   'plate_form', 'status', 'name', 'thaw_count',
                   'notes', 'height', 'length', 'container', 'protocol', 
-                  'wells', 'label')
+                  'wells', 'label', 'plate_vendor_id')
 
 
 class PlateViewSet(viewsets.ModelViewSet):
