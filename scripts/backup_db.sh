@@ -10,11 +10,11 @@
 for db in "users" "main" "orders"
   do
     echo "Backing up $db"
-    python /code/manage.py dumpdata $db > /code/backup/$db.json
+    python /code/manage.py dumpdata $db --output /code/backup/$db.json
 done
 
 # All models in one file, for loading with loaddata
-python /code/manage.py dumpdata main users orders > /code/backup/models.json
+python /code/manage.py dumpdata main users orders --output /code/backup/models.json
 
 # Everything
-python /code/manage.py dumpdata > /code/backup/db.json
+python /code/manage.py dumpdata --output /code/backup/db.json
