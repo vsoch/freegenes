@@ -38,8 +38,8 @@ class Order(models.Model):
     time_updated = models.DateTimeField('date modified', auto_now=True)
     name = models.CharField(max_length=250, blank=False)
 
-    date_ordered = models.DateTimeField('date ordered') 
-    date_shipped = models.DateTimeField('date shipped')
+    date_ordered = models.DateTimeField('date ordered', null=True, blank=True) 
+    date_shipped = models.DateTimeField('date shipped', null=True, blank=True)
 
     # Status of order, ordered and received
     ordered = models.BooleanField(default=False)  # The user submit the order
