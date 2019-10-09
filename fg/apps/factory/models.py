@@ -59,6 +59,7 @@ class FactoryOrder(models.Model):
     ]
 
     name = models.CharField(max_length=255)
+    order_number = models.CharField(max_length=255, null=True, blank=True, default=None)
 
     # Don't delete factory order if vendor is deleted.
     vendor = models.ForeignKey('factory.Vendor', on_delete=models.DO_NOTHING, blank=True, null=True)
