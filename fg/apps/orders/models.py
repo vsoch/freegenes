@@ -24,7 +24,6 @@ import uuid
 # Orders
 ################################################################################
 
-
 class Order(models.Model):
     '''A request by a user for a shipment. The address/ personal information
        is not stored here, but looked up elsewhere via the user address.
@@ -38,6 +37,9 @@ class Order(models.Model):
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
     name = models.CharField(max_length=250, blank=False)
+
+    date_ordered = models.DateTimeField('date ordered') 
+    date_shipped = models.DateTimeField('date shipped')
 
     # Status of order, ordered and received
     ordered = models.BooleanField(default=False)  # The user submit the order
@@ -104,4 +106,4 @@ class Order(models.Model):
                 raise ValidationError(message)
 
     class Meta:
-        app_label = 'orders'
+        app_label = 'main'

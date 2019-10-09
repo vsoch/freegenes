@@ -13,7 +13,7 @@ from fg.apps.orders.models import Order
 
 class OrderAdmin(admin.ModelAdmin):
     exclude = ('transaction', 'label', 'user', )
-    list_display = ('name', 'user', 'received', 'time_updated', 'time_created', 'material_transfer_agreement', )
+    list_display = ('name', 'user', 'received', 'date_ordered', 'date_shipped', 'material_transfer_agreement', )
     list_display_links = ('user', 'material_transfer_agreement', )
     list_filter = ['received']
     search_fields = [
