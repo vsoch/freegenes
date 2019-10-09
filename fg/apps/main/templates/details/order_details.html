@@ -11,7 +11,7 @@
     </div>
   </div>{% if request.user.is_superuser or request.user.is_staff %}
   <div class="row" style="margin-bottom:20px">
-      <div class="col-md-12"><a href="{% url 'admin:main_order_change' instance.uuid %}">
+      <div class="col-md-12"><a href="{% url 'admin:orders_order_change' instance.uuid %}">
           <button class="btn btn-primary">Edit</button></a>
              <a href="{% url 'download_mta' instance.uuid  %}">
           <button class="btn btn-primary"><i class="fa fa-download" style="margin-right:5px"></i> Download MTA</button></a>
