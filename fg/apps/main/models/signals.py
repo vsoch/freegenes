@@ -17,40 +17,19 @@ from django.db.models.signals import (
 from fg.apps.main.models import (
     Plate,
     Plan,
-    Container
+    Container,
+    Well
 )
-
-@receiver(post_save, sender=Plate, dispatch_uid='plate_save_generate_wells_signal')
-def generate_plate_wells(sender, instance, **kwargs):
-    '''After save of a plate, based on the width and length generate it's associated
-       wells. This assumes that we want to model wells for a plate as soon as it's 
-       generated. If the instance already has wells defined (for imported data)
-       we skip the generation.
-
-       Parameters
-       ==========
-       instance: is the instance of the Plate
-       sender: is the plate model (we likely don't need)
-    '''
-    # Imported data will already have wells added, skip this
-    if instance.wells.count() > 0:
-        return
-
-    # Well positions are generated based on the plate dimensions
-    positions = []
-    
-    for letter in list(string.ascii_uppercase[0:instance.height]):
-        for number in range(instance.length):
-            positions.append((letter, number+1))
-
-    # Create wells, add to plate
-    for location in [x[0]+str(x[1]) for x in positions]:
-        well = Well.objects.create(address=location)
-        well.save()
-        instance.wells.add(well)
-
-    instance.save()
  
+@receiver(pre_delete, sender=Plate, dispatch_uid='plate_pre_delete_signal')
+def delete_wells(sender, instance, using, **kwargs):
+    '''Delete all wells for a container that is to be deleted.
+    '''
+    # Move any modules belonging to the container to parent container.
+    for well in instance.wells.all():
+        if well.plate_wells.count() == 1:
+            well.delete()
+
 
 @receiver(pre_delete, sender=Container, dispatch_uid='container_pre_delete_signal')
 def protect_containers(sender, instance, using, **kwargs):
@@ -68,7 +47,7 @@ def protect_containers(sender, instance, using, **kwargs):
 
 
 @receiver(pre_delete, sender=Plan, dispatch_uid='plan_pre_delete_signal')
-def protect_containers(sender, instance, using, **kwargs):
+def protect_plan(sender, instance, using, **kwargs):
     '''Once a plan has been executed, it cannot be deleted.
     '''
     # Don't allow delete if plan is executed
