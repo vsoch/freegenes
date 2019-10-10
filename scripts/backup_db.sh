@@ -7,7 +7,7 @@
 # > crontab -l
 # > crontab -e
 
-for db in "users" "main" "orders"
+for db in "users" "main" "orders" "factory"
   do
     echo "Backing up $db"
     python /code/manage.py dumpdata $db --output /code/backup/$db.json
