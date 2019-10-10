@@ -57,7 +57,6 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN apt-get update && apt-get install -y cron
 RUN echo "0 2 * * * python manage.py generate_mapdata /code/data/ordercoords.json" >> /code/cronjob
 RUN echo "0 1 * * * /bin/bash /code/scripts/backup_db.sh" >> /code/cronjob
-RUN crontab /code/cronjob
 
 CMD /code/run_uwsgi.sh
 

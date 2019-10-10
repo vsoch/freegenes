@@ -12,7 +12,6 @@ import os
 
 # Monitoring **recommended
 ENABLE_SENTRY=False
-SENTRY_DSN="https://xxxxxxxxxxxxxxxxxxxxxxx@sentry.io/xxxxxxx"
 
 # Default Django logging is WARNINGS+ to console
 # so visible via docker-compose logs uwsgi
@@ -33,6 +32,8 @@ LOGGING = {
 }
 
 if ENABLE_SENTRY:
+
+    SENTRY_DSN="https://xxxxxxxxxxxxxxxxxxxxxxx@sentry.io/xxxxxxx"
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 

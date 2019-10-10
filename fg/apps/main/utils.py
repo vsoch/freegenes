@@ -8,8 +8,43 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from django.core.management import call_command
+import django_rq
 import hashlib
 import json
+import shutil
+import os
+
+def backup_db():
+    '''backup_db is a task intended to be run by django_rq
+    '''
+    if not os.path.exists('/code/backup'):
+        os.mkdir('/code/backup')
+
+    tables = ['users', 'main', 'orders', 'factory']
+    
+    # Save each table individually
+    for table in tables:
+        output_file = "/code/backup/%s.json" % table
+
+        # Save each one day back (e.g., main1.json)
+        if os.path.exists(output_file):
+            shutil.move(output_file, output_file.replace(".json", "1.json"))
+
+        with open(output_file, 'w') as output:
+            print("Dumping tables for module %s" % table)
+            call_command('dumpdata', table, format='json', indent=3, stdout=output)
+
+    # All models in one file, for loading with loaddata
+    with open("/code/backup/models.json", "w") as output:
+        print("Dumping tables for all modules")
+        call_command('dumpdata', *tables, format='json', indent=3, stdout=output)
+
+    # Everything
+    with open("/code/backup/db.json", "w") as output:
+        print("Dumping tables for entire database")
+        call_command('dumpdata', format='json', indent=3, stdout=output)
+
 
 def generate_sha256(content):
     '''Generate a sha256 hex digest for a string or dictionary. If it's a 
