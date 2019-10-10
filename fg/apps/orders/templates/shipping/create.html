@@ -44,6 +44,8 @@ $("#load-button").click(function() {
   if(typeof Storage !== "undefined") {
       $("input[name='shipping_to']").val(localStorage.getItem('shipping_to'));
       $("input[name='shipping_address']").val(localStorage.getItem('shipping_address'));
+      $("input[name='shipping_city']").val(localStorage.getItem('shipping_city'));
+      $("input[name='shipping_state']").val(localStorage.getItem('shipping_state'));
       $("input[name='shipping_zip']").val(localStorage.getItem('shipping_zip'));
       $("input[name='shipping_address2']").val(localStorage.getItem('shipping_address2'));   
       $("input[name='shipping_phone']").val(localStorage.getItem('shipping_phone'));   
@@ -51,6 +53,8 @@ $("#load-button").click(function() {
       $("input[name='from_name']").val(localStorage.getItem('from_name'));
       $("input[name='from_address']").val(localStorage.getItem('from_address'));
       $("input[name='from_zip']").val(localStorage.getItem('from_zip'));
+      $("input[name='from_state']").val(localStorage.getItem('from_state'));
+      $("input[name='from_city']").val(localStorage.getItem('from_city'));
 
       $("input[name='parcel_length']").val(localStorage.getItem('parcel_length'));
       $("input[name='parcel_width']").val(localStorage.getItem('parcel_width'));
@@ -78,9 +82,13 @@ $("form").submit(function(event) {
       localStorage.setItem('shipping_to', $("input[name='shipping_to']").val());
       localStorage.setItem('shipping_address', $("input[name='shipping_address']").val());
       localStorage.setItem('shipping_zip', $("input[name='shipping_zip']").val());
+      localStorage.setItem('shipping_city', $("input[name='shipping_city']").val());
+      localStorage.setItem('shipping_state', $("input[name='shipping_state']").val());
       localStorage.setItem('shipping_address2', $("input[name='shipping_address2']").val());
       localStorage.setItem('shipping_phone', $("input[name='shipping_phone']").val());
    
+      localStorage.setItem('from_city', $("input[name='from_city']").val());
+      localStorage.setItem('from_state', $("input[name='from_state']").val());
       localStorage.setItem('from_name', $("input[name='from_name']").val());
       localStorage.setItem('from_address', $("input[name='from_address']").val());
       localStorage.setItem('from_zip', $("input[name='from_zip']").val());

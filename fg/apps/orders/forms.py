@@ -68,6 +68,8 @@ class ShippingForm(forms.Form):
     shipping_to = forms.CharField(required=True)
     shipping_address = forms.CharField(required=True)
     shipping_address2 = forms.CharField(required=False)
+    shipping_city = forms.CharField(required=True)
+    shipping_state = forms.CharField(required=True)
     shipping_zip = forms.CharField(required=True)
     shipping_phone = forms.CharField(required=True)
 
@@ -76,6 +78,8 @@ class ShippingForm(forms.Form):
     from_address = forms.CharField(required=True)
     from_address2 = forms.CharField(required=False)
     from_zip = forms.CharField(required=True)
+    from_state = forms.CharField(required=True)
+    from_city = forms.CharField(required=True)
 
     parcel_length = forms.CharField(required=True, label="Length in inches")
     parcel_width = forms.CharField(required=True, label="Width in inches")

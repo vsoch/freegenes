@@ -40,6 +40,16 @@
                 </div>
 
                 <div class="md-form mb-5">
+                  <input type='text' id='lab_city' name='lab_city' class='form-control' 
+                         placeholder="Lab City" required/>
+                </div>
+
+                <div class="md-form mb-5">
+                  <input type='text' id='lab_state' name='lab_state' class='form-control' 
+                         placeholder="Lab State" required/>
+                </div>
+
+                <div class="md-form mb-5">
                   <input type='text' id='lab_phone' name='lab_phone' class='form-control' 
                          placeholder="Lab Phone" required/>
                 </div>
@@ -89,6 +99,16 @@
                 </div>
 
                 <div class="md-form mb-5">
+                  <input type='text' id='shipping_city' name='shipping_city' class='form-control' 
+                         placeholder="Shipping City" required/>
+                </div>
+
+                <div class="md-form mb-5">
+                  <input type='text' id='shipping_state' name='shipping_state' class='form-control' 
+                         placeholder="Shipping State" required/>
+                </div>
+
+                <div class="md-form mb-5">
                   <input type='text' id='shipping_phone' name='shipping_phone' class='form-control' 
                          placeholder="Shipping Phone" required/>
                 </div>
@@ -134,6 +154,8 @@ use_same_shipping.addEventListener('change', function() {
     document.getElementById("shipping_address").required = false;
     document.getElementById("shipping_zip").required = false;
     document.getElementById("shipping_phone").required = false;
+    document.getElementById("shipping_state").required = false;
+    document.getElementById("shipping_city").required = false;
   } else {
     hideable_shipping_form.show();
     document.getElementById("shipping_to").required = true;
