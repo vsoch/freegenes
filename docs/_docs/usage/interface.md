@@ -199,9 +199,7 @@ red.
 
 ### Orders Map
 
-When you are logged in as a superuser or staff, on the main page there is a link
-for a map above the orders table. Clicking it will show a map of orders, with
-circles representing number of orders located above a zip code:
+When you are logged in as a superuser or staff, on the main page there is a link above the orders table that says "Map". Clicking it will show a map of orders. Each circle represents a zip code from which orders were placed, and the size of the circle represents the number of orders placed from that zip code.
 
 ![shipping-map.png]({{ site.baseurl }}/docs/usage/img/shipping-map.png)
 
@@ -215,6 +213,8 @@ $ python manage.py generate_mapdata
 
 with the working directory as /code. If you need to test this script, it's recommended to
 get dummy data (or real data from the server) and run manually.
+
+The map is generated using using Mapbox GL JS.
 
 ## Profile
 

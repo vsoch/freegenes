@@ -19,6 +19,7 @@ OLD
 secrets.py
 local_settings.py
 cronjob
+.DS_Store
 
 # Static #
 ##########

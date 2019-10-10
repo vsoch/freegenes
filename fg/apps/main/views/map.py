@@ -15,7 +15,8 @@ from ratelimit.decorators import ratelimit
 
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
-    VIEW_RATE_LIMIT_BLOCK as rl_block
+    VIEW_RATE_LIMIT_BLOCK as rl_block,
+    MAPBOX_ACCESS_TOKEN as mapbox_token
 )
 
 import os
@@ -34,6 +35,6 @@ def order_map_view(request):
         with open(order_coords, 'r') as filey:
             data = json.loads(filey.read())
 
-    print(data)
-    context = {"data": data}
+    context = { "data": data, "mapbox_token": mapbox_token }
+
     return render(request, "maps/orders.html", context)
