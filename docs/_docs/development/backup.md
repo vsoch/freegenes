@@ -38,6 +38,17 @@ This will run a docker commit at 1:00am, daily, using the container name
 is saved for the disk (at 3-4am per the previous instructions) then
 this container should be included.
 
+Since we are able, we also run the database backup scripts from the host
+via cron:
+
+```
+0 3 * * * docker exec freegenes_uwsgi_1 /code/scripts/backup_db.sh
+0 4 * * * docker exec freegenes_uwsgi_1 python manage.py generate_mapdata /code/data/ordercoords.json
+```
+
+It's probably unecessary, but adds a backup in case the in-container cron
+(described below) does not work.
+
 ## Database
 
 There is a backup script in "scripts/backup_db.sh" that works when run manually,

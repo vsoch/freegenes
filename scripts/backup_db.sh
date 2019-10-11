@@ -10,11 +10,24 @@
 for db in "users" "main" "orders" "factory"
   do
     echo "Backing up $db"
+
+    # Keep 1 day previous
+    if [ -f "/code/backup/$db.json" ]; then
+        mv /code/backup/$db.json /code/backup/$db1.json
+    fi
     python /code/manage.py dumpdata $db --output /code/backup/$db.json
 done
 
 # All models in one file, for loading with loaddata
-python /code/manage.py dumpdata main users orders --output /code/backup/models.json
+if [ -f "/code/backup/models.json" ]; then
+    mv /code/backup/models.json /code/backup/models1.json
+fi
+
+python /code/manage.py dumpdata main users orders factory --output /code/backup/models.json
 
 # Everything
+if [ -f "/code/backup/db.json" ]; then
+    mv /code/backup/db.json /code/backup/db1.json
+fi
+
 python /code/manage.py dumpdata --output /code/backup/db.json
