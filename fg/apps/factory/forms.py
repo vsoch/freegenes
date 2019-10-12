@@ -21,3 +21,13 @@ class UploadTwistPlatesForm(forms.Form):
                                 initial=",",
                                 label="Delimiter of file, defaults to ,")
 
+
+class UploadTwistPartsForm(forms.Form):
+    '''a form to upload a csv of parts from twist
+    '''
+    csv_file = forms.FileField(required=True, label="parts (csv) file")
+    factory_order = forms.ModelChoiceField(queryset=FactoryOrder.objects.all())
+    delimiter = forms.CharField(max_length=1,
+                                initial=",",
+                                label="Delimiter of file, defaults to ,")
+

@@ -86,6 +86,11 @@ class FactoryOrder(models.Model):
                                     related_name="factoryorder_plates",
                                     related_query_name="factoryorder_plates")
 
+    # One or more plates can be added to an order
+    parts = models.ManyToManyField('main.Part', blank=True, default=None,
+                                   related_name="factoryorder_parts",
+                                   related_query_name="factoryorder_parts")
+
     def __str__(self):
         return "<FactoryOrder:%s>" % self.name
 

@@ -28,7 +28,10 @@ from fg.apps.main.models import (
 
 from fg.apps.factory.utils import read_csv
 from fg.apps.factory.twist import get_unique_plates
-from fg.apps.factory.forms import UploadTwistPlatesForm
+from fg.apps.factory.forms import (
+    UploadTwistPlatesForm,
+    UploadTwistPartsForm
+)
 from ratelimit.decorators import ratelimit
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
@@ -96,7 +99,119 @@ def twist_import_plates(request):
         "plate_forms": Plate.PLATE_FORM
     }
 
-    return render(request, 'twist/import.html', context)
+    return render(request, 'twist/import_parts.html', context)
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def twist_import_parts(request):
+    '''Show the user a form to import an export of twist parts.
+    '''
+    if not request.user.is_staff or not request.user.is_superuser:
+        messages.info(request, "You are not allowed to see this view.")
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = UploadTwistPartsForm(request.POST, request.FILES)
+        if form.is_valid():       
+
+            # Read in rows from csv file - the first is the header
+            rows = read_csv(fileobj=request.FILES['csv_file'], 
+                            delim=form.data['delimiter'])
+
+            import pickle
+            pickle.dump(rows, open('rows-parts.pkl','wb'))
+
+            # The user must also provide a factory order, and on/off generate samples
+            factory_order = request.POST.get('factory_order')
+
+            # Case 2: we have the fields! Import the plates
+            message = import_parts_task(rows=rows,factory_order=factory_order)
+            messages.info(request, message)
+            return redirect('factory')
+
+        # Form isn't valid
+        else:
+            return JsonResponse({"message": form.errors})
+
+    context = {"form": UploadTwistPartsForm()}
+    return render(request, 'twist/import_parts.html', context)
+
+
+def import_parts_task(rows, factory_order):
+    '''given a csv with parts, import into a FactoryOrder
+
+       Parameters
+       ==========
+       rows: rows from Twist, including the header
+       factory_order: should be the uuid of the chosen factory order.
+
+       Headers:
+		['Name',
+		 'Insertion site name',
+		 'Vector name',
+		 'Insert length',
+		 'Construct length',
+		 'Insert sequence',
+		 'Construct sequence',
+		 'Step',
+		 'Shipping est']
+    '''
+    from fg.apps.main.models import Part
+    from fg.apps.users.models import User
+
+    print('RUNNING IMPORT TWIST PARTS TASK')
+    print("Found %s total entries" % (len(rows) -1))
+
+    # Separate header list 
+    headers = rows.pop(0)
+
+    # Get the Factory Order
+    if factory_order:
+        try:
+            factory_order = FactoryOrder.objects.get(uuid=factory_order)
+        except:
+            pass
+
+    # First create the plates - we need a lookup row for plate metadata
+    part_lookup = dict()
+    for row in rows:
+        part_lookup[row[headers.index("Name")]] = row
+    
+    part_ids = list(part_lookup.keys())
+    parts = dict()
+
+    # Get plate names in advance. We are required to have all parts
+    #names = set([row[headers.index("Name")] for row in rows])
+    #existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
+
+    # We are required to have all parts represented
+    #if len(existing) != len(names):
+    #    return "All parts are required to exist for import, import cancelled."
+
+    for part_id in part_ids:
+        name = part_lookup[part_id][headers.index("Name")]
+        insertion_site = part_lookup[part_id][headers.index("Insertion site name")] # 'BbsI_BbsI'
+
+        # I don't see mappings for these fields
+        vector = part_lookup[part_id][headers.index("Vector name")] # 'pOpen_v3.0'
+        step = part_lookup[part_id][headers.index("Step")] # usually in transit
+        insert_length = part_lookup[part_id][headers.index("Insert length")]
+        insert_sequence = part_lookup[part_id][headers.index("Insert sequence")]
+        construct_sequence = part_lookup[part_id][headers.index("Construct sequence")]
+        construct_length = part_lookup[part_id][headers.index("Construct length")]
+        shipping_est = part_lookup[part_id][headers.index("Shipping est")]
+ 
+        try:
+            part = Part.objects.get(gene_id=name)
+        except:
+            part = Part(gene_id=name, name=insertion_site)
+
+        part.save()
+        factory_order.parts.add(part)
+
+    return "Successfully added %s parts to %s" %(len(part_ids), factory_order.name)
+
 
 # Tasks
 
@@ -138,7 +253,7 @@ def import_plate_task(rows, fields, factory_order, generate_samples=False):
     from fg.apps.main.models import (Part, Plate, Well)
     from fg.apps.users.models import User
     
-    print('RUNNING IMPORT ORDER TASK')
+    print('RUNNING IMPORT TWIST PLATES TASK')
     print("Found %s total entries" % (len(rows) -1))
 
     # Separate header list 
