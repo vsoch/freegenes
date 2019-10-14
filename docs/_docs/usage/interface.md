@@ -85,6 +85,17 @@ we are only working on importing from Twist and creating orders
 
 ![factory_incoming.png]({{ site.baseurl }}/docs/usage/img/factory_incoming.png)
 
+### Import Twist Parts
+
+Starting from a Twist csv export with Parts associated with a factory order,
+ you can import those parts to be associated with a `FactoryOrder`.
+
+![twist_import_parts.png]({{ site.baseurl }}/docs/usage/img/twist_import_parts.png)
+
+All parts must already be represented in FreeGenes to do the import.
+
+### Import Twist Plate Map
+
 When you click to import a twist plate map (csv), you are presented with a form to 
 upload it:
 

@@ -1,0 +1,100 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+.logo-title {
+  color: #074f66;
+}
+</style>
+
+<div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
+  {% include "style/spinner.html" %}
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h1>Import Twist Parts</h1>
+       <a href="{% url 'admin:factory_factoryorder_add' %}" target="_blank">
+           <button style="float:right" 
+                   title="If you haven't added the order yet, you can do so here."
+                   class="btn btn-primary">Add Factory Order</button></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+       <p class="alert alert-info" id="response-messages" style="display:none"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <form action="{% url 'twist_import_plates' %}" id="form" enctype="multipart/form-data" method="POST">
+	{% csrf_token %}
+	{{ form|crispy }}
+	<button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<script>
+$(document).ready(function() {
+
+  // When final submit is done, submit the form
+  $("#final-submit").click(function(event) {
+     $("form").submit();
+  });
+
+  $("#submit-button").click(function(event) {
+     event.preventDefault();
+     console.log("Import requested.")
+
+     // Show the fade and loading icon
+     $("#fade").show();
+     $("#loading-image").show();
+     $("#fade").attr("hidden", false);
+
+     var url = "{% url 'twist_import_parts' %}";
+     let form = document.getElementById('form');
+     let data = new FormData(form);
+     data.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').attr('value'));
+     console.log(data)
+     fetch(url, {
+       method: 'POST',
+       body: data,
+       credentials: 'same-origin'
+     }).then(res => res.json()) 
+
+    .then(function(response) {
+      
+      console.log('Response:', response)
+
+      // If a message is provided, show it
+      if ("message" in response) {
+         $("#response-messages").text(response['message'])
+         $("#response-messages").show();
+      } else {
+         $("#response-messages").text()
+         $("#response-messages").hide();
+      }
+
+      // Show submit button
+      $("#final-submit").show();
+      $("#fade").hide();
+      $("#loading-image").hide();
+      $("#fade").attr("hidden", true);
+
+    })
+    .catch(function(response) {
+       var response = JSON.stringify(response);
+       console.log("Error", response)
+       event.preventDefault();
+    })
+  });
+});
+</script>
+{% endblock %}
