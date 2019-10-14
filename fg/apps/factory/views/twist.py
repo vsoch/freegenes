@@ -119,16 +119,12 @@ def twist_import_parts(request):
             rows = read_csv(fileobj=request.FILES['csv_file'], 
                             delim=form.data['delimiter'])
 
-            import pickle
-            pickle.dump(rows, open('rows-parts.pkl','wb'))
-
             # The user must also provide a factory order, and on/off generate samples
             factory_order = request.POST.get('factory_order')
 
             # Case 2: we have the fields! Import the plates
-            message = import_parts_task(rows=rows,factory_order=factory_order)
-            messages.info(request, message)
-            return redirect('factory')
+            message = import_parts_task(rows=rows, factory_order=factory_order)
+            return JsonResponse({"message": message})
 
         # Form isn't valid
         else:
@@ -139,7 +135,8 @@ def twist_import_parts(request):
 
 
 def import_parts_task(rows, factory_order):
-    '''given a csv with parts, import into a FactoryOrder
+    '''given a csv with parts, import into a FactoryOrder. If all parts are 
+       not represented in the database, we do not add them to the FactoryOrder.
 
        Parameters
        ==========
@@ -167,11 +164,10 @@ def import_parts_task(rows, factory_order):
     headers = rows.pop(0)
 
     # Get the Factory Order
-    if factory_order:
-        try:
-            factory_order = FactoryOrder.objects.get(uuid=factory_order)
-        except:
-            pass
+    try:
+        factory_order = FactoryOrder.objects.get(uuid=factory_order)
+    except:
+        return "Invalid factory order uuid %s" % factory_order
 
     # First create the plates - we need a lookup row for plate metadata
     part_lookup = dict()
@@ -182,33 +178,22 @@ def import_parts_task(rows, factory_order):
     parts = dict()
 
     # Get plate names in advance. We are required to have all parts
-    #names = set([row[headers.index("Name")] for row in rows])
-    #existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
+    names = set([row[headers.index("Name")] for row in rows])
+    existing = Part.objects.filter(gene_id__in=names).values_list('gene_id', flat=True)
 
     # We are required to have all parts represented
-    #if len(existing) != len(names):
-    #    return "All parts are required to exist for import, import cancelled."
+    if len(existing) != len(names):
+        missing = abs(len(existing) - len(names))
+        return "All parts are required for import: missing %s, import cancelled." % missing
 
     for part_id in part_ids:
+
+        # We are already sure that it exists
         name = part_lookup[part_id][headers.index("Name")]
-        insertion_site = part_lookup[part_id][headers.index("Insertion site name")] # 'BbsI_BbsI'
-
-        # I don't see mappings for these fields
-        vector = part_lookup[part_id][headers.index("Vector name")] # 'pOpen_v3.0'
-        step = part_lookup[part_id][headers.index("Step")] # usually in transit
-        insert_length = part_lookup[part_id][headers.index("Insert length")]
-        insert_sequence = part_lookup[part_id][headers.index("Insert sequence")]
-        construct_sequence = part_lookup[part_id][headers.index("Construct sequence")]
-        construct_length = part_lookup[part_id][headers.index("Construct length")]
-        shipping_est = part_lookup[part_id][headers.index("Shipping est")]
- 
-        try:
-            part = Part.objects.get(gene_id=name)
-        except:
-            part = Part(gene_id=name, name=insertion_site)
-
-        part.save()
+        part = Part.objects.get(gene_id=name)
         factory_order.parts.add(part)
+
+    factory_order.save()
 
     return "Successfully added %s parts to %s" %(len(part_ids), factory_order.name)
 

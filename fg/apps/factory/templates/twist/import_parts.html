@@ -32,7 +32,6 @@
 	{{ form|crispy }}
 	<button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
       </form>
-      <button id="final-submit" style="display:none" type="submit" class="btn btn-primary">Submit</button>
     </div>
     <div class="col-md-4">
     </div>
@@ -71,11 +70,7 @@ $(document).ready(function() {
      }).then(res => res.json()) 
 
     .then(function(response) {
-
-      // Will show different button to submit
-      $("#submit-button").remove();
       
-      // {"plate_ids":{"pSHPs0725B133922SH":{"product_type":"Clonal Genes","name":"BBF10K_003247"}}}
       console.log('Response:', response)
 
       // If a message is provided, show it
