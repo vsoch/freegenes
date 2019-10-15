@@ -1,4 +1,5 @@
 from .users import (
+    add_institution,
     change_institution,
     delete_account,
     view_profile

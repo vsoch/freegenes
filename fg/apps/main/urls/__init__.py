@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^e/tag/(?P<uuid>.+)/collections/?$', views.tag_collections_details, name='tag_collections_details'),
     url(r'^e/tag/(?P<uuid>.+)/authors/?$', views.tag_authors_details, name='tag_authors_details'),
     url(r'^e/tag/(?P<uuid>.+)/?$', views.tag_details, name='tag_details'),
-
+    
     # Maps
     url(r'map/orders/?$', views.order_map_view, name='order_map'),
 

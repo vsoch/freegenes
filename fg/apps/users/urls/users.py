@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^terms/agree', views.agree_terms, name="agree_terms"),
     url(r'^u/delete$', views.delete_account, name="delete_account"),           # delete account
     url(r'^u/institution/update', views.change_institution, name="change_institution"),
+    url(r'^u/institution/add', views.add_institution, name="add_institution"),
     url(r'^u/profile', views.view_profile, name="profile"),
     
     # We don't currently have a reason for one user to see another user's account

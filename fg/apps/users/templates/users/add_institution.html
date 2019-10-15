@@ -1,0 +1,38 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% load gravatar %}
+
+{% block content %}
+<div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class="title">Add Institution
+      {% if return_link %}<small style="float:right">My institution is already in the list! <a href="{{ return_link }}">Take Me Back</a></small>{% endif %}</h3>
+    </div>
+  </div>
+  <div class="row">
+     <div class="col-md-12">
+           <div class="list-group">{% for entry in institutions %}
+	    <a class="list-group-item list-group-item-action">{{ entry.name }}</a>{% endfor %}
+	   </div>
+     </div>
+  </div>
+  <div class="row">
+     <div class="col-md-12">
+            <form method="POST" action="{% url 'add_institution' %}">
+                {% csrf_token %}
+		 <div class="form-group" style='margin-top:10px'>
+		    <input type="text" name="institution" class="form-control" id="addInstitution" aria-describedby="addHelp" placeholder="Enter institution name">
+		    <small id="addHelp" class="form-text text-muted">Don't see your Institution? Add it here.</small>
+		  </div>
+                   <button class="btn btn-secondary btn-small" style="float:right" type="submit">Add New Institution</button>
+            </form>
+     </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% include "messages/notification.html" %}
+<script src="{% static "js/cookie-token.js" %}"></script>
+{% endblock %}

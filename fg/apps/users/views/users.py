@@ -25,6 +25,7 @@ from django.shortcuts import (
     render, 
     redirect
 )
+from django.urls import reverse
 from django.db.models import Q, Sum
 from ratelimit.decorators import ratelimit
 
@@ -48,7 +49,20 @@ def view_profile(request, username=None):
 
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def change_institution(request):
+def add_institution(request):
+    '''add an institution to the list, this view renders a form
+       and uses the same "change_institution" view, but with
+       a different redirect parameter.
+    '''
+    if request.method == "POST":
+        return change_institution(request, redirect_url="checkout")
+    context = {'institutions': Institution.objects.all(),
+               'return_link': reverse('checkout')}
+    return render(request, 'users/add_institution.html', context)
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def change_institution(request, redirect_url="profile"):
     '''change a user's institution
     '''
     if request.method == "POST":
@@ -74,7 +88,7 @@ def change_institution(request):
             except Institution.DoesNotExist:
                 messages.info(request, "That institution cannot be found.")
 
-        return redirect('profile')  
+        return redirect(redirect_url)  
 
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
