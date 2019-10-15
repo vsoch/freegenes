@@ -293,7 +293,7 @@ def import_plate_task(rows, fields, factory_order, generate_samples=False):
 
             # We can only create with a plate_name and container
             if not plate_name:
-                print("Missing plate name, skipping plate %s." % plate_od)
+                print("Missing plate name, skipping plate %s." % plate_id)
                 continue
 
             if product_type == "Clonal Genes":
