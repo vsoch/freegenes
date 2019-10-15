@@ -15,24 +15,54 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-4">
-      <h2>Factory Orders</h2>
-      <div class="list-group">
-         <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_vendor_add' %}">Add Vendor</a>
-         <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_factoryorder_add' %}">Add Factory Order</a>
-      </div>
+    <div class="col-md-12">
+        <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table" role="tab" aria-controls="nav-table" aria-selected="true">Production Table</a>
+                <a class="nav-item nav-link" id="nav-actions-tab" data-toggle="tab" href="#nav-actions" role="tab" aria-controls="nav-actions" aria-selected="false">Actions</a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-table" role="tabpanel" aria-labelledby="nav-table-tab">
+		  {% if orders %}<div class="row" style="margin-top:30px">
+		    <div class="col-md-12">
+		      {% include "tables/production_table.html" with table_id="production_table" %}
+		    </div>
+		  </div><hr>{% else %}
+		  <p class="alert alert-info">There are currently no Factory Orders</p>
+		  {% endif %}
+            </div>
+            <div class="tab-pane fade" id="nav-actions" role="tabpanel" aria-labelledby="nav-actions-tab">
+	    <div class="row" style="padding-bottom:100px">
+	    <div class="col-md-4">
+	      <h2>Factory Orders</h2>
+	      <div class="list-group">
+		 <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_vendor_add' %}">Add Vendor</a>
+		 <a class="list-group-item list-group-item-action" href="{% url 'admin:factory_factoryorder_add' %}">Add Factory Order</a>
+	      </div>
+	    </div>
+	    <div class="col-md-4">
+	      <h2>Twist</h2>
+	      <div class="list-group">
+		 <a class="list-group-item list-group-item-action" href="{% url 'twist_import_parts' %}">Import Twist Parts (csv)</a>
+		 <a class="list-group-item list-group-item-action" href="{% url 'twist_import_plates' %}">Import Twist Plates (csv)</a>
+	      </div>
+	    </div>
+	    <div class="col-md-4">
+	    </div>
+	  </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-      <h2>Twist</h2>
-      <div class="list-group">
-         <a class="list-group-item list-group-item-action" href="{% url 'twist_import_parts' %}">Import Twist Parts (csv)</a>
-         <a class="list-group-item list-group-item-action" href="{% url 'twist_import_plates' %}">Import Twist Plates (csv)</a>
-      </div>
-    </div>
-    <div class="col-md-4">
-    </div>
-  </div>
 </div>
 {% endblock %}
 {% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#production-table').DataTable();
+});
+</script>
 {% endblock %}

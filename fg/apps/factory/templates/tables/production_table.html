@@ -1,0 +1,25 @@
+{% load factory_template_tags %}
+                <table class="table table-bordered" id="{{ table_id }}" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Order Name</th>
+                            <th>Number of Parts</th>
+                            <th>Status</th>
+                            <th>Estimated Price</th>
+                            <th>Real Price</th>
+                            <th>Order Duration (Days)</th>
+                            <th>Parts</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for order in orders %}
+                        <tr>
+                            <td><a href="{% url 'admin:factory_factoryorder_change' order.uuid %}">{{ order.name }}</a></td>
+                            <td>Total: {{ order.parts.count }}</td>
+                            <td>{% if order.status %}{{ order.status }}{% endif %}</td>
+                            <td>{% if order.estimated_price %}${{ order.estimated_price }}{% endif %}</td>
+                            <td>{% if order.real_price %}${{ order.real_price }}{% endif %}</td>
+                            <td>{% if order.is_completed %}{{ order.duration_days }} days{% else %}Not Completed{% endif %}</td>
+                            <td>{% if order.parts.count > 0 %}<a href="{% url 'view_factoryorder_parts' order.uuid %}">View Parts</a>{% endif %}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                </table>

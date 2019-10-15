@@ -1,0 +1,29 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:50px">
+      <h1>Factory Order {{ order.name }} Parts</h1>
+      <p>Total Parts: {{ order.parts.count }}</p>
+      <p><a href="{% url 'factory' %}"><< Back to Factory Dashboard</a></p> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      {% include "tables/part_table.html" with table_id="parts-table" parts=order.parts.all %}
+   </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#parts-table').DataTable();
+});
+</script>
+{% endblock %}

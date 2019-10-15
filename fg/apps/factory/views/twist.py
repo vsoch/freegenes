@@ -63,6 +63,10 @@ def twist_import_plates(request):
             rows = read_csv(fileobj=request.FILES['csv_file'], 
                             delim=form.data['delimiter'])
 
+            # Temporary save to debug import
+            import pickle
+            pickle.dump(rows, open('rows.pkl', 'wb'))
+
             # Case 1: First submit means no plate metadata
             if not fields:
                 
@@ -99,7 +103,7 @@ def twist_import_plates(request):
         "plate_forms": Plate.PLATE_FORM
     }
 
-    return render(request, 'twist/import_parts.html', context)
+    return render(request, 'twist/import_plates.html', context)
 
 
 @login_required
