@@ -91,6 +91,21 @@ class FactoryOrder(models.Model):
                                    related_name="factoryorder_parts",
                                    related_query_name="factoryorder_parts")
 
+    def is_completed(self):
+        '''determine if an order is completed based on having an end date.
+        '''
+        if self.finish_date is not None and self.start_date is not None:
+            return True
+        return False
+
+    @property
+    def duration_days(self):
+        '''return the duration of the order (in days), 
+           given that it is completed.
+        '''
+        if self.is_completed:
+            return (self.finish_date - self.start_date).days
+
     def __str__(self):
         return "<FactoryOrder:%s>" % self.name
 

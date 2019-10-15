@@ -1,5 +1,6 @@
 from .factory import (
-    factory_view
+    factory_view,
+    view_factoryorder_parts
 )
 
 from .twist import (

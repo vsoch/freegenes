@@ -78,12 +78,16 @@ start and finish dates, prices, and upload Invoices.
 
 Most of the updates to these models can be handled with the Admin interface, but
 for custom functionality we also have the Factory views page.
-This page is only viewable by staff and superusers. We start
-with a selection of options for the lab staff, which is currently sparse because
+This page is only viewable by staff and superusers. The main tab shows
+the production table for factory orders:
+
+![factory_incoming.png]({{ site.baseurl }}/docs/usage/img/factory_incoming.png)
+
+And the Actions tab shows a selection of options for the lab staff, which is currently sparse because
 we are only working on importing from Twist and creating orders
 (but many other functions are likely to result):
 
-![factory_incoming.png]({{ site.baseurl }}/docs/usage/img/factory_incoming.png)
+![factory_incoming_actions.png]({{ site.baseurl }}/docs/usage/img/factory_incoming_actions.png)
 
 ### Import Twist Parts
 

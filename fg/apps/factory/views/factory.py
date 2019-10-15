@@ -16,6 +16,7 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.shortcuts import redirect
+from fg.apps.factory.models import FactoryOrder
 
 from ratelimit.decorators import ratelimit
 from fg.settings import (
@@ -33,4 +34,24 @@ def factory_view(request):
         messages.info(request, "You are not allowed to see this view.")
         return redirect('dashboard')
 
-    return render(request, 'factory/incoming.html')
+    orders = FactoryOrder.objects.all()
+    return render(request, 'factory/incoming.html', {"orders": orders})
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def view_factoryorder_parts(request, uuid):
+    '''Given a unique ID for a factory order, show a table of parts 
+       associated. This view is linked from the main factory page.
+    '''
+    if not request.user.is_staff or not request.user.is_superuser:
+        messages.info(request, "You are not allowed to see this view.")
+        return redirect('dashboard')
+
+    try:
+        order = FactoryOrder.objects.get(uuid=uuid)
+    except FactoryOrder.DoesNotExist:
+        messages.info(request, "This factory order does not exist.")
+        return redirect('factory')
+
+    return render(request, 'tables/twist_parts.html', {"order": order})

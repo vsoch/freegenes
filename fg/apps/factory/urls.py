@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^$', views.factory_view, name='factory'),
     url(r'^twist/plates/import$', views.twist_import_plates, name='twist_import_plates'),
     url(r'^twist/parts/import$', views.twist_import_parts, name='twist_import_parts'),
+    url(r'^factoryorder/parts/(?P<uuid>.+)$', views.view_factoryorder_parts, name='view_factoryorder_parts'),
 
     # Lab Map
     url(r'map/?$', views.lab_map_view, name='lab_map'),
