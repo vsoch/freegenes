@@ -15,9 +15,23 @@ from fg.apps.factory.models import (
     Invoice
 )
 
+# Actions
+
+def reset_parts(modeladmin, request, queryset):
+    '''reset parts for a selected factory order (remove but don't delete)'''
+    for order in queryset:
+        order.parts.clear()
+        order.save()
+reset_parts.short_description = "Reset Parts (empty but don't delete)"
+
+
+# Admin Models
+
 class FactoryOrderAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'finish_date', 'status', 'estimated_price', 
                     'real_price', 'time_updated', 'time_created')
+
+    actions = [reset_parts,]
 
 class VendorAdmin(admin.ModelAdmin):
     list_display = ('name', 'time_updated', 'time_created',)
