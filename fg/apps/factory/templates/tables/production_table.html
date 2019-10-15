@@ -16,7 +16,7 @@
                     <tbody>{% for order in orders %}
                         <tr>
                             <td><a href="{% url 'admin:factory_factoryorder_change' order.uuid %}">{{ order.name }}</a></td>
-                            <td>Total: {{ order.parts.count }}</td>
+                            <td>{% if order.is_completed %}Completed: {{ order.count_parts_completed }}<br>Failed: {{ order.count_parts_failed }}<br>{% endif %}Total: {{ order.parts.count }}</td>
                             <td>{% if order.status %}{{ order.status }}{% endif %}</td>
                             <td>{% if order.estimated_price %}${{ order.estimated_price }}{% endif %}</td>
                             <td>{% if order.real_price %}${{ order.real_price }}{% endif %}</td>
