@@ -804,6 +804,7 @@ class Plate(models.Model):
         '''
         fields = [
             {"key": "Plate Type", "value": self.plate_type},
+            {"key": "Plate Vendor", "value": self.plate_vendor_id},
             {"key": "Plate Form", "value": self.plate_form},
             {"key": "Status", "value": self.status},
             {"key": "Time Updated", "value": self.time_updated},
