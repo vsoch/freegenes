@@ -10,20 +10,18 @@
                             <th>Duration (Days)</th>
                             <th>Start Date</t>
                             <th>End Date</th>
-                            <th>Parts</th>
                         </tr>
                     </thead>
                     <tbody>{% for order in orders %}
                         <tr>
                             <td><a href="{% url 'admin:factory_factoryorder_change' order.uuid %}">{{ order.name }}</a></td>
-                            <td>{% if order.is_completed %}Completed: {{ order.count_parts_completed }}<br>Failed: {{ order.count_parts_failed }}<br>{% endif %}Total: {{ order.parts.count }}</td>
+                            <td>{% if order.is_completed %}{% if order.count_parts_completed > 0 %}<a href="{% url 'view_factoryorder_parts_completed' order.uuid %}">{% endif %}Completed: {{ order.count_parts_completed }}{% if order.count_parts_completed > 0 %}</a>{% endif %}<br>{% if order.count_parts_failed > 0 %}<a href="{% url 'view_factoryorder_parts_failed' order.uuid %}">{% endif %}Failed: {{ order.count_parts_failed }}{% if order.count_parts_failed > 0 %}</a>{% endif %}<br>{% endif %}{% if order.parts.count > 0 %}<a href="{% url 'view_factoryorder_parts' order.uuid %}">{% endif %}Total: {{ order.parts.count }}{% if order.parts.count > 0 %}</a>{% endif %}</td>
                             <td>{% if order.status %}{{ order.status }}{% endif %}</td>
                             <td>{% if order.estimated_price %}${{ order.estimated_price }}{% endif %}</td>
                             <td>{% if order.real_price %}${{ order.real_price }}{% endif %}</td>
                             <td>{% if order.is_completed %}{{ order.duration_days }} days{% else %}Not Completed{% endif %}</td>
 		            <td>{% if order.start_date %}{{ order.start_date| date:'Y-m-d' }}{% endif %}</td>
             		    <td>{% if order.finish_date %}{{ order.finish_date| date:'Y-m-d' }}{% endif %}</td>
-                            <td>{% if order.parts.count > 0 %}<a href="{% url 'view_factoryorder_parts' order.uuid %}">View Parts</a>{% endif %}</td>
                         </tr>{% endfor %}
                     </tbody>
                 </table>

@@ -37,12 +37,25 @@ def factory_view(request):
     orders = FactoryOrder.objects.all()
     return render(request, 'factory/incoming.html', {"orders": orders})
 
+# Parts Tables
 
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def view_factoryorder_parts(request, uuid):
+def view_factoryorder_parts_completed(request, uuid):
+    return view_factoryorder_parts(request, uuid, subset="completed")
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def view_factoryorder_parts_failed(request, uuid):
+    return view_factoryorder_parts(request, uuid, subset="failed")
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def view_factoryorder_parts(request, uuid, subset=None):
     '''Given a unique ID for a factory order, show a table of parts 
        associated. This view is linked from the main factory page.
+       If subset is set to be "failed" or "completed" we filter a subset
+       of the parts.
     '''
     if not request.user.is_staff or not request.user.is_superuser:
         messages.info(request, "You are not allowed to see this view.")
@@ -54,4 +67,17 @@ def view_factoryorder_parts(request, uuid):
         messages.info(request, "This factory order does not exist.")
         return redirect('factory')
 
-    return render(request, 'tables/twist_parts.html', {"order": order})
+    # Custom filtering of parts
+    if subset == "completed":
+        parts = order.get_completed_parts()
+    elif subset == "failed":
+        parts = order.get_failed_parts()
+    else:
+        parts = order.parts.all()
+
+    context = {
+        "order": order,
+        "parts": parts,
+        "subset": subset
+    }
+    return render(request, 'tables/twist_parts.html', context)

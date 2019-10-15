@@ -106,6 +106,8 @@ class FactoryOrder(models.Model):
         if self.is_completed:
             return (self.finish_date - self.start_date).days
 
+    # Counting Functions
+
     def count_parts_completed(self):
         '''determine parts completed based on having (or not having) a sample.
         '''
@@ -120,6 +122,25 @@ class FactoryOrder(models.Model):
         '''parts failed is total minus parts completed
         '''
         return self.parts.count() - self.count_parts_completed()
+
+    # Get filtered parts
+
+    def get_completed_parts(self):
+        '''return completed parts'''
+        parts = []
+        for part in self.parts.all():
+            if part.sample_set.count() > 0:
+                parts.append(part)
+        return parts
+
+    def get_failed_parts(self):
+        '''return completed parts'''
+        parts = []
+        for part in self.parts.all():
+            if part.sample_set.count() == 0:
+                parts.append(part)
+        return parts
+   
 
     def __str__(self):
         return "<FactoryOrder:%s>" % self.name
