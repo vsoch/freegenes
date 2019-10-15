@@ -103,7 +103,7 @@ def twist_import_plates(request):
         "plate_forms": Plate.PLATE_FORM
     }
 
-    return render(request, 'twist/import_parts.html', context)
+    return render(request, 'twist/import_plates.html', context)
 
 
 @login_required
