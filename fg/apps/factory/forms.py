@@ -16,7 +16,6 @@ class UploadTwistPlatesForm(forms.Form):
     '''
     csv_file = forms.FileField(required=True, label="plate map (csv) file")
     factory_order = forms.ModelChoiceField(queryset=FactoryOrder.objects.all())
-    generate_samples = forms.BooleanField(required=False)
     delimiter = forms.CharField(max_length=1,
                                 initial=",",
                                 label="Delimiter of file, defaults to ,")

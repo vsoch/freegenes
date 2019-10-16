@@ -80,15 +80,13 @@ def twist_import_plates(request):
 
                 return JsonResponse(response)
 
-            # The user must also provide a factory order, and on/off generate samples
+            # The user must also provide a factory order
             factory_order = request.POST.get('factory_order')
-            generate_samples = request.POST.get('generate_samples', 'off') == "on"
 
             # Case 2: we have the fields! Import the plates
             message = import_plate_task(rows=rows, 
                                         fields=fields,
-                                        factory_order=factory_order, 
-                                        generate_samples=generate_samples)
+                                        factory_order=factory_order)
 
             messages.info(request, message)
             return redirect('factory')
@@ -123,7 +121,7 @@ def twist_import_parts(request):
             rows = read_csv(fileobj=request.FILES['csv_file'], 
                             delim=form.data['delimiter'])
 
-            # The user must also provide a factory order, and on/off generate samples
+            # The user must also provide a factory order
             factory_order = request.POST.get('factory_order')
 
             # Case 2: we have the fields! Import the plates
@@ -204,16 +202,16 @@ def import_parts_task(rows, factory_order):
 
 # Tasks
 
-def import_plate_task(rows, fields, factory_order, generate_samples=False):
+def import_plate_task(rows, fields, factory_order):
     '''Using the rows (plate map) import plates and wells (physicals) into 
-       FreeGenes.
+       FreeGenes. We always generate samples (a previously defined boolean
+       was removed).
 
        Parameters
        ==========
        rows: rows from Twist, including the header
        fields: a lookup for plate_(id) and plate_container_(id), e.g.,
        factory_order: should be the uuid of the chosen factory order.
-       generate_samples: if True, generate samples to correspond with each part.
 
         {'plate_pSHPs0725B133922SH': 'name1', 
          'plate_container_pSHPs0725B133922SH': 'f8780f18-fe74-4fa3-87ec-1718aa8352e4', 
