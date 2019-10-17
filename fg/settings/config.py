@@ -38,12 +38,10 @@ SENDGRID_API_KEY=None
 
 # DOMAIN NAMES
 ## IMPORTANT: if/when you switch to https, you need to change "DOMAIN_NAME"
-# to have https, otherwise some functionality will not work (e.g., GitHub webhooks)
+# to have https, otherwise some functionality will not work
 
 DOMAIN_NAME = "http://127.0.0.1"
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = DOMAIN_NAME
-DOMAIN_NAME_HTTP = "http://127.0.0.1"
-DOMAIN_NAKED = DOMAIN_NAME_HTTP.replace('http://', '')
 
 ADMINS = (('vsochat', 'vsochat@gmail.com'),)
 MANAGERS = ADMINS
