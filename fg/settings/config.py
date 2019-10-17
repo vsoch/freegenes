@@ -107,4 +107,4 @@ PLUGINS_ENABLED = [
 
 # Map
 ## Default / public Mapbox token
-MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2hlYTI1NiIsImEiOiJjazB5dXJqYTgwN3p5M2NvODhrYWY4ejBuIn0.WYrEJAAKQBR3i38SU3nllQ'
+MAPBOX_ACCESS_TOKEN = None
