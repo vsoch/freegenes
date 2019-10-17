@@ -130,7 +130,8 @@ MAPBOX_ACCESS_TOKEN = 'XXXXX'
 
 This token is passed from the server to the Orders Map template and can be set as a configuration variable.
 
-By default, the default public Mapbox token is used and defined in "/fg/settings/config.py". This will work perfectly fine for all the basic map features, but if you are expanding the feature set of the map, you will need to register a Mapbox token and replace the default public one with your own.
+Once you log in to your account, you can click on "tokens" in the settings bar and write your
+token to your secrets.py file.
 
 ### Authentication Secrets
 
