@@ -112,4 +112,7 @@ GRAVATAR_DEFAULT_IMAGE = "retro"
 try:
     from .secrets import *
 except ImportError:
-    pass
+    try:
+        from .env_secrets import *
+    except ImportError:
+        pass
