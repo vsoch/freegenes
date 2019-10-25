@@ -227,13 +227,18 @@ def create_shipment(addresses, data):
     if data.get('dryice_options', 'No') != 'No':
         extra['dry_ice'] = {"contains_dry_ice": True, "weight": data.get('dryice_options')}
 
-    return shippo.Shipment.create(
+    shipment = shippo.Shipment.create(
                address_from = addresses["From"],
                address_to = addresses["To"],
                parcels = [parcel_default],
                api_key = SHIPPO_TOKEN,
-               extra = extra
-    )
+               extra = extra)
+
+    # Important! Shippo's create API only returns 3 rates, usually wrong.
+    rates = shippo.Shipment.get_rates(shipment.object_id, api_key=SHIPPO_TOKEN)['results']
+    shipment['rates'] = rates
+    return shipment
+
 
 def create_addresses(data):
     '''create a shipment, where data is the cleaned data from the ShippingForm.
