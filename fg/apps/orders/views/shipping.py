@@ -16,6 +16,7 @@ from django.http import (
 )
 from django.shortcuts import render, redirect
 from django.views.generic import View
+from django.utils import timezone
 from fg.apps.orders.forms import (
     ShippingForm
 )
@@ -134,6 +135,20 @@ class ShippingView(View):
         except Order.DoesNotExist:                
             message.error(self.request, 'That order does not exist.')
             return redirect('orders')
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def mark_as_shipped(request, uuid):
+    '''mark an order as shipped.
+    '''
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+    order.date_shipped = timezone.now()
+    order.save()
+    return redirect('dashboard')
 
 
 @login_required

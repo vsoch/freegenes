@@ -15,5 +15,6 @@ from .orders import (
 from .shipping import (
     create_label,
     create_transaction,
+    mark_as_shipped,
     ShippingView
 )
