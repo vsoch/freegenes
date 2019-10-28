@@ -51,7 +51,6 @@ class CheckoutForm(forms.Form):
 
 
 DRY_ICE_CHOICES = (
-    ('5', 'Add 5 Pounds Dry Ice'),
     ('2', 'Add 2 Pounds Dry Ice'),
     ('1', 'Add 1 Pound Dry Ice'),
     ('No', 'No Dry Ice')
