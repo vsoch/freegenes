@@ -15,7 +15,7 @@
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                             <td>{% if order.received %}Complete{% else %}Processing{% endif %}</td>
                             <td>{{ order.date_ordered | date:'Y-m-d' }}</td>
-                            <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}{% if request.user.is_staff or request.user.is_superuser %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% endif %}</td>
+                            <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}{% if request.user.is_staff or request.user.is_superuser %}{% if order.received %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% endif %}{% endif %}</td>
                             <td>{% if order.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
                             <td>{{ order.notes }}</td>
                             <td>{% for dist in order.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>
