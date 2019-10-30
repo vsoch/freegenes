@@ -157,9 +157,11 @@ def mark_as_shipped(request, uuid):
 
 
 
-
 class ImportShippoView(View):
     '''Import an order id from Shippo, but only if it's not in the system yet.
+       Since we can't reliably look up a transaction (and then label) based 
+       on a shipment, here we ask the user to provide the tracking and
+       label url for us, and we populate artificial objects.
     '''
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
@@ -205,43 +207,65 @@ class ImportShippoView(View):
     def post(self, *args, **kwargs):
         '''Receive the post with the shipment id to import.
         '''
-        selected = self.request.data.get('select_order')
-        name = self.request.data.get("order_name")
-        dist_ids = self.request.data.get("dist_ids")
+        selected = self.request.POST.get('select_order')
+        order_name = self.request.POST.get("order_name")
+        order_label = self.request.POST.get("order_label")
+        order_tracking = self.request.POST.get("order_tracking")
+        dist_ids = self.request.POST.get("dist_ids")
+
+        # Single selection will just return one
+        if not isinstance(dist_ids, list):
+            dist_ids = [dist_ids]
+
         print(dist_ids)
-        print(name)
+        print(order_name)
         print(selected)
 
         distributions = Distribution.objects.filter(uuid__in=dist_ids)
 
-        if selected and name:
+        if selected and order_name and order_label and order_tracking:
             print('selected order is %s' % selected)
             shipment = shippo.Shipment.retrieve(object_id=selected, api_key=SHIPPO_TOKEN)
 
-            # Get transaction and label based on rate ids? (this doesn't work)
-            trans = get_shippo_transactions()
-            rates = [x['object_id'] for x in shipment['rates']]
+            # Confirm that both links work
+            for url in [order_label, order_tracking]:
+                response = requests.get(url)
+                if not response.status_code == 200:
+                    messages.info(self.request, "%s returned invalid response, %s" %(url, response.status_code))
+                    return render(self.request, "shipping/import_shippo.html", context)
 
-            # THIS DOES NOT SEEM POSSIBLE - to get transaction and label from shipment
-            # I also tried order (an id) doesn't seem to work)
-            #transaction = [x for x in trans if x['rate'] in rates] or {}            
-            #label = shippo.Transaction.retrieve(object_id=shipment['object_id'],
-            #                                    api_key=SHIPPO_TOKEN) 
+            # **Here we weren't able to look up label or transaction
+            label = {'test': False, 
+                     'status': 'SUCCESS',
+                     'messages': [],
+                     'metadata': '',
+                     'label_url': order_label,
+                     'object_owner': HELP_CONTACT_EMAIL,
+                     'object_state': "VALID",
+                     'tracking_url_provider': order_tracking,
+                     'commercial_invoice_url': None,
+                     'bionode_notes': 'This is an artificially created label'}
 
-            order = Order.objects.create(name=name,
-                                         user=request.user,
-                                         date_ordered=convert_time(shipment['created_date']),
+            # Generate the order
+            order = Order.objects.create(name=order_name,
+                                         user=self.request.user,
+                                         date_ordered=convert_time(shipment['object_created']),
                                          date_shipped=convert_time(shipment['shipment_date']),
                                          ordered=True,
                                          received=True,
-                                         distributions=distributions,
-                                         label={},
-                                         transaction={})
+                                         label=label,
+                                         transaction={'eta': None})
 
-            messages.info(request, "Order imported successfully")
+            # Add distributions
+            for dist in distributions:
+                order.distributions.add(dist)
+
+            # redundant
+            order.save()
+            messages.info(self.request, "Order imported successfully")
             return redirect('order_details', uuid=str(order.uuid))
             
-        messages.info(request, "You need to provide a name and valid object id.")
+        messages.info(self.request, "You need to provide all valid fields on the form.")
         return render(self.request, "shipping/import_shippo.html", context)
 
 
@@ -346,10 +370,11 @@ def get_shippo_paginate(url):
 
 
 def convert_time(timestr):
-    '''convert a datetime string to django timezone
+    '''convert a datetime string to django timezone, we cut out just
+       the year, month, date, and timestamp
     '''
     if timestr:
-        timestr = timestr.split('.')[0]
+        timestr = timestr[0:19]
         return datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
 
 

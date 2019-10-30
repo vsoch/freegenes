@@ -13,6 +13,14 @@
                   <input type='text' id='order_name' name='order_name' class='form-control' placeholder="Enter a name for this Order" required/>
                 </div>
 		<div class="form-group">
+		  <label for="order_label">Link to label (pdf):</label>
+                  <input type='text' id='order_label' name='order_label' class='form-control' placeholder="Enter the full url for the pdf label" required/>
+                </div>
+		<div class="form-group">
+		  <label for="order_tracking">Link to tracking:</label>
+                  <input type='text' id='order_tracking' name='order_tracking' class='form-control' placeholder="Enter the full url for tracking" required/>
+                </div>
+		<div class="form-group">
 		  <label for="select-order">Select Distributions:</label>
 		  <select class="form-control selectpicker" name="dist_ids" id="dist_ids" multiple required>{% for dist in distributions %}
 		    <option value="{{ dist.uuid }}">{{ dist.name }}</option>{% endfor %}
