@@ -12,4 +12,6 @@ represented by the pull requests that fixed them. Critical items to know are:
 
 
 ## [master](https://github.com/vsoch/freegenes-django/tree/master) (master)
+ - adding shippo basic import (0.0.11)
+ - factory, orders, most work done (0.0.1)
  - initial draft (0.0.0)
