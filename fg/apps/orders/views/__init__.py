@@ -16,5 +16,6 @@ from .shipping import (
     create_label,
     create_transaction,
     mark_as_shipped,
+    ImportShippoView,
     ShippingView
 )

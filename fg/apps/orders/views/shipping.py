@@ -22,6 +22,7 @@ from fg.apps.orders.forms import (
 )
 
 from fg.apps.orders.models import Order
+from fg.apps.main.models import Distribution
 from ratelimit.decorators import ratelimit
 from fg.settings import (
     NODE_INSTITUTION,
@@ -33,7 +34,12 @@ from fg.settings import (
     VIEW_RATE_LIMIT_BLOCK as rl_block
 )
 
+from collections import OrderedDict
+from operator import getitem
+
+from datetime import datetime
 import shippo
+import requests
 
 # Default parcel dimensions
 
@@ -46,7 +52,6 @@ parcel_default = {
     "mass_unit": "lb"
 }
 
-# Default dry ice weight
 
 class ShippingView(View):
     '''Checkout a cart, meaning finishing up an order and placing it. We check
@@ -151,6 +156,114 @@ def mark_as_shipped(request, uuid):
     return redirect('dashboard')
 
 
+
+class ImportShippoView(View):
+    '''Import an order id from Shippo, but only if it's not in the system yet.
+       Since we can't reliably look up a transaction (and then label) based 
+       on a shipment, here we ask the user to provide the tracking and
+       label url for us, and we populate artificial objects.
+    '''
+
+    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
+    def get(self, *args, **kwargs):
+        '''return base page with form to select an order to import
+        '''
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
+            messages.warning(self.request, "You don't have permission to see this view.")
+            return redirect('catalog_view')
+
+        # Get all current shipments
+        shipments = get_shippo_shipments()
+
+        # Get set of shipments we currently have as orders
+        haves = set()
+        for order in Order.objects.all():
+  
+            # These should be the same
+            haves.add(order.label.get('object_id'))
+            haves.add(order.transaction.get('object_id'))
+
+        haves.remove(None)
+
+        results = {}
+        for s in shipments:
+            if s['object_id'] not in haves and s['status'] == "SUCCESS" and not s['test'] and s.get('order') is not None:
+                results[s['object_id']] = {"name": s['address_to']['name'],
+                                           "address": s['address_to']['street1'],
+                                           "created": s['object_created']}
+
+        # Sort by date
+        results = OrderedDict(sorted(results.items(), 
+                              key = lambda x: getitem(x[1], 'created'), reverse=True))
+
+        # Add distributions
+        context = {'shipments': results,
+                   'distributions': Distribution.objects.all()}
+
+        return render(self.request, "shipping/import_shippo.html", context)
+
+
+    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
+    def post(self, *args, **kwargs):
+        '''Receive the post with the shipment id to import.
+        '''
+        selected = self.request.POST.get('select_order')
+        order_name = self.request.POST.get("order_name")
+        order_label = self.request.POST.get("order_label")
+        order_tracking = self.request.POST.get("order_tracking")
+        dist_ids = self.request.POST.get("dist_ids")
+
+        # Single selection will just return one
+        if not isinstance(dist_ids, list):
+            dist_ids = [dist_ids]
+
+        distributions = Distribution.objects.filter(uuid__in=dist_ids)
+
+        if selected and order_name and order_label and order_tracking:
+            shipment = shippo.Shipment.retrieve(object_id=selected, api_key=SHIPPO_TOKEN)
+
+            # Confirm that both links work
+            for url in [order_label, order_tracking]:
+                response = requests.get(url)
+                if not response.status_code == 200:
+                    messages.info(self.request, "%s returned invalid response, %s" %(url, response.status_code))
+                    return render(self.request, "shipping/import_shippo.html", context)
+
+            # **Here we weren't able to look up label or transaction
+            label = {'test': False, 
+                     'status': 'SUCCESS',
+                     'messages': [],
+                     'metadata': '',
+                     'label_url': order_label,
+                     'object_owner': HELP_CONTACT_EMAIL,
+                     'object_state': "VALID",
+                     'tracking_url_provider': order_tracking,
+                     'commercial_invoice_url': None,
+                     'bionode_notes': 'This is an artificially created label'}
+
+            # Generate the order
+            order = Order.objects.create(name=order_name,
+                                         user=self.request.user,
+                                         date_ordered=convert_time(shipment['object_created']),
+                                         date_shipped=convert_time(shipment['shipment_date']),
+                                         ordered=True,
+                                         received=True,
+                                         label=label,
+                                         transaction={'eta': None})
+
+            # Add distributions
+            for dist in distributions:
+                order.distributions.add(dist)
+
+            # redundant
+            order.save()
+            messages.info(self.request, "Order imported successfully")
+            return redirect('order_details', uuid=str(order.uuid))
+            
+        messages.info(self.request, "You need to provide all valid fields on the form.")
+        return render(self.request, "shipping/import_shippo.html", context)
+
+
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def create_transaction(request, uuid):
@@ -221,6 +334,44 @@ def create_label(request, uuid):
 
 
 # Helper Functions
+
+def get_shippo_shipments():
+    '''use the Shippo API to retrieve all (paginated) shipments
+    '''
+    url = "https://api.goshippo.com/v1/shipments/?results=25"
+    return get_shippo_paginate(url)
+
+
+def get_shippo_transactions():
+    '''use the Shippo API to retrieve all (paginated) transactions
+    '''
+    url = "https://api.goshippo.com/v1/transactions/?results=25"
+    return get_shippo_paginate(url)
+
+
+def get_shippo_paginate(url):
+    '''use the Shippo API to retrieve all (paginated) items
+    '''
+    results = []
+    headers = {"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
+
+    while url is not None:
+        result = requests.get(url, headers=headers)
+        if result.status_code == 200:
+            result = result.json()
+            results += result.get('results', [])
+            url = result['next']
+    return results
+
+
+def convert_time(timestr):
+    '''convert a datetime string to django timezone, we cut out just
+       the year, month, date, and timestamp
+    '''
+    if timestr:
+        timestr = timestr[0:19]
+        return datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
+
 
 def create_shipment(addresses, data):
     '''create a shipment using the default parcel dimensions, and the valid

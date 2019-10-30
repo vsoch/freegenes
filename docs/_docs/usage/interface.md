@@ -84,10 +84,16 @@ the production table for factory orders:
 ![factory_incoming.png]({{ site.baseurl }}/docs/usage/img/factory_incoming.png)
 
 And the Actions tab shows a selection of options for the lab staff, which is currently sparse because
-we are only working on importing from Twist and creating orders
-(but many other functions are likely to result):
+we are only working on importing from Twist, Shippo, and creating orders:
 
 ![factory_incoming_actions.png]({{ site.baseurl }}/docs/usage/img/factory_incoming_actions.png)
+
+For example, here is the "Import Shippo" page. This imports a shipment,
+but asks the user to provide both the tracking url and the label (pdf url)
+as the Shippo API cannot reliably return a transaction or label created
+outside of it.
+
+![import-shippo.png]({{ site.baseurl }}/docs/usage/img/import-shippo.png)
 
 ### Import Twist Parts
 

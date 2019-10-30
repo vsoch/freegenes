@@ -10,7 +10,7 @@
             {% if order.transaction %}
               {% if order.label %}
                 {% if order.label.status == "SUCCESS" %}
-                  <p class="alert alert-info">Tracking Number: {{ order.label.tracking_number }}</p>
+                  {% if order.label.tracking_number %}<p class="alert alert-info">Tracking Number: {{ order.label.tracking_number }}</p>{% endif %}
                   <a href="{{ order.label.tracking_url_provider }}" target="_blank"><button class="btn btn-secondary">Track this Package</button></a>
                   <a href="{{ order.label.label_url }}" target="_blank"><button class="btn btn-secondary">Print Label</button></a>
                   {% if order.label.messages %}<p class="alert alert-info">{% for message in order.label.messages %}{{ message }}{% endfor %}<br></p>{% endif %}
