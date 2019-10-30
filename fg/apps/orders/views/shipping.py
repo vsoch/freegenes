@@ -217,14 +217,9 @@ class ImportShippoView(View):
         if not isinstance(dist_ids, list):
             dist_ids = [dist_ids]
 
-        print(dist_ids)
-        print(order_name)
-        print(selected)
-
         distributions = Distribution.objects.filter(uuid__in=dist_ids)
 
         if selected and order_name and order_label and order_tracking:
-            print('selected order is %s' % selected)
             shipment = shippo.Shipment.retrieve(object_id=selected, api_key=SHIPPO_TOKEN)
 
             # Confirm that both links work
