@@ -127,14 +127,20 @@ def download_plate_csv(request, uuid):
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def download_plateset_csv(request, uuid):
-    '''generate a csv for an entire (single) plateset.
+    '''generate a csv for an entire (single) plateset. This means that if plates
+       are defined for it, we return the first plate as a representative one.
+       See https://github.com/vsoch/freegenes/issues/109#issuecomment-548831927
     '''
     try:
         plateset = PlateSet.objects.get(uuid=uuid)
         filename = "freegenes-plateset-%s-plates-%s.csv" %(datetime.now().strftime('%Y-%m-%d'),
                                                            plateset.plates.count())
 
-        return generate_plate_csv(plateset.plates.all(), filename)
+        if plateset.plates.count() > 0:
+            return generate_plate_csv([plateset.plates.first()], filename)
+
+        # No plates returns an empty csv
+        return generate_plate_csv([], filename)
 
     except PlateSet.DoesNotExist:
         pass
@@ -142,13 +148,15 @@ def download_plateset_csv(request, uuid):
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def download_distribution_csv(request, uuid):
     '''generate a csv for an entire distribution (more than one plateset).
+       Akin to the plateset download, we only return a single representative
+       plate per plateset (only_first is set to True)
     '''
     try:
         dist = Distribution.objects.get(uuid=uuid)
         filename = "freegenes-distribution-%s-%s.csv" %(dist.name.replace(' ', '-').lower(),
                                                         datetime.now().strftime('%Y-%m-%d'))
 
-        return generate_plate_csv(dist.get_plates(), filename)
+        return generate_plate_csv(dist.get_plates(only_first=True), filename)
 
     except Distribution.DoesNotExist:
         pass

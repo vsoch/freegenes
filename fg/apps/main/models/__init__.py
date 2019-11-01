@@ -907,13 +907,18 @@ class Distribution(models.Model):
     def get_absolute_url(self):
         return reverse('distribution_details', args=[self.uuid])
 
-    def get_plates(self):
+    def get_plates(self, only_first=False):
         '''return a list of plates belonging to the distribution (meaning
-           unwrapping the platesets
+           unwrapping the platesets. If only_first is True, we are returning
+           only a representative sample (the first plate) for each plateset.
         '''
         plates = []
         for plateset in self.platesets.all():
-            plates = list(chain(plates, plateset.plates.all()))
+            if not only_first:
+                plates = list(chain(plates, plateset.plates.all()))
+            else:
+                if plateset.plates.count() > 0:
+                    plates = list(chain(plates, [plateset.plates.first()]))
         return plates
 
     def __str__(self):

@@ -11,7 +11,7 @@
   </div>
   <div class="row" style="margin-bottom:20px">
       <div class="col-md-12">{% if request.user.is_superuser or request.user.is_staff %}<a href="{% url 'admin:main_plateset_change' instance.uuid %}"><button class="btn btn-primary">Edit</button></a>{% endif %}
-           <a href="{% url 'download_plateset_csv' instance.uuid %}"><button class="btn btn-primary">Download (csv)</button></a>
+           <a title="Download a csv with a single representative plate in the plateset." href="{% url 'download_plateset_csv' instance.uuid %}"><button class="btn btn-primary">Download (csv)</button></a>
       </div>
   </div>
   <div class="row">
