@@ -102,7 +102,7 @@ class Order(models.Model):
         '''
         if self.user is not None:
             message = 'User %s has a pending order, only one cart is allowed.' % self.user.username
-            if Order.objects.filter(ordered=False, user=self.user.username).count() >= 1:
+            if Order.objects.filter(ordered=False, user=self.user).count() >= 1:
                 raise ValidationError(message)
 
     class Meta:
