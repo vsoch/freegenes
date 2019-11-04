@@ -54,11 +54,11 @@ def search_view(request, query=None):
     if query is None:
         query = request.GET.get('q')
  
-    query_type=request.GET.get('type')
+    query_type = request.GET.get('type')
 
     if query is not None:
-        results = freegenes_query(query, query_type)
-        context["results"] = results 
+        results = freegenes_query(query, query_type, request=request)
+        context["results"] = results
     return render(request, 'search/search.html', context)
 
 
@@ -72,7 +72,7 @@ def run_search(request):
         q = request.GET.get('q')
 
     if q is not None:    
-        results = freegenes_query(q)
+        results = freegenes_query(q, request=request)
         context = {"results": results,
                    "submit_result": "anything"}
         return render(request, 'search/result.html', context)
@@ -85,85 +85,95 @@ def parts_query(q):
        catalog page.
     '''
     return Part.objects.filter(
-                    Q(name__contains=q) |
-                    Q(description__contains=q) |
-                    Q(part_type__contains=q) |
-                    Q(gene_id__contains=q)).distinct()
+                    Q(name__icontains=q) |
+                    Q(description__icontains=q) |
+                    Q(part_type__icontains=q) |
+                    Q(gene_id__icontains=q)).distinct()
+
+def distributions_query(q):
+    '''specific search for distributions
+    '''
+    return Distribution.objects.filter(
+                    Q(name__icontains=q) |
+                    Q(description__icontains=q)).distinct()
 
 
 def containers_query(q):
     '''specific search for containers
     '''
     return Container.objects.filter(
-                    Q(name__contains=q) |
-                    Q(container_type__contains=q) |
-                    Q(description__contains=q)).distinct()
+                    Q(name__icontains=q) |
+                    Q(container_type__icontains=q) |
+                    Q(description__icontains=q)).distinct()
 
 
 def organisms_query(q):
     '''specific search for organisms
     '''
     return Organism.objects.filter(
-                    Q(name__contains=q) |
-                    Q(description__contains=q)).distinct()
+                    Q(name__icontains=q) |
+                    Q(description__icontains=q)).distinct()
 
 
 def collections_query(q):
     '''specific search for collections
     '''
-    return Collection.objects.filter(Q(name__contains=q)).distinct()
+    return Collection.objects.filter(Q(name__icontains=q)).distinct()
 
 
 def institutions_query(q):
     '''specific search for institutions
     '''
     return Institution.objects.filter(
-                    Q(name__contains=q)).distinct()
+                    Q(name__icontains=q)).distinct()
     
 
 def modules_query(q):
     '''specific search for modules
     '''
     return Module.objects.filter(
-                    Q(name__contains=q) |
-                    Q(model_id__contains=q) |
-                    Q(module_type__contains=q)).distinct()
+                    Q(name__icontains=q) |
+                    Q(model_id__icontains=q) |
+                    Q(module_type__icontains=q)).distinct()
 
 def plates_query(q):
     '''specific search for plates
     '''
     return Plate.objects.filter(
-                    Q(name__contains=q) |
-                    Q(plate_type__contains=q) |
-                    Q(status__contains=q) |
-                    Q(thaw_count__contains=q) |
-                    Q(plate_form__contains=q)).distinct()
+                    Q(name__icontains=q) |
+                    Q(plate_type__icontains=q) |
+                    Q(status__icontains=q) |
+                    Q(thaw_count__icontains=q) |
+                    Q(plate_form__icontains=q)).distinct()
 
 def samples_query(q):
     '''specific search for samples
     '''
     return Sample.objects.filter(
-                    Q(evidence__contains=q) |
-                    Q(sample_type__contains=q) |
-                    Q(vendor__contains=q) |
-                    Q(status__contains=q)).distinct()
+                    Q(evidence__icontains=q) |
+                    Q(sample_type__icontains=q) |
+                    Q(vendor__icontains=q) |
+                    Q(status__icontains=q)).distinct()
 
 
 def tags_query(q):
     '''specific search for modules
     '''
     return Tag.objects.filter(
-                    Q(tag__contains=q)).distinct()
+                    Q(tag__icontains=q)).distinct()
 
 
-def freegenes_query(q, query_types=None):
+def freegenes_query(q, query_types=None, request=None):
     '''for a general freegenes query, we might be looking for a container,
        collection, plate, or other entity not associated with a person/order
        We do search over institutions in case the user is looking for an 
-       associated part.
+       associated part. If a request object is provided, we check if
+       the user is authenticated. If so, we remove search for parts,
+       plates, tags, and organisms.
     '''
     searches = {'containers': containers_query,
                 'collections': collections_query,
+                'distributions': distributions_query,
                 'institutions': institutions_query,
                 'modules': modules_query,
                 'organisms': organisms_query,
@@ -178,9 +188,15 @@ def freegenes_query(q, query_types=None):
     else:
         query_types = query_types.split(",")
 
+    skips = []
+    # If a request is provided, check if the user is admin/staff
+    if request is not None:
+        if not request.user.is_staff and not request.user.is_superuser:
+            skips = ['parts', 'plates', 'tags', 'organisms']       
+
     results = [] 
     for query_type in query_types:
-        if query_type in searches:
+        if query_type in searches and query_type not in skips:
             results = list(chain(results, searches[query_type](q)))
 
     return results
