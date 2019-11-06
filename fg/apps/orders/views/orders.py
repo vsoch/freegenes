@@ -63,7 +63,10 @@ def remove_from_cart(request, uuid):
     if order:        
         if order.distributions.filter(uuid=distribution.uuid).exists():
             order.distributions.remove(distribution)
-            messages.info(request, "This distribution was removed from your cart.")
+
+            # Remove the cart order if it's empty, they can re-generate
+            if order.distributions.count() == 0:
+                order.delete()
         else:
             messages.info(request, "This distribution was not in your cart.")
         return redirect('orders')
