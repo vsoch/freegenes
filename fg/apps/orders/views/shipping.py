@@ -327,6 +327,7 @@ def create_label(request, uuid):
 
         # Received flag indicates it was processed
         order.received = True
+        order.date_ordered = timezone.now()
         order.save()
 
     # A get is viewing a previous transaction, if it exists.
