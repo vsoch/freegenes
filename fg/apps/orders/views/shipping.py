@@ -419,8 +419,10 @@ def create_addresses(data):
 	 'shipping_zip': '94305',
          'shipping_state': "CA",
          'shipping_city': "Palo Alto",
+         'shipping_country': "US",
 	 'from_name': 'Dinosaur Labs',
 	 'from_address': '2128 Roaring Ave Apt 410',
+         'from_country': "US",
 	 'from_zip': '12345',
 	 'dryice_options': 'Yes'}
     '''
@@ -435,7 +437,7 @@ def create_addresses(data):
         zip = data.get('from_zip'),
         phone = HELP_CONTACT_PHONE,
         api_key=SHIPPO_TOKEN,
-        country = "US", 
+        country = data.get("from_country", "US"), 
         email = HELP_CONTACT_EMAIL,
         validate = True
     )
@@ -449,7 +451,7 @@ def create_addresses(data):
         zip = data.get('shipping_zip'),
         phone = data.get('shipping_phone'),
         api_key=SHIPPO_TOKEN,
-        country = "US", 
+        country = data.get("shipping_country", "US"), 
         email = data.get('shipping_email'),
         validate = True
     )

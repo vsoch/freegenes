@@ -59,12 +59,26 @@
                     <label for="lab_zip">Postal Code</label>
                     <input type='text' id='lab_zip' name='lab_zip' class='form-control' required/>
                     <div class="invalid-feedback">
-                      Zip code required.
+                      Postal code is required.
                     </div>
                   </div>
-                  <div class="col-lg-4 col-md-6 mb-4">
+                  <div class="col-lg-6 col-md-6 mb-6">
                     <label for="contactEmail">Contact Email</label>
                     <input type='email' id='contactEmail' name='_replyto' class='form-control' required/>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6 col-md-12 mb-6">
+                    <label for="lab_country">Country</label>
+                    <input type='text' id='lab_country' name='lab_country' class='form-control' required/>
+                    <div class="invalid-feedback">
+                      Country is required.
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-md-6 mb-6">
+                    <label for="lab_comments">Additional Comments?</label>
+                    <textarea type='text' placeholder="Special information" id='lab_comments' name='lab_comments' class='form-control'></textarea>
                   </div>
                 </div>
 
@@ -114,10 +128,24 @@
                 </div>
 
                 <div class="md-form mb-5">
-                    <input type='text' placeholder="Zip code" id='shipping_zip' name='shipping_zip' class='form-control' required/>
+                    <input type='text' placeholder="Postal code" id='shipping_zip' name='shipping_zip' class='form-control' required/>
                     <div class="invalid-feedback">
-                      Zip code required.
+                      Postal code is required.
                     </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6 col-md-12 mb-6">
+                    <label for="shipping_country">Country</label>
+                    <input type='text' id='shipping_country' name='shipping_country' class='form-control' required/>
+                    <div class="invalid-feedback">
+                      Country is required.
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-md-6 mb-6">
+                    <label for="shipping_comments">Additional Comments?</label>
+                    <textarea type='text' placeholder="Anything special we should know about delivery times, days, or shipping?" id='shipping_comments' name='shipping_comments' class='form-control'></textarea>
+                  </div>
                 </div>
                
               </div>
@@ -156,6 +184,7 @@ use_same_shipping.addEventListener('change', function() {
     document.getElementById("shipping_phone").required = false;
     document.getElementById("shipping_state").required = false;
     document.getElementById("shipping_city").required = false;
+    document.getElementById("shipping_country").required = false;
   } else {
     hideable_shipping_form.show();
     document.getElementById("shipping_to").required = true;
@@ -164,6 +193,7 @@ use_same_shipping.addEventListener('change', function() {
     document.getElementById("shipping_phone").required = true;
     document.getElementById("shipping_state").required = true;
     document.getElementById("shipping_city").required = true;
+    document.getElementById("shipping_country").required = true;
   }
 })
 

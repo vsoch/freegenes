@@ -71,6 +71,7 @@ class ShippingForm(forms.Form):
     shipping_state = forms.CharField(required=True)
     shipping_zip = forms.CharField(required=True, label="Postal Code")
     shipping_phone = forms.CharField(required=True)
+    shipping_country = forms.CharField(required=True)
 
     # TO Lab Name and Address
     from_name = forms.CharField(required=True)
@@ -79,6 +80,7 @@ class ShippingForm(forms.Form):
     from_zip = forms.CharField(required=True, label="Postal Code")
     from_state = forms.CharField(required=True)
     from_city = forms.CharField(required=True)
+    from_country = forms.CharField(required=True)
 
     parcel_length = forms.CharField(required=True, label="Length in inches")
     parcel_width = forms.CharField(required=True, label="Width in inches")
