@@ -14,6 +14,7 @@ from django.core.management.base import (
 )
 from fg.apps.main.utils import load_json
 from fg.settings import SHIPPO_TOKEN
+from fg.apps.orders.views.shipping import get_shippo_shipments
 
 from uszipcode import SearchEngine
 from geopy.geocoders import Nominatim
@@ -105,30 +106,30 @@ class Command(BaseCommand):
             print("Generation of mapdata is only possible with the live Shippo Token.")
             sys.exit(0)
 
-        url="https://api.goshippo.com/orders/"
-        headers={"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
+        # We have to get order ids from shipments instead of using the orders 
+        # endpoint, which has a bug that it only returns the first page then 404
+        shipments = get_shippo_shipments()
 
-        # If we get here, there are orders to parse!
-        coords = dict()
+        # Get unique order ids from the shipments
+        orders = set(x['order'] for x in shipments)
+        orders.remove(None)
+        print("Found %s orders via the Shipping endpoint" % len(orders))
+
+        # The baseurl for the orders endpoint
+        baseurl="https://api.goshippo.com/orders"
+        headers={"Authorization": "ShippoToken %s" % SHIPPO_TOKEN}
 
         # First usage will download database to root (9MB)
         search = SearchEngine(simple_zipcode=True)
         geolocator = Nominatim(user_agent="freegenes")
+        coords = dict()
 
-        response = requests.get(url, headers=headers)
+        for order in orders:
+            url = "%s/%s" %(baseurl, order)
+            response = requests.get(url, headers=headers)
 
-        # Continue parsing until we don't have next
-        while response.status_code == 200:
-
-            results = response.json()
-            if "results" not in results:
-                print("No results in response.")
-                sys.exit(1)
-
-            listing = results['results']
-
-            # Assemble list of latitudes, longitudes
-            for result in listing:
+            if response.status_code == 200:
+                result = response.json()
 
                 if "to_address" in result:
 
@@ -167,8 +168,6 @@ class Command(BaseCommand):
 
                         coords[zipcode]['count'] +=1
 
-            # Get the next page
-            response = requests.get(results['next'], headers=headers)
 
         # Write to output file
         print('Writing to file...')
