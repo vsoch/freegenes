@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^cart/add/(?P<uuid>.+)$', views.add_to_cart, name='add-to-cart'),
     url(r'^cart/remove/(?P<uuid>.+)$', views.remove_from_cart, name='remove-from-cart'),
     url(r'^checkout$', login_required(views.CheckoutView.as_view()), name='checkout'),
+    url(r'^checkout/(?P<uuid>.+)$', login_required(views.CheckoutView.as_view()), name='checkout'),
     url(r'^submit/(?P<uuid>.+)$', views.submit_order, name='submit_order'),
 
     # Material Transfer Agreement

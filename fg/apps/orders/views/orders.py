@@ -22,12 +22,19 @@ from fg.apps.orders.forms import (
     MTAForm
 )
 
-from fg.apps.orders.models import Order
+from fg.apps.orders.models import (
+    Order, 
+    Address
+) 
 from fg.apps.main.models import Distribution
 from ratelimit.decorators import ratelimit
+from fg.apps.orders.email import send_email
 from fg.settings import (
     VIEW_RATE_LIMIT as rl_rate, 
-    VIEW_RATE_LIMIT_BLOCK as rl_block
+    VIEW_RATE_LIMIT_BLOCK as rl_block,
+    DOMAIN_NAME,
+    HELP_CONTACT_EMAIL,
+    NODE_NAME
 )
 
 
@@ -176,6 +183,77 @@ class CheckoutView(View):
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
-        '''This can be written if form data is ever sent to the server
+        '''When the user checks out, we validate the form data, add 
+           it to the order, and then send an email to the lab to 
+           link to further process the shipment.
         '''
         form = CheckoutForm(self.request.POST or None)
+
+        try:
+            order = Order.objects.get(uuid=kwargs.get('uuid'))
+            if form.is_valid():
+
+                # Get cleaned form data
+                data = form.cleaned_data
+
+                # First create the lab address, this data is always required
+                lab_address = Address.objects.create(institution_name=data.get('lab_name', None),
+                                                     recipient_title=data.get('recipient_title', None),
+                                                     recipient_name=data.get('recipient_name', None),
+                                                     address1=data.get('lab_address'),
+                                                     address2=data.get('lab_address2', None),
+                                                     postal_code=data.get('lab_zip'),
+                                                     city=data.get('lab_city'),
+                                                     state=data.get('lab_state'),
+                                                     phone=data.get('lab_phone'),
+                                                     country=data.get('lab_country'),
+                                                     email=data.get('lab_email', None))
+
+                # The user can request to use the same address for shipping
+                if data.get('same_shipping_address', False) == True:
+                    shipping_address = lab_address
+                else:
+                    shipping_address = Address.objects.create(recipient_name=data.get('shipping_to'),
+                                                              address1=data.get('shipping_address'),
+                                                              address2=data.get('shipping_address2', None),
+                                                              postal_code=data.get('shipping_zip'),
+                                                              phone=data.get('shipping_phone'),
+                                                              city=data.get('shipping_city'),
+                                                              state=data.get('shipping_state'),
+                                                              country=data.get('shipping_country'),
+                                                              email=data.get('lab_email', None))
+ 
+                order.lab_address = lab_address
+                order.shipping_address = shipping_address
+                order.save()
+
+                # Send email to lab with link to order
+                comments = (self.request.POST.get('lab_comments', '') + 
+                            self.request.POST.get('shipping_comments', ''))
+                send_order_notification(order, comments=comments)
+
+                messages.info(self.request, "Thank you for submitting your order!")
+                return redirect("dashboard")
+
+            # The form isn't valid
+            context = {
+                'form': form,
+                'order': order
+            }
+            return render(self.request, "orders/checkout.html", context)
+
+        except Order.DoesNotExist:                
+            message.error(self.request, 'That order does not exist.')
+            return redirect('orders')
+
+
+def send_order_notification(order, comments):
+    '''based on a submit order, send a notification, including a link to
+       it's page to create a shipment. This relies on using the SendGrid API.
+    '''
+    print(comments)
+    # Derive the message - it should include a link to the order, and comments
+    link = "%s/%s" %(DOMAIN_NAME, order.get_absolute_url())
+    subject = "New Order for %s: %s" % (NODE_NAME, order.name)
+    message = "Woohoo! We have a new order!<br>%s<br>Comments:%s" %(link, comments)
+    send_email(email_to=HELP_CONTACT_EMAIL, message=message, subject=subject)

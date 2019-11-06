@@ -24,6 +24,47 @@ import uuid
 # Orders
 ################################################################################
 
+class Address(models.Model):
+    '''an address can correspond to a lab or shipping address. We collect
+       both for an order, and then link to the order.
+    '''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_created = models.DateTimeField('date created', auto_now_add=True) 
+    time_updated = models.DateTimeField('date modified', auto_now=True)
+
+    # Either institution name or recipient name must be defined
+    institution_name = models.CharField(max_length=250, blank=True, null=True)
+    recipient_title = models.CharField(max_length=50, blank=True, null=True)
+    recipient_name = models.CharField(max_length=250, blank=True, null=True)
+    address1 = models.CharField(max_length=500, blank=False)
+    address2 = models.CharField(max_length=500, blank=False)
+    postal_code = models.CharField(max_length=500, blank=False)
+    city = models.CharField(max_length=250, blank=False)
+    state = models.CharField(max_length=250, blank=False)
+    phone = models.CharField(max_length=500, blank=False)
+    email = models.CharField(max_length=250, blank=True, null=True)
+    country = models.CharField(max_length=250, blank=False, default="US")
+
+    def clean(self):
+        '''a recipient_name or institution name is required.
+        '''
+        if self.institution_name is None and self.recipient_name is None:
+            message = "Either an institution or individual name needs to be provided."
+            raise ValidationError(message)
+
+    def __str__(self):
+        return "<Address:%s>" % self.institution_name or self.recipient_name
+
+    def __repr__(self):
+        return self.__str__()
+
+    def get_label(self):
+        return "address"
+
+    class Meta:
+        app_label = 'orders'
+
+
 class Order(models.Model):
     '''A request by a user for a shipment. The address/ personal information
        is not stored here, but looked up elsewhere via the user address.
@@ -55,6 +96,14 @@ class Order(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.DO_NOTHING, blank=True, null=True)
     transaction = JSONField(default=dict)
     label = JSONField(default=dict)
+
+    # Lab and Shipping Address
+    lab_address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, 
+                                    related_name="order_lab_address",
+                                    blank=True, null=True)
+    shipping_address = models.ForeignKey(Address, on_delete=models.DO_NOTHING,
+                                         related_name="order_shipping_address",
+                                         blank=True, null=True)
 
     # When an MTA is deleted, we don't touch the order. We don't require an MTA
     # for the order object, however we require it to be present when checking out
