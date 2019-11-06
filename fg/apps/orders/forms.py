@@ -69,14 +69,14 @@ class ShippingForm(forms.Form):
     shipping_address2 = forms.CharField(required=False)
     shipping_city = forms.CharField(required=True)
     shipping_state = forms.CharField(required=True)
-    shipping_zip = forms.CharField(required=True)
+    shipping_zip = forms.CharField(required=True, label="Postal Code")
     shipping_phone = forms.CharField(required=True)
 
     # TO Lab Name and Address
     from_name = forms.CharField(required=True)
     from_address = forms.CharField(required=True)
     from_address2 = forms.CharField(required=False)
-    from_zip = forms.CharField(required=True)
+    from_zip = forms.CharField(required=True, label="Postal Code")
     from_state = forms.CharField(required=True)
     from_city = forms.CharField(required=True)
 
