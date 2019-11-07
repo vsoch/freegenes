@@ -56,12 +56,10 @@ A successful upload redirects the user to the actual Checkout form.
 
 ![checkout.png]({{ site.baseurl }}/docs/usage/img/checkout.png)
 
-The checkout form itself doesn't save personal information to the server,
-but rather sends an email with the form to the lab. This is done for three reasons -
-
- 1. It's an easy way to notify the lab of an order
- 2. It eliminates the need to store personal information on the server
- 3. We can have better certainty of having the latest shipping information.
+The checkout form saves the lab address and shipping address associated with
+the order to the database, and uses SendGrid to notify the lab of a new order.
+The link to the order is included in the email for the lab to continue processing
+the shipment.
 
 
 ## Factory

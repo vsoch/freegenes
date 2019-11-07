@@ -8,7 +8,9 @@
       <div class="row">
         <div class="col-md-8 mb-4">
 
-	<form action="https://formspree.io/{{ HELP_CONTACT_EMAIL }}" method="POST" class="card-body">
+	<form action="{% url 'checkout' order.uuid %}" method="POST" class="card-body">
+
+              {% csrf_token %}
               <div class="mta_form">
                 <div class="row">
                   <div class="col-lg-4 col-md-12 mb-4">
@@ -64,7 +66,7 @@
                   </div>
                   <div class="col-lg-6 col-md-6 mb-6">
                     <label for="contactEmail">Contact Email</label>
-                    <input type='email' id='contactEmail' name='_replyto' class='form-control' required/>
+                    <input type='email' id='contactEmail' name='lab_email' class='form-control' required/>
                   </div>
                 </div>
 
@@ -151,7 +153,7 @@
               </div>
 
               <hr class="mb-4">
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
 
             </form>
 
