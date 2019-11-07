@@ -192,7 +192,7 @@ def freegenes_query(q, query_types=None, request=None):
     # If a request is provided, check if the user is admin/staff
     if request is not None:
         if not request.user.is_staff and not request.user.is_superuser:
-            skips = ['parts', 'plates', 'tags', 'organisms']       
+            skips = ['parts', 'plates', 'tags', 'organisms', 'containers', 'institutions']
 
     results = [] 
     for query_type in query_types:
