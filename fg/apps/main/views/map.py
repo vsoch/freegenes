@@ -9,7 +9,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render 
 from ratelimit.decorators import ratelimit
 
@@ -22,7 +21,6 @@ from fg.settings import (
 import os
 import json
 
-@login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def order_map_view(request):
     '''A nightly job gets updated latitudes and longitudes from the shippo API,
