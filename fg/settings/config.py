@@ -52,8 +52,8 @@ HELP_CONTACT_EMAIL = 'vsochat@stanford.edu'
 HELP_CONTACT_PHONE = None # "123-456-7890"
 HELP_INSTITUTION_SITE = 'https://srcc.stanford.edu'
 NODE_INSTITUTION = 'Stanford University'
-NODE_URI = "freegenes"
-NODE_NAME = "FreeGenes"
+NODE_URI = "bionet-server"
+NODE_NAME = "Bionet Server"
 NODE_TWITTER = "biobricks"
 
 # Defaults for Physical Models
