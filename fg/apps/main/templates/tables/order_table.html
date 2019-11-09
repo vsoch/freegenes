@@ -14,7 +14,9 @@
                     <tbody>{% for order in orders %}{% if order.status != "Cart" %}
                         <tr>
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-                            <td>{{ order.status }}<br>({{ order.summary_status }})</td>
+                            <td>{{ order.status }}<br>({{ order.summary_status }})
+                                {% if request.user == order.user and order.status == "Shipped" %}<br><a href="{% url 'mark_as_received' order.uuid %}">Mark Received</a>{% endif %}
+                            </td>
                             <td>{% if order.transaction.tracking_status %}{% if order.transaction.tracking_url_provider %}<a href="{{ order.transaction.tracking_url_provider }}" target="_blank">{{ order.transaction.tracking_status }}</a>{% endif %}{% endif %}</td>
                             <td>{{ order.date_ordered | date:'Y-m-d' }}</td>
                             <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}

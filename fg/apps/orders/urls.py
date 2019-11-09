@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^shipment/create/(?P<uuid>.+)$', login_required(views.ShippingView.as_view()), name='create_shipment'),
     url(r'^shipment/import-shippo-order$', login_required(views.ImportShippoView.as_view()), name='import_shippo_order'),
     url(r'^shipment/mark-shipped/(?P<uuid>.+)$', views.mark_as_shipped, name='mark_as_shipped'),
+    url(r'^shipment/mark-received/(?P<uuid>.+)$', views.mark_as_received, name='mark_as_received'),
     url(r'^shipment/reject/(?P<uuid>.+)$', views.mark_as_rejected, name='mark_as_rejected'),
     url(r'^transaction/create/(?P<uuid>.+)$', views.create_transaction, name='create_transaction'),
     url(r'^transaction/tracking/update$', views.update_tracking, name='update_tracking'),

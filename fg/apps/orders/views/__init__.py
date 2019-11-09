@@ -17,6 +17,7 @@ from .shipping import (
     create_transaction,
     mark_as_rejected,
     mark_as_shipped,
+    mark_as_received,
     ImportShippoView,
     ShippingView,
     update_tracking

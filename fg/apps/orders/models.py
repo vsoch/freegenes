@@ -82,7 +82,8 @@ class Order(models.Model):
         ('Awaiting Countersign', 'Awaiting Countersign'),
         ('Generating Label', 'Generating Label'),
         ('Waiting to Ship', 'Waiting to Ship'),
-        ('Shipped', 'Shipped')
+        ('Shipped', 'Shipped'),
+        ('Received', 'Received')
     ]
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -126,11 +127,15 @@ class Order(models.Model):
 
     @property
     def summary_status(self):
-        '''the status here corresponds to Complete or Processing depending
-           on self.status, or Cart (which admins don't care to see)
+        '''the status here corresponds to Completed, Shipped, Cart, or Processing 
+           depending on self.status. A rejected or received order is entirely
+           complete, while Processing is only for when it's between being
+           submit (after cart) and before shipped.
         '''
-        if self.status in ['Rejected', 'Shipped']:
+        if self.status in ['Rejected', 'Received']:
             return "Completed"
+        elif self.status == "Shipped":
+            return "Shipped"
         elif self.status == "Cart":
             return "Cart"
         return "Processing"

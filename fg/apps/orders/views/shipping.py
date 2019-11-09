@@ -151,22 +151,24 @@ class ShippingView(View):
             return redirect('orders')
 
 
+
 @login_required
-@user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def mark_as_shipped(request, uuid):
-    '''mark an order as shipped.
+def mark_as_received(request, uuid):
+    '''mark an order as received
     '''
     try:
         order = Order.objects.get(uuid=uuid)
     except Order.DoesNotExist:
         raise Http404
-    order.date_shipped = timezone.now()
 
-    # Shipped. The package has been shipped (FedEx takes over)
-    order.status = "Shipped"
+    if not request.user == order.user:
+        messages.info(request, "Only an order owner can mark as received.")
+
+    order.status = "Received"
     order.save()
-    return redirect('dashboard')
+    messages.info(request, "Order %s is marked as received." % order.uuid)
+    return redirect('orders')
 
 
 @login_required
