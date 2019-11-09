@@ -162,9 +162,46 @@ def mark_as_shipped(request, uuid):
     except Order.DoesNotExist:
         raise Http404
     order.date_shipped = timezone.now()
+
+    # Shipped. The package has been shipped (FedEx takes over)
+    order.status = "Shipped"
     order.save()
     return redirect('dashboard')
 
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def mark_as_shipped(request, uuid):
+    '''mark an order as shipped.
+    '''
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+    order.date_shipped = timezone.now()
+
+    # Shipped. The package has been shipped (FedEx takes over)
+    order.status = "Shipped"
+    order.save()
+    messages.info(request, "Order %s has been marked as Shipped, and is complete." % order.uuid)
+    return redirect('dashboard')
+
+
+@login_required
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def mark_as_rejected(request, uuid):
+    '''mark an order as rejected.
+    '''
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+
+    # Rejected. A request is received, and the lab will not fulfill it.
+    messages.info(request, "Order %s has been rejected." % order.uuid)
+    order.status = "Rejected"
+    order.save()
+    return redirect('dashboard')
 
 
 class ImportShippoView(View):
@@ -251,13 +288,12 @@ class ImportShippoView(View):
                      'commercial_invoice_url': None,
                      'bionode_notes': 'This is an artificially created label'}
 
-            # Generate the order
+            # Generate the order (set status to Awaiting Countersign so shows up in table)
             order = Order.objects.create(name=order_name,
                                          user=self.request.user,
                                          date_ordered=convert_time(shipment['object_created']),
                                          date_shipped=convert_time(shipment['shipment_date']),
-                                         ordered=True,
-                                         received=True,
+                                         status="Awaiting Countersign",
                                          label=label,
                                          transaction={'eta': None})
 
@@ -323,7 +359,6 @@ def create_label(request, uuid):
        is not generated) require them to push a button to generate it.
     '''
     try:
-        # An order cannot be already processed (received is True)
         order = Order.objects.get(uuid=uuid)
     except Order.DoesNotExist:
         raise Http404
@@ -335,8 +370,8 @@ def create_label(request, uuid):
                                             api_key=SHIPPO_TOKEN)
         order.add_label(label)
 
-        # Received flag indicates it was processed
-        order.received = True
+        # Shipping label generated, but not yet given to FedEx
+        order.status = "Waiting to Ship"
         order.date_ordered = timezone.now()
         order.save()
 

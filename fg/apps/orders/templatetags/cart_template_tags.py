@@ -17,7 +17,7 @@ register = template.Library()
 def cart_item_count(user):
     if user.is_authenticated:
         try:
-            cart = Order.objects.get(user=user, ordered=False)
+            cart = Order.objects.get(user=user, status="Cart")
         except Order.DoesNotExist:
             return 0
         return cart.distributions.count()

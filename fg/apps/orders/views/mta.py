@@ -26,6 +26,7 @@ from fg.settings import (
 def _upload_mta(request, uuid, 
                 template="orders/sign-mta.html",
                 redirect_checkout=True,
+                updated_status=None,
                 email_to=None):
 
     '''a general view to handle uploading the MTA form, is used for both the
@@ -36,6 +37,8 @@ def _upload_mta(request, uuid,
        uuid: the unique id of the order associated with the MTA
        template: the template to return
        redirect_checkout: redirect to checkout, otherwise to order details
+       updated_status: when the lab re-uploads the countersigned MTA,
+                       we change the status to "Generating Label"
        email_to: if defined, and SENDGRID_API_KEY too, send PDF attached 
                  to email to this contact.
     '''
@@ -53,6 +56,10 @@ def _upload_mta(request, uuid,
         if form.is_valid():
             mta = form.save()
             order.material_transfer_agreement = mta
+
+            # If a new status is requested, countersigned MTA letter has been uploaded
+            if updated_status is not None:
+                order.status = "Generating Label"
             order.save()
 
             # If a to email is provided, and the sendgrid api key present
@@ -84,7 +91,9 @@ def upload_mta(request, uuid):
        view to checkout in the case that an order is missing an MTA. The
        uuid corresponds to the UUID for the order
     '''
-    return _upload_mta(request, uuid)
+    # In this case, if a user re-uploads an MTA (and it needs to again be
+    # countersigned) we revert the status back to Awaiting Countersign
+    return _upload_mta(request, uuid, updated_status="Awaiting Countersign")
 
 
 @login_required
@@ -98,9 +107,12 @@ def admin_upload_mta(request, uuid):
     if request.user.is_staff or request.user.is_superuser:
 
         # Upload, and send email attachment (testing) back to lab
+        # This is when a countersigned MTA letter has been uploaded
+        # and we update the order status to reflect that
         return _upload_mta(request, uuid, 
                            template='orders/upload-mta.html',
                            redirect_checkout=False,
+                           updated_status="Generating label",
                            email_to=HELP_CONTACT_EMAIL)
 
     messages.warning(request, 'You are not allowed to perform this action.')

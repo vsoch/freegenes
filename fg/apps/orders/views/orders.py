@@ -93,7 +93,7 @@ def add_to_cart(request, uuid):
     distribution = get_object_or_404(Distribution, uuid=uuid)
     order = request.user.get_cart()
 
-    # A cart exists, meaning an order that has ordered=False
+    # A cart exists, meaning an order that has status = Cart
     if order:
 
         # We only need to check to alert the user.
@@ -105,8 +105,10 @@ def add_to_cart(request, uuid):
         return redirect('orders')
 
     else:
-        # We name the order based on the distribution added
-        order = Order.objects.create(user=request.user, name=distribution.name)
+        # We name the order based on the distribution added, must be cart
+        order = Order.objects.create(user=request.user,
+                                     status="Cart",
+                                     name=distribution.name)
         order.distributions.add(distribution)
         order.save()
         messages.info(request, "This item was added to your cart.")
@@ -127,8 +129,8 @@ def submit_order(request, uuid):
         return JsonResponse({"message": "The order does not exist.",
                              "code": "error"})
 
-    # Was the order already ordered?
-    if order.ordered:
+    # The order must be a cart (not already ordered)
+    if order.status != "Cart":
         return JsonResponse({"message": "The order has already been submit",
                              "code": "error"})
 
@@ -136,7 +138,9 @@ def submit_order(request, uuid):
         return JsonResponse({"message": "You are not allowed to perform this action",
                              "code": "error"})
 
-    order.ordered = True
+    # When the user submits, it's no longer a Cart, but Awaiting countersign
+    # We can only get here when the user has uploaded the MTA
+    order.status = 'Awaiting Countersign'
     order.save()   
     return JsonResponse({"message": "Your order has been submit.",
                          "code": "success"})
@@ -150,7 +154,7 @@ def orders_view(request):
     context = {}
     if request.user.is_authenticated:
         context['cart'] = request.user.get_cart()
-        context['orders'] = Order.objects.filter(user=request.user, ordered=True)
+        context['orders'] = Order.objects.filter(user=request.user).exclude(status="Cart")
     return render(request, 'orders/orders.html', context)
 
 
@@ -163,7 +167,7 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
 
         try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
+            order = Order.objects.get(user=self.request.user, status="Cart")
             
             # redirect the user to the view to upload their own MTA.
             if order.material_transfer_agreement is None:
@@ -180,6 +184,7 @@ class CheckoutView(View):
         except Order.DoesNotExist:
             messages.info(self.request, "You do not have an active order")
             return redirect('orders')
+
 
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
@@ -223,6 +228,8 @@ class CheckoutView(View):
                                                               country=data.get('shipping_country'),
                                                               email=data.get('lab_email', None))
  
+                # When the order is checked out, update status to awaiting countersign
+                order.status = "Awaiting Countersign"
                 order.lab_address = lab_address
                 order.shipping_address = shipping_address
                 order.save()

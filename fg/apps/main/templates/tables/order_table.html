@@ -5,17 +5,18 @@
                             <th>Status</th>
                             <th>Date Ordered</th>
                             <th>Date Shipped</th>
-                            <th>Signed MTA</th>
+                            <th>MTA</th>
                             <th>Notes</th>
                             <th>Distributions</th>
                         </tr>
                     </thead>
-                    <tbody>{% for order in orders %}{% if order.ordered or order.received %}
+                    <tbody>{% for order in orders %}{% if order.status != "Cart" %}
                         <tr>
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-                            <td>{% if order.received %}Complete{% else %}Processing{% endif %}</td>
+                            <td>{{ order.status }}<br>({{ order.summary_status }})</td>
                             <td>{{ order.date_ordered | date:'Y-m-d' }}</td>
-                            <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}{% if request.user.is_staff or request.user.is_superuser %}{% if order.received %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% endif %}{% endif %}</td>
+                            <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}
+{% if request.user.is_staff or request.user.is_superuser %}{% if order.status == "Waiting to Ship" %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% if order.status != "Rejected" %}<a href="{% url 'mark_as_rejected' order.uuid %}"><button class="btn btn-secondary btn-sm">Reject</button></a>{% endif %}{% endif %}{% endif %}</td>
                             <td>{% if order.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
                             <td>{{ order.notes }}</td>
                             <td>{% for dist in order.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>

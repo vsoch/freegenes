@@ -81,8 +81,7 @@ class User(AbstractUser):
            is only allowed one order with this status and their association.
         '''
         for order in self.order_set.all():
-            # if the order isn't ordered, it's the cart.
-            if not order.ordered:
+            if order.status == "Cart":
                 return order
 
     def get_cart_items(self):
