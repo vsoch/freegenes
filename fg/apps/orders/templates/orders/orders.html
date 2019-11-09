@@ -32,7 +32,7 @@
 <script>
 $(document).ready(function() {
   {% if cart %}$("#cart-table").DataTable();{% endif %}
-  {% if orders %}$("#order-table").DataTable();{% endif %}
+  {% if orders %}$("#order-table").DataTable({pageLength:50});{% endif %}
 });
 </script>
 {% endblock %}

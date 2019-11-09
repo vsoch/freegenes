@@ -74,6 +74,17 @@ class Order(models.Model):
        Scripts / automation to generate order labels, etc. for addresses
        could be derived from there.
     '''
+    # see https://github.com/vsoch/freegenes/issues/126#issue-520266580
+    # and a status of None indicates not submit (still a cart)
+    ORDER_STATUS = [
+        ('Cart', 'Cart'),
+        ('Rejected', 'Rejected'),  # add toggle to reject
+        ('Awaiting Countersign', 'Awaiting Countersign'),
+        ('Generating Label', 'Generating Label'),
+        ('Waiting to Ship', 'Waiting to Ship'),
+        ('Shipped', 'Shipped')
+    ]
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
@@ -82,9 +93,8 @@ class Order(models.Model):
     date_ordered = models.DateTimeField('date ordered', null=True, blank=True) 
     date_shipped = models.DateTimeField('date shipped', null=True, blank=True)
 
-    # Status of order, ordered and received
-    ordered = models.BooleanField(default=False)  # The user submit the order
-    received = models.BooleanField(default=False) # FreeGenes staff has processed it
+    # Status of order, default is Awaiting Countersign, as the user can only have one Cart
+    status = models.CharField(max_length=32, choices=ORDER_STATUS, blank=False, default='Awaiting Countersign')
 
     # Notes match to physical sticky notes in the lab
     notes = models.CharField(max_length=500)
@@ -111,6 +121,19 @@ class Order(models.Model):
     material_transfer_agreement = models.ForeignKey('main.MaterialTransferAgreement', 
                                                     on_delete=models.DO_NOTHING,
                                                     blank=True, null=True)
+
+    # Get status
+
+    @property
+    def summary_status(self):
+        '''the status here corresponds to Complete or Processing depending
+           on self.status, or Cart (which admins don't care to see)
+        '''
+        if self.status in ['Rejected', 'Shipped']:
+            return "Completed"
+        elif self.status == "Cart":
+            return "Cart"
+        return "Processing"
 
     # Save json functions
 
@@ -151,7 +174,7 @@ class Order(models.Model):
         '''
         if self.user is not None:
             message = 'User %s has a pending order, only one cart is allowed.' % self.user.username
-            if Order.objects.filter(ordered=False, user=self.user).count() >= 1:
+            if Order.objects.filter(status="Cart", user=self.user).count() >= 1:
                 raise ValidationError(message)
 
     class Meta:

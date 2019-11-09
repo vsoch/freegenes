@@ -42,7 +42,7 @@
           <td>Time Updated</td><td>{{ instance.time_updated }}</td>
         </tr>
         <tr>
-          <td>Status</td><td>{% if instance.ordered and instance.received %}Complete{% elif instance.ordered %}Processing{% else %}Cart{% endif %}</td>
+          <td>Status</td><td>{{ instance.status }} ({{ instance.summary_status }})</td>
         </tr>
         <tr>
           <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
