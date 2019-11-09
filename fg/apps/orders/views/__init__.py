@@ -18,5 +18,6 @@ from .shipping import (
     mark_as_rejected,
     mark_as_shipped,
     ImportShippoView,
-    ShippingView
+    ShippingView,
+    update_tracking
 )

@@ -95,7 +95,13 @@
     <div class="col-md-12">
       <h1 style="padding-bottom:20px; float:right">{% if request.user.is_superuser or request.user.is_staff %}Shipments{% else %}Your Orders{% endif %}</h1>
     </div>
+  </div>{% if request.user.is_superuser or request.user.is_staff %}
+  <div class="row">
+    <div class="col-md-12">
+      <a href="{% url 'update_tracking' %}"><button class="btn btn-primary">Update Tracking</button></a>
+    </div>
   </div>
+{% endif %}
   <div class="row">
     <div class="col-md-12">{% if orders.count > 0 %}
       <hr>

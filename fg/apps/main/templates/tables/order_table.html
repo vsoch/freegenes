@@ -3,6 +3,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Status</th>
+                            <th>Tracking</th>
                             <th>Date Ordered</th>
                             <th>Date Shipped</th>
                             <th>MTA</th>
@@ -14,6 +15,7 @@
                         <tr>
                             <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                             <td>{{ order.status }}<br>({{ order.summary_status }})</td>
+                            <td>{% if order.transaction.tracking_status %}{% if order.transaction.tracking_url_provider %}<a href="{{ order.transaction.tracking_url_provider }}" target="_blank">{{ order.transaction.tracking_status }}</a>{% endif %}{% endif %}</td>
                             <td>{{ order.date_ordered | date:'Y-m-d' }}</td>
                             <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}
 {% if request.user.is_staff or request.user.is_superuser %}{% if order.status == "Waiting to Ship" %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% if order.status != "Rejected" %}<a href="{% url 'mark_as_rejected' order.uuid %}"><button class="btn btn-secondary btn-sm">Reject</button></a>{% endif %}{% endif %}{% endif %}</td>

@@ -17,6 +17,7 @@ from django.http import (
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.utils import timezone
+from fg.apps.base.decorators import user_is_staff_superuser
 from fg.apps.orders.forms import (
     ShippingForm
 )
@@ -58,7 +59,8 @@ class ShippingView(View):
        for the MTA, along with ensuring that the order exists, period.
     '''
 
-    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
+    @login_required
+    @user_is_staff_superuser
     def get(self, *args, **kwargs):
         '''create a shipment for a given order
 
@@ -66,10 +68,6 @@ class ShippingView(View):
            ==========
            uuid: the unique ID for the order, must exist.
         '''
-        if not self.request.user.is_staff or not self.request.user.is_superuser:
-            messages.warning(self.request, "You don't have permission to see this view.")
-            return redirect('catalog_view')
-
         try:
             order = Order.objects.get(uuid=kwargs.get('uuid'))
         except Order.DoesNotExist:
@@ -97,7 +95,8 @@ class ShippingView(View):
         }
         return render(self.request, "shipping/create.html", context)
 
-    @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
+    @login_required
+    @user_is_staff_superuser
     def post(self, *args, **kwargs):
         '''Create the shipment from the order page.
 
@@ -153,6 +152,7 @@ class ShippingView(View):
 
 
 @login_required
+@user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def mark_as_shipped(request, uuid):
     '''mark an order as shipped.
@@ -170,6 +170,7 @@ def mark_as_shipped(request, uuid):
 
 
 @login_required
+@user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def mark_as_shipped(request, uuid):
     '''mark an order as shipped.
@@ -188,6 +189,7 @@ def mark_as_shipped(request, uuid):
 
 
 @login_required
+@user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def mark_as_rejected(request, uuid):
     '''mark an order as rejected.
@@ -204,21 +206,29 @@ def mark_as_rejected(request, uuid):
     return redirect('dashboard')
 
 
+@login_required
+@user_is_staff_superuser
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def update_tracking(request):
+    '''A view to request updating tracking for all orders.
+    '''
+    count_updated = update_shippo_transactions()
+    messages.info(request, "Tracking updated for %s orders." % count_updated)
+    return redirect('dashboard')
+
+
 class ImportShippoView(View):
     '''Import an order id from Shippo, but only if it's not in the system yet.
        Since we can't reliably look up a transaction (and then label) based 
        on a shipment, here we ask the user to provide the tracking and
        label url for us, and we populate artificial objects.
     '''
-
+    @login_required
+    @user_is_staff_superuser
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
     def get(self, *args, **kwargs):
         '''return base page with form to select an order to import
         '''
-        if not self.request.user.is_staff or not self.request.user.is_superuser:
-            messages.warning(self.request, "You don't have permission to see this view.")
-            return redirect('catalog_view')
-
         # Get all current shipments
         shipments = get_shippo_shipments()
 
@@ -249,7 +259,8 @@ class ImportShippoView(View):
 
         return render(self.request, "shipping/import_shippo.html", context)
 
-
+    @login_required
+    @user_is_staff_superuser
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
         '''Receive the post with the shipment id to import.
@@ -352,10 +363,11 @@ def create_transaction(request, uuid):
 
 
 @login_required
+@user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def create_label(request, uuid):
     '''The shipment takes a small delay to process the transaction, so we
-       first direct the user to the transaction page, and (given that the label
+       first direct the staff to the transaction page, and (given that the label
        is not generated) require them to push a button to generate it.
     '''
     try:
@@ -380,6 +392,25 @@ def create_label(request, uuid):
 
 
 # Helper Functions
+
+
+def update_shippo_transactions():
+    '''based on the current transactions in the database, update
+       them to get a more recent order status. We provide this function
+       via a view (button to update) or via a task run every 3 hours.
+       returns a count of the number of transactions that were updated.
+    '''
+    # Get all orders that have transactions with object_id
+    count = 0
+    orders = [order for order in Order.objects.all() if order.transaction.get('object_id')]
+    for order in orders:
+        object_id = order.transaction.get('object_id')
+        result = shippo.Transaction.retrieve(object_id=object_id, api_key=SHIPPO_TOKEN)
+        if result:
+            order.add_transaction(result)
+            count+=1
+    return count
+
 
 def get_shippo_shipments():
     '''use the Shippo API to retrieve all (paginated) shipments
