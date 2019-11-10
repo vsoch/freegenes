@@ -10,6 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from django.core.paginator import Paginator
 from django.shortcuts import render 
+from django.http import Http404
 from ratelimit.decorators import ratelimit
 
 from fg.apps.main.models import (
@@ -58,7 +59,7 @@ def platesets_catalog_view(request):
     return render(request, "catalogs/platesets.html", context=context)
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
-def distributions_catalog_view(request):
+def distributions_catalog_view(request):        
     context = {"distributions": Distribution.objects.all()}
     return render(request, "catalogs/distributions.html", context=context)
 
@@ -74,31 +75,53 @@ def tags_catalog_view(request, selection=None):
 
 ## Catalogs with Pagination (too large for table)
 
-def catalog_pagination(request, Model, label, number_pages=50):
+def catalog_pagination(request, queryset, label, number_pages=50, title=None):
     '''a shared function to provide generic pagination, and return a template.
  
        Parameters
        ==========
        request: the request object from the receiving view
-       Model: the Model class to use
+       queryset: the queryset to use (should be ordered)
        label: the label, e.g., "samples" expected under catalogs/<label>.html
               along with the variable to provide in the page.
        number_pages: how many pages to paginate (default is 50)
     '''
-    paginator = Paginator(Model.objects.all(), number_pages)
+    paginator = Paginator(queryset, number_pages)
     page = request.GET.get('page')
-    context = {label: paginator.get_page(page)}
+    context = {label: paginator.get_page(page), "title": title}
     template = "catalogs/%s.html" % label
     return render(request, template, context=context)
 
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def distribution_parts(request, uuid):
+    '''show the unique parts associated with a specific distribution.
+    '''
+    try:
+        distribution = Distribution.objects.get(uuid=uuid)
+    except Distribution.DoesNotExist:
+        raise Http404
+
+    # Get unique gene ids
+    gene_ids = distribution.gene_ids()
+    title = "%s Parts" % distribution.name
+
+    # then get parts
+    queryset = Part.objects.filter(gene_id__in=gene_ids).order_by('gene_id')
+    return catalog_pagination(request, queryset, "parts", title=title)
+
+
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def samples_catalog_view(request):
-    return catalog_pagination(request, Sample, "samples")
+    queryset = Sample.objects.all().order_by('-time_updated')
+    return catalog_pagination(request, queryset, "samples")
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def parts_catalog_view(request):
-    return catalog_pagination(request, Part, "parts")
+    queryset = Part.objects.all().order_by('-time_updated')
+    return catalog_pagination(request, queryset, "parts")
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def plates_catalog_view(request):
-    return catalog_pagination(request, Plate, "plates")
+    queryset = Plate.objects.all().order_by('-time_updated')
+    return catalog_pagination(request, queryset, "plates")

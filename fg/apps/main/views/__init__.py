@@ -32,6 +32,7 @@ from .catalog import (
     collections_catalog_view,
     containers_catalog_view,
     distributions_catalog_view,
+    distribution_parts,
     organisms_catalog_view,
     platesets_catalog_view,
     tags_catalog_view,

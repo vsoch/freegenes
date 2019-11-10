@@ -921,6 +921,28 @@ class Distribution(models.Model):
                     plates = list(chain(plates, [plateset.plates.first()]))
         return plates
 
+    def gene_ids(self):
+        '''return a list of unique part gene_ids for the distribution
+        '''
+        gene_ids = set()
+        for plateset in self.platesets.all():
+            # Each plate should be the same, so we look at the first
+            plate = plateset.plates.first()          
+            for well in plate.wells.all():
+                gene_ids.add(well.sample_wells.first().part.gene_id)
+        return gene_ids
+
+    def parts(self):
+        '''return unique list of part objects'''
+        return Part.objects.filter(gene_id__in=self.gene_ids())
+
+
+    def unique_parts(self):
+        '''return the count of unique parts (intended for the distribution 
+           catalog view or the function in views to count parts
+        '''
+        return len(self.gene_ids())
+
     def __str__(self):
         return "<Distribution:%s,%s>" %(self.name, self.platesets.count())
 

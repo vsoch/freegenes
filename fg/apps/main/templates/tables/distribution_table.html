@@ -2,6 +2,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Unique Parts</th>
                             <th>Description</th>
                             <th>PlateSets</th>
 {% if request.user.is_authenticated%}<th></th>{% endif %}
@@ -10,6 +11,7 @@
                     <tbody>{% for dist in distributions %}
                         <tr>
                             <td><a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a></td>
+                            <td>{% if dist.unique_parts > 0 %}<a href="{% url 'distribution_parts' dist.uuid %}">{{ dist.unique_parts }}</a>{% endif %}</td>
                             <td>{{ dist.description }}</td>
                             <td>{% for plateset in dist.platesets.all %}<a href="{{ plateset.get_absolute_url }}">{{ plateset.name }}</a>{% endfor %}</td>
                             {% if request.user.is_authenticated %}<td><a href="{% url 'add-to-cart' dist.uuid %}"><button class="btn btn-primary {% if dist in request.user.get_cart_items %}disabled{% endif %}">Add to Cart</button></a></td>{% endif %}

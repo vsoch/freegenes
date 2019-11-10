@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^e/author/(?P<uuid>.+)/?$', views.author_details, name='author_details'),
     url(r'^e/container/(?P<uuid>.+)/?$', views.container_details, name='container_details'),
     url(r'^e/collection/(?P<uuid>.+)/?$', views.collection_details, name='collection_details'),
+    url(r'^e/distribution/(?P<uuid>.+)/parts/?$', views.distribution_parts, name='distribution_parts'),
     url(r'^e/distribution/(?P<uuid>.+)/?$', views.distribution_details, name='distribution_details'),
     url(r'^e/institution/(?P<uuid>.+)/?$', views.institution_details, name='institution_details'),
     url(r'^e/module/(?P<uuid>.+)/?$', views.module_details, name='module_details'),

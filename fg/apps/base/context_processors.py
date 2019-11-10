@@ -20,15 +20,14 @@ def get_unique_parts():
        FreeGenes, which would be this query:
 
        Part.objects.values('gene_id').distinct().count()
+
+       The function distribution.parts() returns unique gene_ids associated
+       with the distribution (not part objects)
     '''
     parts = set()
     for distribution in Distribution.objects.all():
-        for plateset in distribution.platesets.all():
-            # Each plate should be the same, so we look at the first
-            plate = plateset.plates.first()          
-            for well in plate.wells.all():
-                parts.add(well.sample_wells.first().part.gene_id)
-    return parts         
+        parts.update(distribution.gene_ids())
+    return parts
 
 
 def domain_processor(request):
