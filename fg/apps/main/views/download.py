@@ -82,10 +82,12 @@ def generate_plate_csv(plates, filename, content_type='text/csv'):
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     # Columns headers for plate wells
-    columns = ['plate_name', 'plate_type', 
-               'well_address', 'part_name',
-               'part_gene_id', 'sample_evidence',
-               'part_sequence']
+    columns = ['plate_name', 'plate_type', 'plate_form',
+               'well_address', 'well_media', 'well_volume', 
+               'part_name', 'part_gene_id',
+               'sample_evidence', 'sample_status',
+               'part_full_sequence', 'part_sequence',
+               'part_description', 'part_author']
 
     writer = csv.writer(response)
     writer.writerow(columns)
@@ -97,13 +99,21 @@ def generate_plate_csv(plates, filename, content_type='text/csv'):
 
             # We get the part via the associated sample
             sample = well.sample_wells.first()
+            part_description = sample.part.description or "" # can be None
             writer.writerow([plate.name,
                              plate.plate_type,
+                             plate.plate_form,
                              well.address,
+                             well.media,
+                             well.volume,
                              sample.part.name,
                              sample.part.gene_id,
                              sample.evidence,
-                             sample.part.synthesized_sequence])
+                             sample.status,
+                             sample.part.full_sequence,
+                             sample.part.optimized_sequence,
+                             part_description.replace(',', ' '),
+                             sample.part.author.name])
 
     return response
 
@@ -144,6 +154,7 @@ def download_plateset_csv(request, uuid):
 
     except PlateSet.DoesNotExist:
         pass
+
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def download_distribution_csv(request, uuid):
