@@ -369,7 +369,7 @@ def import_plate_task(rows, fields, factory_order):
 
                    # Look for a sample already associated with plate from the factory order      
                     for plate_well in plate.wells.all():
-                        contenders = Sample.objects.filter(wells=plate_well and part=part)
+                        contenders = Sample.objects.filter(wells=plate_well).filter(part=part)
                         if contenders.count() > 0:
                             sample = contenders[0]
                             break
