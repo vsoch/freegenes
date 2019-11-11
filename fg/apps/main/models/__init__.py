@@ -254,7 +254,7 @@ class Part(models.Model):
     status = models.CharField(max_length=250, choices=PART_STATUS, default='null', blank=True, null=True)
     name = models.CharField(max_length=250, blank=False)
     description = models.CharField(max_length=500, blank=True, null=True)
-    gene_id = models.CharField(max_length=250)
+    gene_id = models.CharField(max_length=250, unique=True)
     part_type = models.CharField(max_length=250, choices=PART_TYPE)
 
     # Sequences - we would want 10K to 100K, can go up to 4 million (but not practical)
