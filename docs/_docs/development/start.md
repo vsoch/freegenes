@@ -107,6 +107,22 @@ This script will successfully work given that the data exported has not changed 
 format since it was developed. If you have any issues or there are known changes, please
 [open an issue]({{ site.repo }}/issues).
 
+## Initialize Root Containers
+
+If you don't have any data to import, you will need to initialize root containers
+which all other containers will exist in. By default, the two root containers are 
+"Lab" and "Trash", and these are configurable in the `config.py` settings file.
+
+To initialize the root containers, first shell into the uwsgi container:
+```bash
+$ docker exec -it freegenes_uwsgi_1 bash
+```
+
+Then, initialize the containers:
+```bash
+$ python manage initialize_containers
+```
+
 ## Enabling Monitoring
 
 Google offers monitoring options, but I like using [sentry.io](https://sentry.io).

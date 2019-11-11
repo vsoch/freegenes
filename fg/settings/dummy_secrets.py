@@ -7,8 +7,6 @@
 # e.g. https://djskgen.herokuapp.com/
 
 #SECRET_KEY = 'xxxxxxxxxxxxxxxxxx'
-#LAB_NAME = 'Lab'
-#TRASH_NAME = 'Trash'
 
 # =============================================================================
 # Social Authentication
