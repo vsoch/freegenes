@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(dest='username', nargs=1, type=str)
 
-    help = "Generates an admin for freegenes."
+    help = "Generates an admin"
     def handle(self, *args, **options):
         if options['username'] is None:
             raise CommandError("Please provide a username with --username")
@@ -41,4 +41,4 @@ class Command(BaseCommand):
             raise CommandError("This user is already staff")        
         else:
             user = User.objects.add_staff(user)
-            print("%s is now FreeGenes staff." %(user.username))
+            print("%s is now staff." %(user.username))

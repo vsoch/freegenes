@@ -19,12 +19,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    '''add a superuser to FreeGenes
+    '''add a superuser to a Bionet Server
     '''
     def add_arguments(self, parser):
         parser.add_argument(dest='username', nargs=1, type=str)
 
-    help = "Generates a superuser for FreeGenes."
+    help = "Generates a superuser"
     def handle(self, *args, **options):
         if options['username'] is None:
             raise CommandError("Please provide a username.")

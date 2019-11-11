@@ -52,7 +52,7 @@ function agreeTerms() {
                 $("#agree_button").hide();
                 $("#continue_button").attr("disabled",false)
                 $("#continue_button").show();
-                $("#message").text("Welcome to the FreeGenes Community!")
+                $("#message").text("Welcome to the {{ NODE_NAME }} Community!")
 
             } else {
                $("#message").text("There was a problem with your agreement. Please post an issue to get help.")

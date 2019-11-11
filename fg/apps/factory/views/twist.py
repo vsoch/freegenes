@@ -204,8 +204,8 @@ def import_parts_task(rows, factory_order):
 
 def import_plate_task(rows, fields, factory_order):
     '''Using the rows (plate map) import plates and wells (physicals) into 
-       FreeGenes. We always generate samples (a previously defined boolean
-       was removed).
+       the Bionet Server. We always generate samples (a previously defined 
+       boolean was removed).
 
        Parameters
        ==========

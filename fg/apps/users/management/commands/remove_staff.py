@@ -14,22 +14,23 @@ from django.core.management.base import (
 )
 
 from fg.apps.users.models import User
+from fg.settings import NODE_NAME
 
 import logging
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    '''remove staff will remove staff privileges for FreeGenes 
+    '''remove staff will remove staff privileges for a Bionet Server
     '''
     def add_arguments(self, parser):
         parser.add_argument(dest='username', nargs=1, type=str)
 
-    help = "Removes staff priviledges for FreeGenes."
+    help = "Removes staff priviledges for %s." % NODE_NAME
     def handle(self, *args, **options):
         if options['username'] is None:
             raise CommandError("Please provide a username with --username")
 
-        logger.debug("Username: %s" %options['username']) 
+        logger.debug("Username: %s" % options['username']) 
 
         try:
             user = User.objects.get(username=options['username'][0])

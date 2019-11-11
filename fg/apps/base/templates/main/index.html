@@ -9,7 +9,7 @@
     <header id="header" class="header">  
         <div class="container">   
             <h1 class="logo float-left">
-                <a href="{% url 'index' %}"><span class="logo-title">freeGenes</span></a>
+                <a href="{% url 'index' %}"><span class="logo-title">{{ NODE_NAME }}</span></a>
             </h1> 
             {% include "base/navigation.html" %}            
         </div>
@@ -18,7 +18,7 @@
     <section id="intro" class="intro section offset-header">
         <div class="container text-center">
             <form method="GET" action="{% url 'search' %}">
-                <h2 class="title">free<span class="highlight">Genes</span></h2>
+                <h2 class="title"><span class="highlight">{{ NODE_NAME }}</span></h2>
                 <p class="intro">What are you looking for?
                 <div class="searchbar">
                     <input class="search_input" type="text" name="q" placeholder="Search...">

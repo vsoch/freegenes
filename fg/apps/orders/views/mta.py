@@ -101,8 +101,8 @@ def upload_mta(request, uuid):
 def admin_upload_mta(request, uuid):
     '''the admin view to upload the MTA - the same variables and functionality,
        but a different template. For this view, if a SendGrid key is defined,
-       we also send the MTA to the FreeGenes admin (and in the future, when a user
-       email is available, to them).
+       we also send the MTA to the Bionet Server admin (and in the future, 
+       when a user email is available, to them).
     '''
     if request.user.is_staff or request.user.is_superuser:
 

@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    '''remove a superuser from FreeGenes
+    '''remove a superuser from a Bionet Server
     '''
     def add_arguments(self, parser):
         parser.add_argument(dest='username', nargs=1, type=str)
