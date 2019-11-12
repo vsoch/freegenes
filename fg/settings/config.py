@@ -106,3 +106,8 @@ PLUGINS_ENABLED = [
 # Map
 ## Default / public Mapbox token
 MAPBOX_ACCESS_TOKEN = None
+
+# Default container roots
+LAB_NAME = 'Lab'
+TRASH_NAME = 'Trash'
+
