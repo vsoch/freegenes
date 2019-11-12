@@ -7,7 +7,7 @@
                             <th>Date Ordered</th>
                             <th>Date Shipped</th>
                             <th>MTA</th>
-                            <th>Notes</th>
+                            <th>User/Institution</th>
                             <th>Distributions</th>
                         </tr>
                     </thead>
@@ -22,7 +22,7 @@
                             <td>{% if order.date_shipped %}{{ order.date_shipped | date:'Y-m-d' }}{% else %}
 {% if request.user.is_staff or request.user.is_superuser %}{% if order.status == "Waiting to Ship" %}<a href="{% url 'mark_as_shipped' order.uuid %}"><button class="btn btn-secondary btn-sm">Mark Shipped</button></a>{% endif %}{% if order.status != "Rejected" %}<a href="{% url 'mark_as_rejected' order.uuid %}"><button class="btn btn-secondary btn-sm">Reject</button></a>{% endif %}{% endif %}{% endif %}</td>
                             <td>{% if order.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
-                            <td>{{ order.notes }}</td>
+                            <td>{{ order.user.username }}{% if order.user.institution %}/{{ order.user.institution.name }}{% endif %}</td>
                             <td>{% for dist in order.distributions.all %}<a href="{{ dist.get_absolute_url }}">{{ dist.name }}</a>{% endfor %}</td>
                         </tr>{% endif %}{% endfor %}
                     </tbody>
