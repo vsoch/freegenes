@@ -21,7 +21,7 @@ import shippo
 import shutil
 import sys
 
-from fg.config import LAB_NAME,TRASH_NAME
+from fg.settings import LAB_NAME,TRASH_NAME
 
 class Command(BaseCommand):
     '''Builds initial containers'''
