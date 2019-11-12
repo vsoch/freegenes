@@ -79,7 +79,7 @@ def remove_from_cart(request, uuid):
         return redirect('orders')
 
     else:
-        messages.info(request, "You do not have an active order.")
+        messages.info(request, "You do not have an items in your cart.")
         return redirect("catalog_view")
 
 
