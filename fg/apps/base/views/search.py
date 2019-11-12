@@ -61,9 +61,11 @@ def parts_search_view(request, query=None):
     # True returns only available parts, False all parts
     available = request.GET.get('availableParts', False)
 
+    # Empty query returns all parts
     if query is not None:
         results = parts_query(query, available)
         context["results"] = results
+ 
     return render(request, 'search/parts_search.html', context)
 
 

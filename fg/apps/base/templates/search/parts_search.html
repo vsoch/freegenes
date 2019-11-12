@@ -44,7 +44,12 @@ $(document).ready( function() {
     $('#searchSubmit').click(function() {
         q = $('#q').val();
         available = $("#availableParts").prop("checked");
-        $('#results').html('&nbsp;').load('{% url "running_search" %}?q=' + q + "&availableParts=" + available);
+        console.log(q)
+        if (q == "") {
+            $("#results").html("<p class='alert alert-info'>Please enter a search query</p>")
+        } else {
+            $('#results').html('&nbsp;').load('{% url "running_search" %}?q=' + q + "&availableParts=" + available);
+        }
     });
 });
  
