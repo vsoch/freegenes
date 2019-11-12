@@ -14,5 +14,7 @@ from .main import (
 
 from .search import (
     run_search,
-    search_view
+    run_parts_search,
+    search_view,
+    parts_search_view
 )

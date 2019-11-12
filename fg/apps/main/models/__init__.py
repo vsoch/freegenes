@@ -298,6 +298,26 @@ class Part(models.Model):
     # Authors cannot be deleted if there is a part
     author = models.ForeignKey('Author', on_delete=models.PROTECT, blank=False)
 
+
+    def available(self):
+        '''returns True if a part is available via a distribution, False
+           otherwise. Useful to run before part.get_distribution.
+        '''
+        # returns unique parts in any distribution
+        from fg.apps.base.context_processors import get_unique_parts
+        return self.gene_id in get_unique_parts()
+
+
+    def get_distribution(self):
+        '''if a part is part of a distribution, return the distribution.
+           we assume each part only belongs to one distribution, and return
+           the first.
+        '''
+        for distribution in Distribution.objects.all():
+            if self.gene_id in distribution.gene_ids():
+                return distribution
+
+
     def get_absolute_url(self):
         return reverse('part_details', args=[self.uuid])
 

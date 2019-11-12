@@ -12,7 +12,15 @@ from django.conf.urls import url
 import fg.apps.base.views as views
 
 urlpatterns = [
-    url(r'^search$', views.search_view, name="search"),
-    url(r'^searching$', views.run_search, name="running_search"),
-    url(r'^search/(?P<query>.+?)$', views.search_view, name="search_query"),
+
+    # Non parts search is not primary search
+    url(r'^search/detailed/?$', views.search_view, name="detailed_search"),
+    url(r'^searching/detailed/?$', views.run_search, name="running_detailed_search"),
+    url(r'^search/detailed/(?P<query>.+?)/?$', views.search_view, name="detailed_search_query"),
+
+    # primary search provides parts
+    url(r'^search/?$', views.parts_search_view, name="search"),
+    url(r'^searching/?$', views.run_parts_search, name="running_search"),
+    url(r'^search/(?P<query>.+?)/?$', views.parts_search_view, name="search_query"),
+
 ]

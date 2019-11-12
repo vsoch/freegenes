@@ -40,6 +40,56 @@ from fg.settings import (
 
 from itertools import chain
 
+
+# Parts Search #################################################################
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def parts_search_view(request, query=None):
+    '''search only parts. We expose this to the user on the main pages (and
+       hide the other search interfaces for admin or similar) as the user is
+       primarily interested in parts. See 
+       https://github.com/vsoch/freegenes/issues/139
+    '''
+    context = {'submit_result': 'anything'}
+
+    # First go, see if the user added a query variable as a GET request
+    if query is None:
+        query = request.GET.get('q')
+ 
+    query_type = request.GET.get('type')
+
+    # True returns only available parts, False all parts
+    available = request.GET.get('availableParts', False)
+
+    if query is not None:
+        results = parts_query(query, available)
+        context["results"] = results
+    return render(request, 'search/parts_search.html', context)
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def run_parts_search(request):
+    '''The driver to show results for a parts search.
+    '''
+     
+    if request.method == 'POST':
+        q = request.POST.get('q')
+        availableBox = request.POST.get('availableParts', "false")
+    else:
+        q = request.GET.get('q')
+        availableBox = request.GET.get('availableParts', "false")
+
+    available = True
+    if availableBox == "false":
+        available = False
+    
+    if q is not None:    
+        results = parts_query(q, available)
+        context = {"results": results,
+                   "submit_result": "anything"}
+        return render(request, 'search/parts_result.html', context)
+
+
 # General Search ###############################################################
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
@@ -80,15 +130,21 @@ def run_search(request):
 
 # Search Function ##############################################################
 
-def parts_query(q):
+def parts_query(q, available=False):
     '''search only across parts - we provide this search endpoint on the parts
-       catalog page.
+       catalog page. If available is True, return only available parts.
     '''
-    return Part.objects.filter(
+    parts = Part.objects.filter(
                     Q(name__icontains=q) |
                     Q(description__icontains=q) |
                     Q(part_type__icontains=q) |
                     Q(gene_id__icontains=q)).distinct()
+
+    if available:
+        parts = [p for p in parts if p.available()]
+
+    return parts
+
 
 def distributions_query(q):
     '''specific search for distributions
