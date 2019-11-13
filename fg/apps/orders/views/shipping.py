@@ -18,14 +18,15 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.utils import timezone
 from fg.apps.base.decorators import user_is_staff_superuser
-from fg.apps.orders.forms import (
-    ShippingForm
-)
+from fg.apps.orders.forms import ShippingForm
+from fg.apps.orders.email import send_email
 
 from fg.apps.orders.models import Order
 from fg.apps.main.models import Distribution
 from ratelimit.decorators import ratelimit
 from fg.settings import (
+    DOMAIN_NAME,
+    NODE_NAME,
     NODE_INSTITUTION,
     HELP_CONTACT_EMAIL,
     HELP_CONTACT_PHONE,
@@ -155,7 +156,8 @@ class ShippingView(View):
 @login_required
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def mark_as_received(request, uuid):
-    '''mark an order as received
+    '''mark an order as received. Since the user clicks this, we send the 
+       notification to the lab email.
     '''
     try:
         order = Order.objects.get(uuid=uuid)
@@ -167,6 +169,13 @@ def mark_as_received(request, uuid):
 
     order.status = "Received"
     order.save()
+
+    # Send an email to bionet server admin to alert that order is received!
+    message = "Order %s for %s has been marked as received!" % (order.name, order.user.username)
+    message += "%s%s" % (DOMAIN_NAME, order.get_absolute_url())
+    subject = "[%s] Order Marked as Received" % NODE_NAME
+    send_email(HELP_CONTACT_EMAIL, message, subject)
+
     messages.info(request, "Order %s is marked as received." % order.uuid)
     return redirect('orders')
 
@@ -186,6 +195,14 @@ def mark_as_shipped(request, uuid):
     # Shipped. The package has been shipped (FedEx takes over)
     order.status = "Shipped"
     order.save()
+
+    # Send an email to the user that the order is shipped
+    if order.user.email:
+        message = "Your order %s has been shipped!" % (order.name, order.user.username)
+        message += " See %s%s for details." % (DOMAIN_NAME, order.get_absolute_url())
+        subject = "[%s] Order is Shipped!" % NODE_NAME
+        send_email(order.user.email, message, subject)
+
     messages.info(request, "Order %s has been marked as Shipped, and is complete." % order.uuid)
     return redirect('dashboard')
 
@@ -205,6 +222,14 @@ def mark_as_rejected(request, uuid):
     messages.info(request, "Order %s has been rejected." % order.uuid)
     order.status = "Rejected"
     order.save()
+
+    # Send an email to the user that the order is rejected
+    if order.user.email:
+        message = "We are unable to fulfill this order, please contact us if you have any questions."
+        message += " Previous order details are available at %s%s." % (DOMAIN_NAME, order.get_absolute_url())
+        subject = "[%s] An issue with your order" % NODE_NAME
+        send_email(order.user.email, message, subject)
+
     return redirect('dashboard')
 
 
