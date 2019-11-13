@@ -59,7 +59,7 @@ def _upload_mta(request, uuid,
 
             # If a new status is requested, countersigned MTA letter has been uploaded
             if updated_status is not None:
-                order.status = "Generating Label"
+                order.status = updated_status
             order.save()
 
             # If a to email is provided, and the sendgrid api key present

@@ -15,6 +15,7 @@ from django.http import (
     JsonResponse
 )
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 from django.views.generic import View
 from django.shortcuts import redirect
 from fg.apps.orders.forms import (
@@ -230,6 +231,7 @@ class CheckoutView(View):
  
                 # When the order is checked out, update status to awaiting countersign
                 order.status = "Awaiting Countersign"
+                order.date_ordered = timezone.now()
                 order.lab_address = lab_address
                 order.shipping_address = shipping_address
                 order.save()

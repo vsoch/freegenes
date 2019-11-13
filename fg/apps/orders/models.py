@@ -78,6 +78,7 @@ class Order(models.Model):
     # and a status of None indicates not submit (still a cart)
     ORDER_STATUS = [
         ('Cart', 'Cart'),
+        ('Awaiting Acceptance', 'Awaiting Acceptance'),
         ('Rejected', 'Rejected'),  # add toggle to reject
         ('Awaiting Countersign', 'Awaiting Countersign'),
         ('Generating Label', 'Generating Label'),

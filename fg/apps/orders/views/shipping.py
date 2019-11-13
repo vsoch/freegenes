@@ -386,7 +386,6 @@ def create_label(request, uuid):
 
         # Shipping label generated, but not yet given to FedEx
         order.status = "Waiting to Ship"
-        order.date_ordered = timezone.now()
         order.save()
 
     # A get is viewing a previous transaction, if it exists.
