@@ -27,6 +27,7 @@ from fg.settings import (
     DEFAULT_PLATE_LENGTH
 )
 from sortedm2m.fields import SortedManyToManyField
+from .queries import get_part_available_query
 from .schemas import MODULE_SCHEMAS
 from .validators import (
     validate_direction_string,
@@ -303,9 +304,12 @@ class Part(models.Model):
         '''returns True if a part is available via a distribution, False
            otherwise. Useful to run before part.get_distribution.
         '''
-        # returns unique parts in any distribution
-        from fg.apps.base.context_processors import get_unique_parts
-        return self.gene_id in get_unique_parts()
+        # if there is a result, the part is available
+        query = get_part_available_query(self.gene_id)
+        for p in Part.objects.raw(query):
+            if p is not None:
+                return True
+        return False
 
 
     def get_distribution(self):

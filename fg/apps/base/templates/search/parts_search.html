@@ -46,7 +46,7 @@ $(document).ready( function() {
         available = $("#availableParts").prop("checked");
         console.log(q)
         if (q == "") {
-            $("#results").html("<p class='alert alert-info'>Please enter a search query</p>")
+            $('#results').html('&nbsp;').load('{% url "running_search" %}?q=all&availableParts=' + available);
         } else {
             $('#results').html('&nbsp;').load('{% url "running_search" %}?q=' + q + "&availableParts=" + available);
         }

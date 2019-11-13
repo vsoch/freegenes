@@ -12,6 +12,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from ratelimit.decorators import ratelimit
 
+from fg.apps.main.models.queries import get_part_available_query
+from fg.apps.base.context_processors import get_unique_parts
 from fg.apps.orders.models import Order
 from fg.apps.main.models import (
     Author,
@@ -61,8 +63,7 @@ def parts_search_view(request, query=None):
     # True returns only available parts, False all parts
     available = request.GET.get('availableParts', False)
 
-    # TODO Empty query should return all parts, need to optimize Part.available()
-    # first. See https://github.com/vsoch/freegenes/issues/142
+    # Empty query should return all parts ("")
     if query is not None:
         results = parts_query(query, available)
         context["results"] = results
@@ -137,14 +138,28 @@ def parts_query(q, available=False):
     '''search only across parts - we provide this search endpoint on the parts
        catalog page. If available is True, return only available parts.
     '''
-    parts = Part.objects.filter(
-                    Q(name__icontains=q) |
-                    Q(description__icontains=q) |
-                    Q(part_type__icontains=q) |
-                    Q(gene_id__icontains=q)).distinct()
+    if q in ["all", ""]:
+        parts = Part.objects.all()
+    else:
+        parts = Part.objects.filter(
+                        Q(name__icontains=q) |
+                        Q(description__icontains=q) |
+                        Q(part_type__icontains=q) |
+                        Q(gene_id__icontains=q)).distinct()
+
+    # Generate list of available to annotate
+    gene_ids = list(get_unique_parts())
+    query = get_part_available_query(gene_ids)
+    available_uuids = [str(p.uuid) for p in Part.objects.raw(query)[:]]
 
     if available:
-        parts = [p for p in parts if p.available()]
+        parts = parts.filter(uuid__in=available_uuids)
+
+    # Need to annotate parts
+    for part in parts:
+        part.is_available = False
+        if str(part.uuid) in available_uuids:
+            part.is_available = True
 
     return parts
 
