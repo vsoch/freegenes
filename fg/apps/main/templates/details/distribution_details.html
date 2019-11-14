@@ -12,6 +12,8 @@
   <div class="row" style="margin-bottom:20px">
       <div class="col-md-12">{% if request.user.is_superuser or request.user.is_staff %}<a href="{% url 'admin:main_distribution_change' instance.uuid %}"><button class="btn btn-primary">Edit</button></a>{% endif %}
 <a href="{% url 'download_distribution_csv' instance.uuid %}" title="Download a csv with a single representative plate per plateset in the distribution."><button class="btn btn-primary">Plates (csv)</button></a>
+           <a href="{% url 'export_distribution_json' instance.uuid %}"><button class="btn btn-primary">Export (json)</button></a>
+ <i style="cursor:help" title="Export to json is a complete export of a model intended for import into another node." class="fa fa-info-circle"></i>
       </div>
   </div>
   <div class="row">

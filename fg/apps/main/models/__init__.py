@@ -938,6 +938,10 @@ class Distribution(models.Model):
         '''
         plates = []
         for plateset in self.platesets.all():
+
+            if plateset.plates.count() == 0:
+                continue
+
             if not only_first:
                 plates = list(chain(plates, plateset.plates.all()))
             else:
@@ -950,6 +954,10 @@ class Distribution(models.Model):
         '''
         gene_ids = set()
         for plateset in self.platesets.all():
+
+            if plateset.plates.count() == 0:
+                continue
+
             # Each plate should be the same, so we look at the first
             plate = plateset.plates.first()          
             for well in plate.wells.all():

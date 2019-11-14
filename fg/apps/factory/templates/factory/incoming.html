@@ -33,7 +33,7 @@
 		  {% endif %}
             </div>
             <div class="tab-pane fade" id="nav-actions" role="tabpanel" aria-labelledby="nav-actions-tab">
-	    <div class="row" style="padding-bottom:100px">
+	    <div class="row" style="padding-bottom:50px">
 	    <div class="col-md-4">
 	      <h2>Factory Orders</h2>
 	      <div class="list-group">
@@ -55,6 +55,19 @@
 	      </div>
 	    </div>
 	  </div>
+
+          <!-- Second Row-->
+	    <div class="row" style="padding-bottom:100px">
+	    <div class="col-md-4">
+	      <h2>{{ NODE_NAME }}</h2>
+	      <div class="list-group">
+		 <a class="list-group-item list-group-item-action" href="{% url 'import_factory_plate' %}">Import Plate (json)</a>
+	      </div>
+	    </div>
+	    <div class="col-md-4">
+	    </div>
+	    <div class="col-md-4">
+  	    </div>
             </div>
         </div>
     </div>

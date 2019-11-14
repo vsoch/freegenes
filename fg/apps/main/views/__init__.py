@@ -45,5 +45,8 @@ from .download import (
     download_mta,
     download_plate_csv,
     download_plateset_csv,
-    download_distribution_csv
+    download_distribution_csv,
+    export_plate_json,
+    export_distribution_json,
+    export_plateset_json
 )

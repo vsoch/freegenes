@@ -10,6 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from django import forms
 from fg.apps.factory.models import FactoryOrder
+from fg.apps.main.models import Container
 
 class UploadTwistPlatesForm(forms.Form):
     '''a form to upload a plate csv for twist
@@ -19,6 +20,14 @@ class UploadTwistPlatesForm(forms.Form):
     delimiter = forms.CharField(max_length=1,
                                 initial=",",
                                 label="Delimiter of file, defaults to ,")
+
+
+class UploadFactoryPlateJsonForm(forms.Form):
+    '''a form to upload a plate json export from another node. The user
+       must selected a container and json file.
+    '''
+    container = forms.ModelChoiceField(queryset=Container.objects.all())
+    json_file = forms.FileField(required=True, label="plate (json) export")
 
 
 class UploadTwistPartsForm(forms.Form):

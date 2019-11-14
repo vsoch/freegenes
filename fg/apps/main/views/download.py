@@ -29,6 +29,7 @@ from fg.settings import (
 )
 
 from datetime import datetime
+import json
 import os
 import csv
 
@@ -169,5 +170,168 @@ def download_distribution_csv(request, uuid):
 
         return generate_plate_csv(dist.get_plates(only_first=True), filename)
 
+    except Distribution.DoesNotExist:
+        pass
+
+
+# Json Export
+
+def generate_plate_json(plates, distribution=None, plateset=None):
+    '''An export is distinguished from a download in that it's intended to 
+       download all fields and associated models relevant to a Plate model,
+       with the main intention to import it into another Bionet Server node.
+       We export all fields (including uuid) so a plate in one node can be
+       linked to the "same plate" in another. We don't export container,
+       as that will vary by lab.
+
+       Parameters
+       ==========
+       plates: a list of plates to include (can be from a plateset, a single
+               plate, or a distribution)
+       distribution: if provided, add the distribution to each plate.
+       plateset: if provided, include with distribution (to add plate to)
+    '''
+    from fg.apps.api.urls.serializers import (
+        AuthorSerializer,
+        DistributionSerializer,
+        PlateSerializer, 
+        PlateSetSerializer,
+        SampleSerializer,
+        PartSerializer,
+        TagSerializer,
+        WellSerializer
+    )
+
+    # Export as one json dump, a list of plates
+    data = []
+ 
+    for plate in plates:
+
+        # We can get far with the plate serializer, and then update objects
+        entry = PlateSerializer(plate).data
+        wells = [] 
+
+        # We can optionally include distribution and plateset, or just plateset
+        dist = None
+        pset = None
+
+        # Flattening out, will be represented under plate
+        if plateset is not None:
+            pset = PlateSetSerializer(plateset).data
+            pset['plates'] = []
+
+        # Distribution cannot be import without plateset
+        if distribution is not None and plateset is not None:
+            dist = DistributionSerializer(distribution).data
+            dist['platesets'] = []
+
+        # Add each well to the csv
+        for well in plate.wells.all():
+
+            # We get the part via the associated sample
+            sample = well.sample_wells.first()
+            author_tags = [TagSerializer(t).data for t in sample.part.author.tags.all()]
+            author = AuthorSerializer(sample.part.author).data
+            author['tags'] = author_tags
+            tags = [TagSerializer(t).data for t in sample.part.tags.all()]
+            part = PartSerializer(sample.part).data
+            sample = SampleSerializer(sample).data
+            
+            # Remove reverse relationship of Sample.wells
+            del sample['wells']
+ 
+            # Derived_from, part, should have uuids
+            for field in ['derived_from', 'part']:
+                sample[field] = str(sample[field])
+
+            # Update part tags, author, add part to the sample, sample to well
+            part['tags'] = tags
+            part['author'] = author
+            part['collections'] = []
+            sample['part'] = part             
+            sample['derived_from'] = None # might not be included in export
+            well = WellSerializer(well).data
+            well['sample'] = sample
+            wells.append(well)
+
+        # Add the wells back to the plate, remove container and protocol
+        plate = PlateSerializer(plate).data
+        plate['wells'] = wells
+        plate['container'] = None
+        plate['protocol'] = None
+        plate['plateset'] = pset
+        plate['distribution'] = dist
+        data.append(plate)
+
+    return data
+
+def generate_plate_json_response(plates, filename, distribution=None, plateset=None, content_type='application/json'):
+    '''a wrapper to generate the response, in case we need to modify the data
+
+       Parameters
+       ==========
+       plates: a list of plates to include (can be from a plateset, a single
+               plate, or a distribution)
+       filename: the complete filename to download to
+       content_type: the content type (defaults to application/json)
+       distribution: if provided, add the distribution to each plate.
+       plateset: if provided, include with distribution (to add plate to)
+    '''
+    data = generate_plate_json(plates, distribution, plateset)
+    response = HttpResponse(json.dumps(data, indent=4), content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    return response
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def export_plate_json(request, uuid):
+    '''export json for a single plate'''
+    try:
+        plate = Plate.objects.get(uuid=uuid)
+
+        # Add the date, number of wells
+        filename = "freegenes-plate-%s-wells-%s.json" %(datetime.now().strftime('%Y-%m-%d'),
+                                                       plate.wells.count())
+        return generate_plate_json_response([plate], filename)
+    except Plate.DoesNotExist:
+        pass
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def export_plateset_json(request, uuid):
+    '''export json for a plateset (only the first)'''
+    try:
+
+        plateset = PlateSet.objects.get(uuid=uuid)
+        filename = "freegenes-plateset-%s-plates-%s.json" %(datetime.now().strftime('%Y-%m-%d'),
+                                                           plateset.plates.count())
+
+        if plateset.plates.count() > 0:
+            return generate_plate_json_response(plateset.plates.all(), plateset=plateset, filename=filename)
+
+        # No plates returns an empty csv
+        return generate_plate_json([], filename)
+
+    except PlateSet.DoesNotExist:
+        pass
+
+
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def export_distribution_json(request, uuid):
+    '''generate a json export for an entire distribution (include all plates)
+    '''
+    try:
+        dist = Distribution.objects.get(uuid=uuid)
+        filename = "freegenes-distribution-plates-%s-%s.json" %(dist.name.replace(' ', '-').lower(),
+                                                                datetime.now().strftime('%Y-%m-%d'))
+
+        data = []
+        for plateset in dist.platesets.all():
+            data += generate_plate_json(plateset.plates.all(), distribution=dist, plateset=plateset)
+
+        # Custom response with combined data
+        response = HttpResponse(json.dumps(data, indent=4), content_type="application/json")
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        return response
     except Distribution.DoesNotExist:
         pass

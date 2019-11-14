@@ -605,3 +605,22 @@ class TagViewSet(viewsets.ModelViewSet):
 
     serializer_class = TagSerializer
     permission_classes = (IsStaffOrSuperUser,)
+
+
+# Wells
+
+class WellSerializer(serializers.ModelSerializer):
+
+    label = serializers.SerializerMethodField('get_label')
+    organism = serializers.SerializerMethodField('get_organism')
+
+    def get_organism(self, instance):
+        return OrganismSerializer(instance.organism).data
+
+    def get_label(self, instance):
+        return instance.get_label()
+
+    class Meta:
+        model = Well
+        fields = ('uuid', 'address', 'volume', 'quantity', 'media', 
+                  'time_created', 'time_updated', 'organism', 'label')

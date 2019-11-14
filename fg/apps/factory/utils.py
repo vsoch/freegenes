@@ -8,9 +8,13 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from io import StringIO
-import csv
+from io import (
+    StringIO,
+    TextIOWrapper
+)
 
+import csv
+import json
 
 def read_csv(fileobj, delim):
     '''read the file object (a csv) into the file.
@@ -22,3 +26,12 @@ def read_csv(fileobj, delim):
         rows.append(row)
     fileobj.close()
     return rows
+
+
+def read_json(fileobj):
+    '''read the file object (a json)
+    '''
+    json_file = TextIOWrapper(fileobj)
+    content = json.loads(json_file.read())
+    fileobj.close()    
+    return content
