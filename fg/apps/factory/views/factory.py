@@ -295,19 +295,27 @@ def import_plates_task(data, container):
                 part.save()
 
                 # Generate the sample (we don't also import derived from)
-                try:
-                    sample = Sample.objects.get(uuid=sampleEntry['uuid'])
-                except Sample.DoesNotExist:
+                sample, created = generate_sample_entry(sampleEntry)
+                if created:
                     counts['samples'] +=1
-                    sample = Sample.objects.create(uuid=uuid.UUID(sampleEntry['uuid']),
-                                                   outside_collaborator=sampleEntry['outside_collaborator'],
-                                                   sample_type=sampleEntry['sample_type'],
-                                                   status=sampleEntry['status'],
-                                                   evidence=sampleEntry['evidence'],
-                                                   vendor=sampleEntry['vendor'],
-                                                   part=part,
-                                                   index_forward=sampleEntry['index_forward'],
-                                                   index_reverse=sampleEntry['index_reverse'])
+
+                # Add list of derive froms (oldest ancestor last)
+                derived_froms = sampleEntry['derived_from']
+                ancestors = []
+                while derived_froms:
+                    oldest = derived_froms.pop(-1) # use the same part
+                    olderSample, created = generate_sample_entry(oldest, part)
+                    if created:
+                        counts['samples'] +=1
+                    ancestors.append(olderSample)
+
+                oldest = ancestors.pop(-1)        
+                while len(ancestors) >= 1:
+                    second = ancestors.pop(-1)                    
+                    second.derived_from = oldest
+                    second = oldest
+
+                sample.derived_from = second
 
                 # Organism is associated with a well
                 try:
@@ -346,3 +354,23 @@ def import_plates_task(data, container):
                     dist.save()
 
     return "Imported %s" % json.dumps(counts)
+
+
+def generate_sample_entry(sampleEntry, part):
+    '''generate a sample from an entry
+    '''
+    created = False
+    try:
+        sample = Sample.objects.get(uuid=sampleEntry['uuid'])
+    except Sample.DoesNotExist:
+        created = True
+        sample = Sample.objects.create(uuid=uuid.UUID(sampleEntry['uuid']),
+                                   outside_collaborator=sampleEntry['outside_collaborator'],
+                                   sample_type=sampleEntry['sample_type'],
+                                   status=sampleEntry['status'],
+                                   evidence=sampleEntry['evidence'],
+                                   vendor=sampleEntry['vendor'],
+                                   part=part,
+                                   index_forward=sampleEntry['index_forward'],
+                                   index_reverse=sampleEntry['index_reverse'])
+    return sample, created

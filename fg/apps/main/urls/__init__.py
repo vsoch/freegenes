@@ -64,5 +64,6 @@ urlpatterns = [
     # Export (for future import)
     url(r'^export/plate/(?P<uuid>.+)/?$', views.export_plate_json, name='export_plate_json'),
     url(r'^export/plateset/(?P<uuid>.+)/?$', views.export_plateset_json, name='export_plateset_json'),
-    url(r'^export/distribution/(?P<uuid>.+)/?$', views.export_distribution_json, name='export_distribution_json'),
+    url(r'^export/distribution/(?P<uuid>.+)/?$', views.DistributionExportView.as_view(), name='export_distribution_json'),
+
 ]
