@@ -2,13 +2,9 @@
 {% include "style/search.html" %}
 
                         {% if results|length %}
-                        <table>
-                            <tr class="even">
-                                <td colspan="4" class="right">
-                                    <strong>Found {{ results|length }} results</strong>
-                                </td>
-                            </tr>
- 
+                        <p class="alert alert-info"><strong>Found {{ results|length }} results</strong></p>
+
+                        <table> 
                             {% for result in results %}
                             <tr class="{% cycle 'odd' 'even' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>

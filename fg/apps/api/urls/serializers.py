@@ -35,7 +35,10 @@ from fg.apps.main.models import (
 )
 
 from fg.apps.orders.models import Order
-from .permissions import IsStaffOrSuperUser
+from .permissions import (
+    IsStaffOrSuperUser,
+    AllowAnyGet
+)
 from rest_framework import (
     generics,
     mixins,
@@ -43,6 +46,7 @@ from rest_framework import (
     viewsets,
     status
 )
+
 from rest_framework.exceptions import (
     PermissionDenied,
     NotFound
@@ -132,7 +136,7 @@ class CollectionViewSet(viewsets.ModelViewSet):
         return Collection.objects.all()
 
     serializer_class = CollectionSerializer
-    permission_classes = (IsStaffOrSuperUser,)
+    permission_classes = (AllowAnyGet,)
 
 
 
@@ -156,7 +160,7 @@ class CompositePartSerializer(serializers.ModelSerializer):
 
 
 class CompositePartViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsStaffOrSuperUser,)
+    permission_classes = (AllowAnyGet,)
 
     def get_queryset(self):
         return CompositePart.objects.all()
@@ -393,7 +397,7 @@ class PartViewSet(viewsets.ModelViewSet):
         return Part.objects.all()
 
     serializer_class = PartSerializer
-    permission_classes = (IsStaffOrSuperUser,)
+    permission_classes = (AllowAnyGet,)
 
 
 # Plans
@@ -449,7 +453,7 @@ class PlateViewSet(viewsets.ModelViewSet):
         return Plate.objects.all()
 
     serializer_class = PlateSerializer
-    permission_classes = (IsStaffOrSuperUser,)
+    permission_classes = (AllowAnyGet,)
 
 
 
@@ -559,7 +563,7 @@ class SampleViewSet(viewsets.ModelViewSet):
         return Sample.objects.all()
 
     serializer_class = SampleSerializer
-    permission_classes = (IsStaffOrSuperUser,)
+    permission_classes = (AllowAnyGet,)
 
 
 # Schema

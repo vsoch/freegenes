@@ -33,3 +33,15 @@ Once you are logged in, you can access your API token from your User Profile,
 under the Settings tab.  You'll need to export this token as `FREEGENES_TOKEN` to use
 the client. See the [getting started](https://vsoch.github.io/freegenes-python/docs/getting-started/) 
 guide for more details.
+
+## Permissions
+
+All API views require authentication except for:
+
+ - Parts
+ - Composite Parts
+ - Plates
+ - Samples
+ - Collections
+
+Meaning that an unathenticated user can request the view GET.

@@ -80,18 +80,24 @@ class ShippingView(View):
         if not order.material_transfer_agreement:
             messages.warning(self.request, "This order needs an MTA before proceeding.")
             return redirect('order_details', uuid=str(order.uuid))
- 
-        # Populate fields with current order
-        address = order.shipping_address
-        shipping_to = "%s %s" %(address.recipient_title or '', address.recipient_name)
-        form = ShippingForm(initial={"shipping_to": shipping_to,
-                                     "shipping_address": address.address1,
-                                     "shipping_address2": address.address2,
-                                     "shipping_city": address.city,
-                                     "shipping_state": address.state,
-                                     "shipping_zip": address.postal_code,
-                                     "shipping_phone": address.phone,
-                                     "shipping_country": address.country})
+
+        # If no shipping address, the user needs to enter all
+        if order.shipping_address is None:
+            form = ShippingForm()
+
+        else: 
+
+            # Populate fields with current order
+            address = order.shipping_address
+            shipping_to = "%s %s" %(address.recipient_title or '', address.recipient_name)
+            form = ShippingForm(initial={"shipping_to": shipping_to,
+                                         "shipping_address": address.address1,
+                                         "shipping_address2": address.address2,
+                                         "shipping_city": address.city,
+                                         "shipping_state": address.state,
+                                         "shipping_zip": address.postal_code,
+                                         "shipping_phone": address.phone,
+                                         "shipping_country": address.country})
         context = {
             'form': form,
             'order': order

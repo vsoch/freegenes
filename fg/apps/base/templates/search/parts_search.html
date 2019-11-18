@@ -19,7 +19,8 @@
                    <label class="custom-control-label" for="availableParts">Available Parts</label>
                </div>
             <div style="margin-top:8px">
-                <a href="{% url 'detailed_search' %}">Search all {{ NODE_NAME }}</a>
+                <p class="alert alert-warning">Searching all parts will take a little while.
+                <a href="{% url 'detailed_search' %}">Search all {{ NODE_NAME }}</a></p>
             </div>
           </div>
         </div>
