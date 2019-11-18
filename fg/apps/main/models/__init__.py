@@ -321,7 +321,6 @@ class Part(models.Model):
             if self.gene_id in distribution.gene_ids():
                 return distribution
 
-
     def get_absolute_url(self):
         return reverse('part_details', args=[self.uuid])
 

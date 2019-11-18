@@ -41,6 +41,7 @@
 		<tr><td>Name</td><td>{{ instance.name }}</td></tr>
 		<tr><td>Description</td><td>{{ instance.description }}</td></tr>
 		<tr><td>Status</td><td>{{ instance.status }}</td></tr>
+		{% if instance.get_distribution %}{% with instance.get_distribution as dist %}<tr><td>Distribution</td><td>Get the Part via: <a href="{{ dist.get_absolute_url }}">{{ dist.name }}{% endwith %}</a></td></tr>{% endif %}
 		<tr><td>Gene ID</td><td>{{ instance.gene_id }}</td></tr>
 		<tr><td>Part Type</td><td>{{ instance.part_type }}</td></tr>
 	      <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
