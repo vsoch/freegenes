@@ -295,7 +295,7 @@ def import_plates_task(data, container):
                 part.save()
 
                 # Generate the sample (we don't also import derived from)
-                sample, created = generate_sample_entry(sampleEntry)
+                sample, created = generate_sample_entry(sampleEntry, part)
                 if created:
                     counts['samples'] +=1
 
