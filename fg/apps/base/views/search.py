@@ -141,8 +141,14 @@ def parts_query(q, available=False):
     if q in ["all", ""]:
         parts = Part.objects.all()
     else:
+
+        # If the user adds hashtag, remove
+        if q.startswith("#"):
+            q = q.replace("#", '', 1)
+
         parts = Part.objects.filter(
                         Q(name__icontains=q) |
+                        Q(tags__tag__icontains=q) |
                         Q(description__icontains=q) |
                         Q(part_type__icontains=q) |
                         Q(gene_id__icontains=q)).distinct()
@@ -186,13 +192,15 @@ def organisms_query(q):
     '''
     return Organism.objects.filter(
                     Q(name__icontains=q) |
+                    Q(tags__tag__icontains=q) |
                     Q(description__icontains=q)).distinct()
 
 
 def collections_query(q):
     '''specific search for collections
     '''
-    return Collection.objects.filter(Q(name__icontains=q)).distinct()
+    return Collection.objects.filter(Q(name__icontains=q) |
+                                     Q(tags__tag__icontains=q)).distinct()
 
 
 def institutions_query(q):
