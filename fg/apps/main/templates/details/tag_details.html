@@ -29,16 +29,20 @@
     <div class="col-md-12">
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">{% if instance.author_tags.count > 0 %}
-                <a class="nav-item nav-link tag-tab" id="nav-authors-tab" data-toggle="tab" href="#nav-authors" role="tab" aria-controls="nav-authors" aria-selected="true">Authors</a>{% endif %}
+                <a class="nav-item nav-link" id="nav-authors-tab" data-toggle="tab" href="#nav-authors" role="tab" aria-controls="nav-authors" aria-selected="true">Authors</a>{% endif %}
                 {% if instance.collection_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-collections-tab" data-toggle="tab" href="#nav-collections" role="tab" aria-controls="nav-collections" aria-selected="false">Collections</a>{% endif %}
                 {% if instance.organism_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-organisms-tab" data-toggle="tab" href="#nav-organisms" role="tab" aria-controls="nav-organisms" aria-selected="false">Organisms</a>{% endif %}
                 {% if instance.part_tags.count > 0 %}<a class="nav-item nav-link tag-tab" id="nav-parts-tab" data-toggle="tab" href="#nav-parts" role="tab" aria-controls="nav-parts" aria-selected="false">Parts</a>{% endif %}
             </div>
         </nav>
+        <div class="col-md-12">
+          <p style="margin-top:20px" class="alert alert-info">Select a Tab to view tag details</p>
+        </div>
         <div class="tab-content" id="nav-tabContent">{% if instance.author_tags.count > 0 %}
             <div class="tab-pane fade" id="nav-authors" role="tabpanel" aria-labelledby="nav-authors-tab">
                {% include "tables/author_table.html" with authors=instance.author_tags.all table_id="authors_table" %}
             </div>{% endif %}
+
             {% if instance.collection_tags.count > 0 %}<div class="tab-pane fade" id="nav-collections" role="tabpanel" aria-labelledby="nav-collections-tab">
                {% include "tables/collection_table.html" with collections=instance.collection_tags.all table_id="collections_table" %}
             </div>{% endif %}
@@ -62,8 +66,6 @@ $(document).ready(function() {
   {% if instance.collection_tags.count > 0 %}$('#collections_table').DataTable();{% endif %}
   {% if instance.organism_tags.count > 0 %}$('#organisms_table').DataTable();{% endif %}
   {% if instance.part_tags.count > 0 %}$('#parts_table').DataTable();{% endif %}
-  {% if selection %}$('#nav-{{ selection }}').addClass('show active').removeClass('fade'); {% else %}
-  {% if instance.total_count > 0 %}$('.tab-pane:first').addClass('show active');$('.tab-pane:first').removeClass('fade'); $('.tag-tab').addClass('active');{% endif %}{% endif %}
 });
 </script>
 {% endblock %}
