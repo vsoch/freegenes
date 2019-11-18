@@ -220,6 +220,24 @@ def mark_as_shipped(request, uuid):
 @login_required
 @user_is_staff_superuser
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
+def reset_shipment(request, uuid):
+    '''remove transactions and labels from an order
+    '''
+    try:
+        order = Order.objects.get(uuid=uuid)
+    except Order.DoesNotExist:
+        raise Http404
+
+    order.label = {}
+    order.transaction = {}
+    order.save()
+    messages.info(request, "Order %s has been reset." % order.uuid)
+    return redirect('order_details', uuid=str(order.uuid))
+
+
+@login_required
+@user_is_staff_superuser
+@ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def mark_as_rejected(request, uuid):
     '''mark an order as rejected.
     '''

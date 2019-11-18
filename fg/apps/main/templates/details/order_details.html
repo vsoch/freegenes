@@ -17,7 +17,7 @@
           <button class="btn btn-primary"><i class="fa fa-download" style="margin-right:5px"></i> Download MTA</button></a>
              <a href="{% url 'upload-mta' instance.uuid  %}">
           <button class="btn btn-primary"><i class="fa fa-upload" style="margin-right:5px"></i> Upload Signed MTA</button></a>
-          {% if instance.label %}<a href="{% url 'create_label' instance.uuid %}"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a>{% else %}<a href="{% url 'create_shipment' instance.uuid %}"><button class="btn btn-secondary"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Create Shipment</button></a>{% endif %}
+          {% if instance.label %}<a href="{% url 'create_label' instance.uuid %}"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a><a href="{% url 'reset_shipment' instance.uuid %}"><button class="btn btn-warning">Reset Shipment</button></a>{% else %}<a href="{% url 'create_shipment' instance.uuid %}"><button class="btn btn-secondary"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Create Shipment</button></a>{% endif %}
       </div>
   </div>{% elif request.user == instance.owner %}{% if instance.label %}<div class="row" style="margin-bottom:20px">
       <div class="col-md-12"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a>

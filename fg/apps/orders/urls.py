@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^shipment/mark-shipped/(?P<uuid>.+)$', views.mark_as_shipped, name='mark_as_shipped'),
     url(r'^shipment/mark-received/(?P<uuid>.+)$', views.mark_as_received, name='mark_as_received'),
     url(r'^shipment/reject/(?P<uuid>.+)$', views.mark_as_rejected, name='mark_as_rejected'),
+    url(r'^shipment/reset/(?P<uuid>.+)$', views.reset_shipment, name='reset_shipment'),
     url(r'^transaction/create/(?P<uuid>.+)$', views.create_transaction, name='create_transaction'),
     url(r'^transaction/tracking/update$', views.update_tracking, name='update_tracking'),
     url(r'^label/create/(?P<uuid>.+)$', views.create_label, name='create_label'),

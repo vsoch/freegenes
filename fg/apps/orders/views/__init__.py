@@ -20,5 +20,6 @@ from .shipping import (
     mark_as_received,
     ImportShippoView,
     ShippingView,
+    reset_shipment,
     update_tracking
 )
