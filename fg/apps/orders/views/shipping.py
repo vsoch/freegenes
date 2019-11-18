@@ -60,8 +60,6 @@ class ShippingView(View):
        for the MTA, along with ensuring that the order exists, period.
     '''
 
-    @login_required
-    @user_is_staff_superuser
     def get(self, *args, **kwargs):
         '''create a shipment for a given order
 
@@ -69,6 +67,10 @@ class ShippingView(View):
            ==========
            uuid: the unique ID for the order, must exist.
         '''
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
+            messages.warning(self.request, "You don't have permission to see this view.")
+            return redirect('dashboard')
+
         try:
             order = Order.objects.get(uuid=kwargs.get('uuid'))
         except Order.DoesNotExist:
@@ -96,8 +98,6 @@ class ShippingView(View):
         }
         return render(self.request, "shipping/create.html", context)
 
-    @login_required
-    @user_is_staff_superuser
     def post(self, *args, **kwargs):
         '''Create the shipment from the order page.
 
@@ -105,6 +105,10 @@ class ShippingView(View):
            ==========
            uuid: the unique identifier for the order, must exist
         '''
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
+            messages.warning(self.request, "You don't have permission to see this view.")
+            return redirect('dashboard')
+
         form = ShippingForm(self.request.POST or None)
         try:
             order = Order.objects.get(uuid=kwargs.get('uuid'))
@@ -250,12 +254,15 @@ class ImportShippoView(View):
        on a shipment, here we ask the user to provide the tracking and
        label url for us, and we populate artificial objects.
     '''
-    @login_required
-    @user_is_staff_superuser
+
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="GET")
     def get(self, *args, **kwargs):
         '''return base page with form to select an order to import
         '''
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
+            messages.warning(self.request, "You don't have permission to see this view.")
+            return redirect('dashboard')
+
         # Get all current shipments
         shipments = get_shippo_shipments()
 
@@ -286,12 +293,14 @@ class ImportShippoView(View):
 
         return render(self.request, "shipping/import_shippo.html", context)
 
-    @login_required
-    @user_is_staff_superuser
     @ratelimit(key='ip', rate=rl_rate, block=rl_block, method="POST")
     def post(self, *args, **kwargs):
         '''Receive the post with the shipment id to import.
         '''
+        if not self.request.user.is_staff or not self.request.user.is_superuser:
+            messages.warning(self.request, "You don't have permission to see this view.")
+            return redirect('dashboard')
+
         selected = self.request.POST.get('select_order')
         order_name = self.request.POST.get("order_name")
         order_label = self.request.POST.get("order_label")
