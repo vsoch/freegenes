@@ -22,6 +22,7 @@ from fg.apps.main.models import (
     Distribution,
     Plate,
     PlateSet,
+    Sample
 )
 
 from fg.settings import (
