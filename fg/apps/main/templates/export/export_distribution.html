@@ -1,0 +1,36 @@
+{% extends "base/page.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+.logo-title {
+  color: #074f66;
+}
+</style>
+
+<div class="container" style='padding-top:200px'>
+  {% include "messages/message.html" %}
+  {% include "style/spinner.html" %}
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom:20px">
+       <h1>Export Distribution Plates</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+       <p class="alert alert-info" id="response-messages" style="display:none"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <form action="{% url 'export_distribution_json' distribution.uuid %}" id="form" enctype="multipart/form-data" method="POST">
+	{% csrf_token %}
+        <select name="plate_ids" class="custom-select" multiple>{% for plateset in distribution.platesets.all %}{% for plate in plateset.plates.all %}<option value="plate_id{{ plate.uuid }}||{{ plateset.uuid }}">Plate: {{ plate.name }}: {{ plate.uuid }}</option>{% endfor %}{% endfor %}</select>
+	<button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block pagescripts %}
+{% endblock %}

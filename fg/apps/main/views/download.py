@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render 
 from django.http import Http404, HttpResponse
+from django.views.generic import View
 from ratelimit.decorators import ratelimit
 
 from fg.apps.orders.models import Order
@@ -240,16 +241,29 @@ def generate_plate_json(plates, distribution=None, plateset=None):
             # Remove reverse relationship of Sample.wells
             del sample['wells']
  
-            # Derived_from, part, should have uuids
-            for field in ['derived_from', 'part']:
-                sample[field] = str(sample[field])
+            # Create recursive loop of death to get list of all samples derived from
+            derived_from = sample['derived_from']
+            derived_froms = None
+            if derived_from is not None:
+                derived_froms = []
+                while derived_from is not None:
+                    next_sample = Sample.objects.get(uuid=derived_from)
+                    next_sample = SampleSerializer(next_sample).data
+                    next_sample['part'] = str(next_sample['part'])
+                    derived_from = next_sample['derived_from']
+                    next_sample['derived_from'] = None
+                    del next_sample['wells']
+                    derived_froms.append(next_sample)
+
+            # part, should have uuids
+            sample["part"] = str(sample["part"])
 
             # Update part tags, author, add part to the sample, sample to well
             part['tags'] = tags
             part['author'] = author
             part['collections'] = []
             sample['part'] = part             
-            sample['derived_from'] = None # might not be included in export
+            sample['derived_from'] = derived_froms
             well = WellSerializer(well).data
             well['sample'] = sample
             wells.append(well)
@@ -299,7 +313,7 @@ def export_plate_json(request, uuid):
 
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def export_plateset_json(request, uuid):
-    '''export json for a plateset (only the first)'''
+    '''export json for a plateset (all plates)'''
     try:
 
         plateset = PlateSet.objects.get(uuid=uuid)
@@ -316,22 +330,61 @@ def export_plateset_json(request, uuid):
         pass
 
 
+# Distribution export requires selection of plates
+
+
+class DistributionExportView(View):
+    '''select a particular number of plates to export from a distribution.
+    '''
+
+    def get(self, *args, **kwargs):
+        '''view to select original plates
+        '''
+        try:
+            dist = Distribution.objects.get(uuid=kwargs.get('uuid'))
+        except Distribution.DoesNotExist:
+            raise Http404
+            
+        context = {'distribution': dist}
+        return render(self.request, "export/export_distribution.html", context)
+
+    def post(self, *args, **kwargs):
+        '''Finish the export of the distribution, including some subset of plates
+        '''
+        try:
+            dist = Distribution.objects.get(uuid=kwargs.get('uuid'))
+
+            # We have to pair each plate with its plateset to import properly
+            # [[uuid,plateset],[uuid,plateset]...]
+            plate_ids = self.request.POST.getlist('plate_ids', [])
+            plate_ids = [x.replace('plate_id', '').split('||') for x in plate_ids]
+
+            # Retrieve corresponding plates
+            data = []
+            for plate_id_set in plate_ids:
+                plate_id, plateset_id = plate_id_set
+                plate = Plate.objects.get(uuid=plate_id)
+                plateset = PlateSet.objects.get(uuid=plateset_id)            
+                data += generate_plate_json([plate], dist, plateset)
+
+            filename = "freegenes-distribution-plates-%s-%s.json" %(dist.name.replace(' ', '-').lower(),
+                                                                    datetime.now().strftime('%Y-%m-%d'))
+
+            response = HttpResponse(json.dumps(data, indent=4), content_type="application/json")
+            response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+            return response
+
+        except Distribution.DoesNotExist:
+            message.error(self.request, 'That distribution does not exist.')
+            return redirect('dashboard')
+
+
 @ratelimit(key='ip', rate=rl_rate, block=rl_block)
 def export_distribution_json(request, uuid):
     '''generate a json export for an entire distribution (include all plates)
     '''
     try:
         dist = Distribution.objects.get(uuid=uuid)
-        filename = "freegenes-distribution-plates-%s-%s.json" %(dist.name.replace(' ', '-').lower(),
-                                                                datetime.now().strftime('%Y-%m-%d'))
 
-        data = []
-        for plateset in dist.platesets.all():
-            data += generate_plate_json(plateset.plates.all(), distribution=dist, plateset=plateset)
-
-        # Custom response with combined data
-        response = HttpResponse(json.dumps(data, indent=4), content_type="application/json")
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        return response
     except Distribution.DoesNotExist:
         pass
