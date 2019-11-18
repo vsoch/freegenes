@@ -1,6 +1,7 @@
 #globus-login {
-    color: #2e609b;
+    color: #2e609b !important;
     background: rgb(255, 255, 255) url('/static/img/social-buttons/globus.png') no-repeat scroll 13px 10px / 32px 24px padding-box border-box;
+    border: 1px solid #2e609b;
 }
 
 #globus-login:hover {

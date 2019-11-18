@@ -20,6 +20,8 @@
      {% if request.user.is_staff %}<a href="{% url 'admin:index' %}"><button class="btn btn-default btn-sm">Admin</button></a>{% endif %}
     {% else %}
 
+    <p class="alert alert-info">{{ NODE_NAME }} uses OAuth2 for authentication, meaning that you log in via another social account.</p>
+
     <!-- User isn't logged in yet! -->
     <div class="login-box">
 

@@ -396,8 +396,7 @@ class Command(BaseCommand):
                                                            barcode=entry['barcode'],
                                                            part_type=entry['part_type'],
                                                            name=entry['name'],
-                                                           translation=entry['translation'],
-                                                           status=entry['status'])
+                                                           translation=entry['translation'])
                 if entry['primer_for']:
                     part.primer_forward = entry['primer_for']
                 if entry['primer_rev']:

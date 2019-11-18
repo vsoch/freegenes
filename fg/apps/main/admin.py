@@ -59,7 +59,7 @@ class OrganismAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'time_updated', 'time_created')
 
 class PartAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', 'gene_id', 'part_type', 'description', 'time_updated', 'time_created')
+    list_display = ('name', 'gene_id', 'part_type', 'description', 'time_updated', 'time_created')
 
 class PlanAdmin(admin.ModelAdmin):
     list_display = ('name', 'status', 'description', 'parent', 'time_updated', 'time_created', )

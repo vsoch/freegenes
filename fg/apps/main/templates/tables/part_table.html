@@ -5,7 +5,6 @@
                             <th>Author</th>
                             <th>Part Type</th>
                             <th>Description</th>
-                            <th>Status</th>
                             <th>Gene ID</th>
                             <th>Tags</th>
                         </tr>
@@ -16,7 +15,6 @@
                             <td>{% if part.author %}<a href="{{ part.author.get_absolute_url }}">{{ part.author.name }}</a>{% endif %}</td>
                             <td>{% if part.part_type %}{{ part.part_type }}{% endif %}</td>
                             <td>{% if part.description %}{{ part.description }}{% endif %}</td>
-                            <td>{% if part.status %}{{ part.status }}{% endif %}</td>
                             <td>{{ part.gene_id }}</td>
                             <td>{% for tag in part.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
                         </tr>{% endfor %}
