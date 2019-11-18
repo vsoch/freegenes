@@ -42,13 +42,10 @@
           <td>Time Updated</td><td>{{ instance.time_updated }}</td>
         </tr>
         <tr>
-          <td>Status</td><td>{{ instance.status }} ({{ instance.summary_status }})</td>
-        </tr>
-        <tr>
           <td>Material Transfer Agreement</td><td>{% if instance.material_transfer_agreement %}Yes{% else %}No{% endif %}</td>
         </tr>
         {% if instance.label %}{% else %}{% if request.user.is_superuser or request.user.is_staf %}{% else %}<tr>
-          <td>Checkout</td><td><a href="{% url 'checkout' %}"><button style="margin:0px" class="btn btn-sm btn-warning">Checkout</button></a></td>
+          <td>{% if instance.status == "Cart" %}Checkout{% else %}Status{% endif %}</td><td>{% if instance.status == "Cart" %}<a href="{% url 'checkout' %}"><button style="margin:0px" class="btn btn-sm btn-warning">Checkout</button></a>{% else %}{{ instance.status }} ({{ instance.summary_status }}){% endif %}</td>
         </tr>{% endif %}{% endif %}
         <tr>
           <td>Notes</td><td>{{ instance.notes }}</td>
@@ -66,9 +63,4 @@
 <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('#{{ instance.get_label }}-table').DataTable();
-});
-</script>
 {% endblock %}
