@@ -1,5 +1,6 @@
 # FreeGenes Django
 
+[![DOI](https://zenodo.org/badge/199703713.svg)](https://zenodo.org/badge/latestdoi/199703713)
 [![Docker Repository on Quay](https://quay.io/repository/vsoch/freegenes/status "Docker Repository on Quay")](https://quay.io/repository/vsoch/freegenes)
 
  - [Documentation](https://vsoch.github.io/freegenes/)
