@@ -33,6 +33,9 @@
           <td>Description</td><td>{{ instance.description }}</td>
         </tr>
         <tr>
+          <td>Terms</td><td>{{ instance.terms }}</td>
+        </tr>
+        <tr>
           <td>PlateSets</td><td>{% for plateset in instance.platesets.all %}<a href="{{ plateset.get_absolute_url }}">{{ plateset.name }} </a>{% endfor %}</td>
         </tr>
         <tr>

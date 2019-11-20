@@ -916,12 +916,18 @@ class PlateSet(models.Model):
 class Distribution(models.Model):
     '''One or more platesets (an additional level of abstraction)
     '''
+    TERMS_OPTIONS = [
+        ('OpenMTA', 'OpenMTA'),
+        ('UBMTA', 'UBMTA'),
+    ]
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.CharField(max_length=500)
     name = models.CharField(max_length=250, blank=False)
 
     time_created = models.DateTimeField('date created', auto_now_add=True) 
     time_updated = models.DateTimeField('date modified', auto_now=True)
+    terms = models.CharField(max_length=32, choices=TERMS_OPTIONS, default="OpenMTA")
 
     platesets = models.ManyToManyField('main.PlateSet', blank=False,
                                        related_name="distribution_plateset",
