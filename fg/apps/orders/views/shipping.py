@@ -363,7 +363,6 @@ class ImportShippoView(View):
             order = Order.objects.create(name=order_name,
                                          user=self.request.user,
                                          date_ordered=convert_time(shipment['object_created']),
-                                         date_shipped=convert_time(shipment['shipment_date']),
                                          status="Awaiting Countersign",
                                          label=label,
                                          transaction={'eta': None})

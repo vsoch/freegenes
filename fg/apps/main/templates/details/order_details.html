@@ -17,7 +17,7 @@
           <button class="btn btn-primary"><i class="fa fa-download" style="margin-right:5px"></i> Download MTA</button></a>
              <a href="{% url 'upload-mta' instance.uuid  %}">
           <button class="btn btn-primary"><i class="fa fa-upload" style="margin-right:5px"></i> Upload Signed MTA</button></a>
-          {% if instance.label %}<a href="{% url 'create_label' instance.uuid %}"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a><a href="{% url 'reset_shipment' instance.uuid %}"><button class="btn btn-warning">Reset Shipment</button></a>{% else %}<a href="{% url 'create_shipment' instance.uuid %}"><button class="btn btn-secondary"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Create Shipment</button></a>{% endif %}
+          {% if instance.label %}<a href="{% url 'create_label' instance.uuid %}"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a><a onclick="verifyReset()"><button class="btn btn-warning">Reset Shipment</button></a>{% else %}<a href="{% url 'create_shipment' instance.uuid %}"><button class="btn btn-secondary"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Create Shipment</button></a>{% endif %}
       </div>
   </div>{% elif request.user == instance.owner %}{% if instance.label %}<div class="row" style="margin-bottom:20px">
       <div class="col-md-12"><button class="btn btn-warning"><i class="fas fa-shipping-fast" style="margin-right:10px"></i> Track Shipment</button></a>
@@ -63,4 +63,11 @@
 <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+function verifyReset() {
+  if (confirm("Are you sure you want to reset this shipment? This action cannot be undone.")) {
+    document.location = "{% url 'reset_shipment' instance.uuid %}"
+  }
+}
+</script>
 {% endblock %}

@@ -3,24 +3,20 @@
 
                         {% if results|length %}
                         <p class="alert alert-info"><strong>Found {{ results|length }} results</strong></p>
-
                         <table> 
+
+                            <tr class="odd">
+                                <th></th>
+                                <th>Name</th>
+                                <th>Tags</th>
+                            </tr>
                             {% for result in results %}
                             <tr class="{% cycle 'odd' 'even' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>
-                                <td><a href="{{ result.get_absolute_url }}">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a><br/>
-                                    {% if result.description %}<span class="hint">Description: {{ result.description | truncatechars:100 }}</span>{% endif %}
-                                    {% if result.notes %}<span class="hint">Notes: {{ result.notes | truncatechars:100 }}</span>{% endif %}
-                                </td>
-                                <td>
-                                  <a href="#">
-                                </td>
-                                <td class="right">
-                                    <span class="hint">
-                                    Modified Date {{ result.time_updated }} <br/>
-                                    </span>
-                                </td>
+                                <td><a href="{{ result.get_absolute_url }}">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a></td>
+                                <td>{% for tag in result.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
                             </tr>
+                            {% if result.description %}<tr class="{% cycle 'odd' 'even' %}"><td colspan="3">{{ result.description | truncatechars:100 }}</td></tr>{% endif %}
                             {% endfor %}
                             </table>
                           {% else %}

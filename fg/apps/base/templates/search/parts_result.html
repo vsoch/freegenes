@@ -16,13 +16,12 @@
                             <tr class="{% cycle 'even' 'odd' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>
                                 <td><a href="{{ result.get_absolute_url }}">{% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a>
-                                    {% if result.notes %}<span class="hint">Notes: {{ result.notes | truncatechars:100 }}</span>{% endif %}
                                 </td>
                                 <td>{{ result.part_type }}</td>
-                                <td>{% for tag in result.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}
-                              {% if result.description %}<br/><span class="hint">Description: {{ result.description | truncatechars:100 }}</span>{% endif %}</td>
+                                <td>{% for tag in result.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
                                 <td>{% if result.is_available %}<a href="{{ result.get_distribution.get_absolute_url }}">Get this part</a>{% endif %}</td>
                             </tr>
+                            {% if result.description %}<tr class="{% cycle 'odd' 'even' %}"><td colspan="6">{{ result.description | truncatechars:100 }}</td></tr>{% endif %}
                             {% endfor %}
                             </table>
                           {% else %}
