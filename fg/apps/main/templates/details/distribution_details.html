@@ -33,7 +33,7 @@
           <td>Description</td><td>{{ instance.description }}</td>
         </tr>
         <tr>
-          <td>Terms</td><td>{{ instance.terms }}</td>
+          <td>Terms</td><td>{% if instance.terms %}{{ instance.terms }}{% else %}OpenMTA{% endif %}</td>
         </tr>
         <tr>
           <td>PlateSets</td><td>{% for plateset in instance.platesets.all %}<a href="{{ plateset.get_absolute_url }}">{{ plateset.name }} </a>{% endfor %}</td>
