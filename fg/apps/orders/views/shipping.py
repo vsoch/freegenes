@@ -311,10 +311,13 @@ class ImportShippoView(View):
         results = OrderedDict(sorted(results.items(), 
                               key = lambda x: getitem(x[1], 'created'), reverse=True))
 
+        # only consider Awaiting Countersign and Generating Label
+        statuses = ['Awaiting Countersign', 'Generating Label']
+
         # Add distributions
         context = {'shipments': results,
                    'distributions': Distribution.objects.all(),
-                   'orders': Order.objects.all()}
+                   'orders': Order.objects.filter(status__in=statuses)}
 
         return render(self.request, "shipping/import_shippo.html", context)
 
