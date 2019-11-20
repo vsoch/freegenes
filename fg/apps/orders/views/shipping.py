@@ -369,7 +369,7 @@ class ImportShippoView(View):
             # Update the order
             order.user = self.request.user
             order.date_ordered = convert_time(shipment['object_created'])
-            order.status = "Generating Label"
+            order.status = "Waiting to Ship"
             order.label = label
             order.transaction = {"eta": None}
 
