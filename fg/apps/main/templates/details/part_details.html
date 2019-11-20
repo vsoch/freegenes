@@ -12,7 +12,7 @@
   {% include "messages/message.html" %}
   <div class="row">
     <div class="col-md-12" style="padding-bottom:20px">
-      <h1>{{ instance.get_label | title }}: {{ instance.name }}</h1>
+      <h1>{{ instance.name }}</h1>
       <h4>
     </div>
   </div>{% if request.user.is_superuser or request.user.is_staff %}
@@ -26,12 +26,14 @@
         <nav>
             <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
-                {% if instance.sample_set.count > 0 %}<a class="nav-item nav-link" id="nav-samples-tab" data-toggle="tab" href="#nav-samples" role="tab" aria-controls="nav-samples" aria-selected="false">Samples</a>{% endif %}
+                {% if instance.sample_set.count > 0 %}{% if request.user.is_superuser or request.user.is_staff %}<a class="nav-item nav-link" id="nav-samples-tab" data-toggle="tab" href="#nav-samples" role="tab" aria-controls="nav-samples" aria-selected="false">Samples</a>{% endif %}{% endif %}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-details" role="tabpanel" aria-labelledby="nav-details-tab">
-	    <table class="table table-bordered" id="details-table" width="100%" cellspacing="0"><thead>
+	    <table class="table table-bordered" id="details-table" 
+                   style="word-wrap:break-word;table-layout: fixed;"
+                   width="100%" cellspacing="0"><thead>
 	      <tr>
 	       <th>Key</th>
 	       <th>Value</th>
@@ -49,9 +51,9 @@
 	    </tbody>
 	   </table>
             </div>
-            {% if instance.sample_set.count > 0 %}<div class="tab-pane fade" id="nav-samples" role="tabpanel" aria-labelledby="nav-samples-tab">
+            {% if instance.sample_set.count > 0 %}{% if request.user.is_superuser or request.user.is_staff %}<div class="tab-pane fade" id="nav-samples" role="tabpanel" aria-labelledby="nav-samples-tab">
                {% include "tables/sample_table.html" with samples=instance.sample_set.all table_id="samples_table" %}
-            </div>{% endif %}
+            </div>{% endif %}{% endif %}
         </div>
     </div>
 </div>

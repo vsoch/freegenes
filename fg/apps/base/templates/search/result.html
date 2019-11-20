@@ -9,14 +9,17 @@
                                 <th></th>
                                 <th>Name</th>
                                 <th>Tags</th>
+                                <th>Biosafety Level</th>
                             </tr>
                             {% for result in results %}
                             <tr class="{% cycle 'odd' 'even' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>
-                                <td><a href="{{ result.get_absolute_url }}">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a></td>
+                                <td><a href="{{ result.get_absolute_url }}">{{ result.get_label | title }}: {% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a>
+                            {% if result.description %}<br>{{ result.description | truncatechars:100 }}{% endif %}
+</td>
                                 <td>{% for tag in result.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
+                                <td>BSL1</td>
                             </tr>
-                            {% if result.description %}<tr class="{% cycle 'odd' 'even' %}"><td colspan="3">{{ result.description | truncatechars:100 }}</td></tr>{% endif %}
                             {% endfor %}
                             </table>
                           {% else %}

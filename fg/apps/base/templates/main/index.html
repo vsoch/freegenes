@@ -9,7 +9,7 @@
     <header id="header" class="header">  
         <div class="container">   
             <h1 class="logo float-left">
-                <a href="{% url 'index' %}"><span class="logo-title">{{ NODE_NAME }}</span></a>
+                <a href="{% url 'index' %}"><span class="logo-title">{% if NODE_NAME == "Bionet Server" %}Demo {% else %}{{ NODE_NAME }}{% endif %} Bionet Server</span></a>
             </h1> 
             {% include "base/navigation.html" %}            
         </div>
@@ -18,10 +18,10 @@
     <section id="intro" class="intro section offset-header">
         <div class="container text-center">
             <form method="GET" action="{% url 'search' %}">
-                <h2 class="title"><span class="highlight">{{ NODE_NAME }}</span></h2>
+                <h2 class="title"></h2>
                 <p class="intro">What are you looking for?
                 <div class="searchbar">
-                    <input class="search_input" type="text" name="q" placeholder="Search Parts. Leave blank to search all items.">
+                    <input class="search_input" type="text" name="q" placeholder="Search Items. Leave blank to search all items.">
                     <a href="#" type="submit"></a>
                 </div></p>
                <div class="custom-control custom-checkbox">
@@ -43,15 +43,15 @@
  
     <section id="about" class="about section">
         <div class="container">
-            <h2 class="title text-center">What is {{ NODE_NAME }}?</h2>
+            <h2 class="title text-center">What is a Bionet Server?</h2>
             <div class="row">
                 <div class="item col-lg-4 col-md-6 col-12">
                     <div class="icon-holder">
                         <i class="fas fa-heart"></i>
                     </div>
                     <div class="content">
-                        <h3 class="sub-title">Collaborative</h3>
-                        <p>Tell us what useful DNA sequences should be developed for an open biotechnology commons.</p>
+                        <h3 class="sub-title">Organize</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                     </div>
                 </div>
                 <div class="item col-lg-4 col-md-6 col-12">
@@ -59,8 +59,8 @@
                         <i class="fa fa-code"></i>
                     </div>
                     <div class="content">
-                        <h3 class="sub-title">Open Source</h3>
-                        <p>We will learn and discover faster by sharing our resources. Tell us what you need, and we'll make it available to you!</p>
+                        <h3 class="sub-title">Share</h3>
+                        <p> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                     </div>
                 </div>
                 <div class="item col-lg-4 col-md-6 col-12">
@@ -68,13 +68,12 @@
                         <i class="fas fa-crosshairs"></i>
                     </div>
                     <div class="content">
-                        <h3 class="sub-title">Governance</h3>
-                        <p>Materials are made available under the <a href="https://biobricks.org/openmta/">OpenMTA</a> so everyone can develop applications that benefit all people and the planet.</p>
+                        <h3 class="sub-title">Create</h3>
+                        <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
                     </div>
                 </div>
                 <div class="clearfix visible-md"></div>
-                <p class="text-center learn-more"><a class="btn btn-fg-primary" href="{% url 'about' %}">Learn More</a>
-                  <a class="btn btn-fg-primary" href="{% url 'catalog_view' %}">Browse {{ NODE_NAME }}</a></p>
+                <p class="text-center learn-more"><a class="btn btn-fg-primary" href="{% url 'about' %}">Learn More</a></p>
             </div> 
 
         </div>

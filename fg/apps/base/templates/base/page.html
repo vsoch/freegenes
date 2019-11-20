@@ -17,7 +17,7 @@
   <div class="container">
     <a class="navbar-brand" href="{% url 'dashboard' %}">
         <h1 class="logo float-left">
-            <span class="logo-title">{{ NODE_NAME }}</span>
+            <span class="logo-title">{% if NODE_NAME == "Bionet Server" %}Demo {% else %}{{ NODE_NAME }}{% endif %} Bionet Server</span>
         </h1></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
