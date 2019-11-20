@@ -313,7 +313,8 @@ class ImportShippoView(View):
 
         # Add distributions
         context = {'shipments': results,
-                   'distributions': Distribution.objects.all()}
+                   'distributions': Distribution.objects.all(),
+                   'orders': Order.objects.all()}
 
         return render(self.request, "shipping/import_shippo.html", context)
 
@@ -326,10 +327,16 @@ class ImportShippoView(View):
             return redirect('dashboard')
 
         selected = self.request.POST.get('select_order')
-        order_name = self.request.POST.get("order_name")
         order_label = self.request.POST.get("order_label")
+        order_uuid = self.request.POST.get("order_id")
         order_tracking = self.request.POST.get("order_tracking")
         dist_ids = self.request.POST.get("dist_ids")
+
+        try:
+            order = Order.objects.get(uuid=order_uuid)
+        except Order.DoesNotExist:
+            messages.info(self.request, "%s does not exist." % order_id)
+            return render(self.request, "shipping/import_shippo.html", context)
 
         # Single selection will just return one
         if not isinstance(dist_ids, list):
@@ -337,7 +344,7 @@ class ImportShippoView(View):
 
         distributions = Distribution.objects.filter(uuid__in=dist_ids)
 
-        if selected and order_name and order_label and order_tracking:
+        if selected and order_label and order_tracking:
             shipment = shippo.Shipment.retrieve(object_id=selected, api_key=SHIPPO_TOKEN)
 
             # Confirm that both links work
@@ -359,13 +366,12 @@ class ImportShippoView(View):
                      'commercial_invoice_url': None,
                      'bionode_notes': 'This is an artificially created label'}
 
-            # Generate the order (set status to Awaiting Countersign so shows up in table)
-            order = Order.objects.create(name=order_name,
-                                         user=self.request.user,
-                                         date_ordered=convert_time(shipment['object_created']),
-                                         status="Awaiting Countersign",
-                                         label=label,
-                                         transaction={'eta': None})
+            # Update the order
+            order.user = self.request.user
+            order.date_ordered = convert_time(shipment['object_created'])
+            order.status = "Generating Label"
+            order.label = label
+            order.transaction = {"eta": None}
 
             # Add distributions
             for dist in distributions:
