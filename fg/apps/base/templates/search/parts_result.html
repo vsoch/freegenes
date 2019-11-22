@@ -9,19 +9,19 @@
                                 <th>Name</th>
                                 <th>Type</th>
                                 <th>Tags</th>
-                                <th>Available</th>
+                                <th>Get this item</th>
                                 <th>Biosafety Level</th>
                             </tr>
  
                             {% for result in results %}
                             <tr class="{% cycle 'even' 'odd' %}">
                                 <td><strong>{{ forloop.counter }}.</strong></td>
-                                <td><a href="{{ result.get_absolute_url }}">{% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}{% if result.description %}<br>{{ result.description | truncatechars:100 }}{% endif %}
+                                <td><a href="{{ result.get_absolute_url }}">{% if result.name %}{{ result.name }}{% else %}{{ result }}{% endif %}</a>{% if result.description %}<br>{{ result.description | truncatechars:100 }}{% endif %}
 </a>
                                 </td>
                                 <td>{{ result.part_type }}</td>
                                 <td>{% for tag in result.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td>
-                                <td>{% if result.is_available %}<a href="{{ result.get_distribution.get_absolute_url }}">Get this part</a>{% endif %}</td>
+                                <td>{% if result.is_available %}{% if request.user.is_authenticated %}<a href="{% url 'add-to-cart' result.get_distribution.uuid %}"><button class="btn btn-sm btn-primary {% if result.get_distribution in request.user.get_cart_items %}disabled"{% else %}"{% endif %}>Add distribution to Cart</button></a>{% endif %}{% endif %}</td>
                                 <td>BSL1</td>
                             </tr>
                             {% endfor %}

@@ -35,15 +35,15 @@
                    style="word-wrap:break-word;table-layout: fixed;"
                    width="100%" cellspacing="0"><thead>
 	      <tr>
-	       <th>Key</th>
-	       <th>Value</th>
+	       <th></th>
+	       <th></th>
 	      </tr>
 	    </thead>
 	      <tbody>
+		{% if instance.get_distribution %}{% with instance.get_distribution as dist %}<tr><td><strong>Get this Part</strong></td><td><a href="{{ dist.get_absolute_url }}">{{ dist.name }}{% endwith %}</a></td></tr>{% endif %}
 		<tr><td>Name</td><td>{{ instance.name }}</td></tr>
 		<tr><td>Description</td><td>{{ instance.description }}</td></tr>
 		{% if instance.author %}<tr><td>Author</td><td>{{ instance.author.name }}</td></tr>{% endif %}
-		{% if instance.get_distribution %}{% with instance.get_distribution as dist %}<tr><td>Distribution</td><td>Get the Part via: <a href="{{ dist.get_absolute_url }}">{{ dist.name }}{% endwith %}</a></td></tr>{% endif %}
 		<tr><td>Gene ID</td><td>{{ instance.gene_id }}</td></tr>
 		<tr><td>Part Type</td><td>{{ instance.part_type }}</td></tr>
 	        <tr><td>Tags</td><td>{% for tag in instance.tags.all %}<a href="{{ tag.get_absolute_url }}">{{ tag.tag }}</a> {% endfor %}</td></tr>
