@@ -23,7 +23,7 @@ from fg.settings import (
     HELP_CONTACT_EMAIL
 )
 
-def _upload_mta(request, uuid, 
+def _upload_mta(request, uuid,
                 template="orders/sign-mta.html",
                 redirect_checkout=True,
                 updated_status=None,
@@ -75,7 +75,7 @@ def _upload_mta(request, uuid,
                            attachment=mta.agreement_file.path,
                            filename=filename)
 
-            if redirect_checkout:
+            if redirect_checkout is True:
                 return redirect('checkout')
             return redirect('order_details', uuid=order.uuid)
     else:
@@ -91,9 +91,7 @@ def upload_mta(request, uuid):
        view to checkout in the case that an order is missing an MTA. The
        uuid corresponds to the UUID for the order
     '''
-    # In this case, if a user re-uploads an MTA (and it needs to again be
-    # countersigned) we revert the status back to Awaiting Countersign
-    return _upload_mta(request, uuid, updated_status="Awaiting Countersign")
+    return _upload_mta(request, uuid)
 
 
 @login_required
