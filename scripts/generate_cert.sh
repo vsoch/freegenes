@@ -1,8 +1,10 @@
 #! /bin/bash
 #
 # nginx should be installed on the host machine
-#
-#
+# 1. The top section shows getting new certs
+# 2. The bottom section shows renewing certs
+
+# 1. Getting New Certificates
 
 EMAIL=${1}
 DOMAIN=${2}
@@ -63,3 +65,52 @@ fi
 sudo service nginx stop
 
 cd $INSTALL_ROOT/freegenes
+
+# 2. Renewing Certificates
+# To renew
+# sudo certbox renew
+# and then the same procedure above
+
+# stop nginx container since we need to start nginx on server
+docker-compose stop nginx
+# Stopping freegenes_nginx_1 ... done
+
+# Start on server and renew!
+sudo service nginx start
+sudo certbot renew
+# Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Processing /etc/letsencrypt/renewal/freegenes.dev.conf
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Cert is due for renewal, auto-renewing...
+# Plugins selected: Authenticator nginx, Installer nginx
+# Renewing an existing certificate
+# Performing the following challenges:
+# http-01 challenge for freegenes.dev
+# http-01 challenge for www.freegenes.dev
+# Waiting for verification...
+# Cleaning up challenges
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# new certificate deployed with reload of nginx server; fullchain is
+# /etc/letsencrypt/live/freegenes.dev/fullchain.pem
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Congratulations, all renewals succeeded. The following certs have been renewed:
+#  /etc/letsencrypt/live/freegenes.dev/fullchain.pem (success)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Create recursive backup with date
+backup=$(echo /etc/letsencrypt{,.bak.$(date +%s)} | cut -d ' ' -f 2)
+sudo cp -R /etc/letsencrypt $backup
+
+# Copy updated certs to where container expects them THIS CANNOT BE SYMBOLIC LINK
+sudo cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem /etc/ssl/certs/chained.pem
+sudo cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem /etc/ssl/private/domain.key
+
+# stop nginx and restart nginx container, verify certs at SSL checker online!
+sudo service nginx stop
+docker-compose up -d nginx
