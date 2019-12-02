@@ -208,7 +208,7 @@ def mark_as_shipped(request, uuid):
 
     # Send an email to the user that the order is shipped
     if order.user.email:
-        message = "Your order %s has been shipped!" % (order.name, order.user.username)
+        message = "Your order %s has been shipped!" % order.name
         message += " See %s%s for details." % (DOMAIN_NAME, order.get_absolute_url())
         subject = "[%s] Order is Shipped!" % NODE_NAME
         send_email(order.user.email, message, subject)
