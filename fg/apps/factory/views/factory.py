@@ -359,6 +359,7 @@ def import_plates_task(data, container):
 def generate_sample_entry(sampleEntry, part):
     '''generate a sample from an entry
     '''
+    from fg.apps.main.models import Sample
     created = False
     try:
         sample = Sample.objects.get(uuid=sampleEntry['uuid'])
