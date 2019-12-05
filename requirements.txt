@@ -19,7 +19,7 @@ django-rq
 django-taggit
 django-taggit-templatetags
 django-user-agents
-django==1.11.18
+Django==2.2.5
 djangorestframework
 freegenes>=0.0.12
 h5py
