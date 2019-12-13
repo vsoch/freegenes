@@ -310,6 +310,7 @@ def import_plates_task(data, container):
                     ancestors.append(olderSample)
 
                 oldest = ancestors.pop(-1)        
+                second = None
                 while len(ancestors) >= 1:
                     second = ancestors.pop(-1)                    
                     second.derived_from = oldest
