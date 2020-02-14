@@ -377,7 +377,8 @@ def import_plate_task(rows, fields, factory_order):
                 # If we didn't find a sample already associated with the Factory order, create it
                 if not sample:
                     sample = Sample.objects.create(vendor=factory_order.vendor.name,
-                                                   part=part)
+                                                   part=part, sample_evidence='Twist_Confirmed',
+                                                   sample_status='Confirmed')
   
                 sample.save()
                 sample.wells.add(well)
