@@ -43,7 +43,7 @@ SENDGRID_API_KEY=None
 DOMAIN_NAME = "http://127.0.0.1"
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = DOMAIN_NAME
 
-ADMINS = (('vsochat', 'vsochat@gmail.com'),)
+ADMINS = (('freegenes', '<email>'),)
 MANAGERS = ADMINS
 
 # BioNode Parameters
